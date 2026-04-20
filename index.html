@@ -207,10 +207,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     </div>
     <div class="paiement-section">
       <div class="pay-methods">
-        <button class="pay-btn" id="btnCB" onclick="selectMode('CB')">💳 Carte CB</button>
         <button class="pay-btn" id="btnCash" onclick="selectMode('Especes')">💵 Espèces</button>
         <button class="pay-btn" id="btnSumup" onclick="selectMode('SumUp')">📱 SumUp</button>
-        <button class="pay-btn" id="btnVir" onclick="selectMode('Virement')">🏦 Virement</button>
       </div>
       <button class="pay-confirm" id="payBtn" onclick="confirmerPaiement()" disabled>
         Encaisser <span class="amount-badge" id="payBtnAmt">0,00 €</span>
