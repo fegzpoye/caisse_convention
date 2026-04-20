@@ -270,13 +270,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 
 <script>
 var PRODUCTS = [
-  {id:1,  name:"Mug personnalise",    label:"Mug personnalisé",   price:9.99, cat:"Sublimation",   emoji:"☕", type:"sublim"},
+ {id:1,  name:"Mug personnalise",    label:"Mug personnalisé",   price:9.99, cat:"Sublimation",   emoji:"☕", type:"sublim"},
   {id:2,  name:"T-shirt sublime",     label:"T-shirt sublimé",    price:22, cat:"Sublimation",   emoji:"👕", type:"sublim"},
   {id:3,  name:"Coussin photo",       label:"Coussin photo",      price:18, cat:"Sublimation",   emoji:"🛋️", type:"sublim"},
   {id:4,  name:"Tote bag",            label:"Tote bag",           price:14, cat:"Sublimation",   emoji:"👜", type:"sublim"},
-  {id:5,  name:"Porte-cles",          label:"Porte-clés",         price:2.50,  cat:"Impression 3D",   emoji:"🔑", type:"print3d"},
   {id:6,  name:"Puzzle photo",        label:"Puzzle photo",       price:25, cat:"Sublimation",   emoji:"🧩", type:"sublim"},
-  {id:7,  name:"Plaque alu",          label:"Plaque alu",         price:20, cat:"Sublimation",   emoji:"🖼️", type:"sublim"},
+  {id:7,  name:"Plaque alu",          label:"Plaque alu",         price:20, cat:"Sublimation",   emoji:"🎴", type:"sublim"},
   {id:8,  name:"Gourde",              label:"Gourde",             price:19, cat:"Sublimation",   emoji:"🧴", type:"sublim"},
   {id:9,  name:"Figurine 3D",         label:"Figurine 3D",        price:15, cat:"Impression 3D", emoji:"🗿", type:"print3d"},
   {id:10, name:"Porte-nom bureau",    label:"Porte-nom bureau",   price:10, cat:"Impression 3D", emoji:"🪧", type:"print3d"},
@@ -284,10 +283,12 @@ var PRODUCTS = [
   {id:12, name:"Boite rangement",     label:"Boîte rangement",    price:12, cat:"Impression 3D", emoji:"📦", type:"print3d"},
   {id:13, name:"Bijou personnalise",  label:"Bijou personnalisé", price:18, cat:"Impression 3D", emoji:"💎", type:"print3d"},
   {id:14, name:"Hueforge",   label:"Hueforge",  price:24, cat:"Impression 3D", emoji:"🌸", type:"print3d"},
+  {id:5,  name:"Porte-cles",          label:"Porte-clés",         price:2.50,  cat:"Impression 3D",   emoji:"🔑", type:"print3d"},
+	 {id:18,  name:"Cadre-hueforge",          label:"Cadre hueforge",         price:2.50,  cat:"Impression 3D",   emoji:"🖼️", type:"print3d"},
   {id:15, name:"Pack Souvenir",       label:"Pack Souvenir",      price:28, cat:"Pack",          emoji:"🎁", type:"pack", desc:"Mug + Porte-clés"},
   {id:16, name:"Pack Duo",            label:"Pack Duo",           price:35, cat:"Pack",          emoji:"🎀", type:"pack", desc:"T-shirt + Mug"},
   {id:17, name:"Pack Deco 3D",        label:"Pack Déco 3D",       price:40, cat:"Pack",          emoji:"✨", type:"pack", desc:"Vase + Décoration"}
-];
+ ];
 
 var cart = [];
 var payMode = null;
