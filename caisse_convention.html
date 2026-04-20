@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Caisse — Convention & Marché</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0d0d0f;--surface:#18181c;--surface2:#222228;--surface3:#2c2c35;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#f0f0f4;--text2:#9898a8;--text3:#5a5a6a;
+  --accent:#e94560;--accent2:#ff6b82;--purple:#7c6af7;
+  --green:#2ecc8f;--amber:#f5a623;--blue:#4a9eff;
+  --r:14px;--r-sm:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden;display:flex;flex-direction:column;font-size:15px;position:relative}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 18px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;gap:10px}
+.topbar-left{display:flex;align-items:center;gap:10px}
+.logo-dot{width:9px;height:9px;border-radius:50%;background:var(--accent)}
+.topbar-title{font-weight:600;font-size:15px;letter-spacing:-.3px}
+.event-badge{background:var(--surface2);border:1px solid var(--border2);border-radius:99px;padding:4px 12px;font-size:12px;color:var(--text2);display:flex;align-items:center;gap:6px}
+.event-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.stat-pill{background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:5px 12px;font-size:12px;font-family:'DM Mono',monospace;white-space:nowrap}
+.stat-pill span{color:var(--text2);margin-right:4px}
+.btn-sm{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all .12s}
+.btn-sm:active{transform:scale(.96)}
+.btn-xl{background:var(--green);border:none;border-radius:var(--r-sm);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;white-space:nowrap;transition:all .12s}
+.btn-xl:active{transform:scale(.96)}
+.btn-reset{background:transparent;border:1px solid rgba(233,69,96,.4);border-radius:var(--r-sm);color:#e94560;font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all .12s}
+.btn-reset:active{transform:scale(.96);background:rgba(233,69,96,.1)}
+.main{display:flex;flex:1;overflow:hidden}
+.catalog{flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)}
+.cat-tabs{display:flex;gap:6px;padding:10px 14px;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
+.cat-tabs::-webkit-scrollbar{display:none}
+.tab{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid var(--border2);background:transparent;color:var(--text2);transition:all .15s;-webkit-user-select:none;user-select:none}
+.tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.tab:active{transform:scale(.96)}
+.products-grid{flex:1;overflow-y:auto;padding:6px 14px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;align-content:start;scrollbar-width:thin;scrollbar-color:var(--surface3) transparent}
+.product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;gap:7px;transition:all .12s;-webkit-user-select:none;user-select:none;position:relative;overflow:hidden}
+.product-card.sublim{border-top:2px solid var(--accent)}
+.product-card.print3d{border-top:2px solid var(--purple)}
+.product-card.pack{border-top:2px solid var(--amber)}
+.product-card:active{transform:scale(.96)}
+.product-icon{font-size:26px;line-height:1}
+.product-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.3}
+.product-price{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--accent2)}
+.product-cat{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.panier{width:310px;display:flex;flex-direction:column;background:var(--surface);flex-shrink:0}
+.panier-header{padding:12px 16px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.panier-title{font-weight:600;font-size:13px}
+.panier-count{background:var(--accent);color:#fff;border-radius:99px;min-width:22px;height:22px;padding:0 6px;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.panier-items{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:5px;scrollbar-width:thin;scrollbar-color:var(--surface3) transparent}
+.empty-cart{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);gap:8px;font-size:13px;padding:20px}
+.cart-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 10px;display:flex;align-items:center;gap:8px;animation:slideIn .15s ease}
+@keyframes slideIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.cart-item-info{flex:1;min-width:0}
+.cart-item-name{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cart-item-sub{font-size:10px;color:var(--text2);margin-top:1px}
+.cart-item-price{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap}
+.qty-ctrl{display:flex;align-items:center;gap:5px}
+.qty-btn{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);background:var(--surface3);color:var(--text);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .1s;flex-shrink:0}
+.qty-btn:active{transform:scale(.9);background:var(--accent);border-color:var(--accent)}
+.qty-num{font-size:12px;font-weight:500;min-width:16px;text-align:center;font-family:'DM Mono',monospace}
+.discount-row{padding:7px 10px;border-top:1px solid var(--border);flex-shrink:0}
+.discount-inner{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:5px 10px}
+.discount-label{font-size:12px;color:var(--text2);white-space:nowrap}
+.discount-input{flex:1;background:transparent;border:none;outline:none;color:var(--amber);font-family:'DM Mono',monospace;font-size:13px;font-weight:500;width:50px;text-align:right}
+.discount-pct{font-size:12px;color:var(--text3)}
+.totaux{padding:10px 14px;border-top:1px solid var(--border);flex-shrink:0}
+.total-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;margin-bottom:5px;color:var(--text2)}
+.total-row.main{font-size:20px;font-weight:600;color:var(--text);margin-top:6px;margin-bottom:0;font-family:'DM Mono',monospace}
+.total-row.main .lbl{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--text2)}
+.paiement-section{padding:8px 14px 12px;display:flex;flex-direction:column;gap:7px;flex-shrink:0}
+.pay-methods{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.pay-btn{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;padding:9px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .12s;-webkit-user-select:none;user-select:none}
+.pay-btn:active{transform:scale(.97)}
+.pay-btn.selected{border-color:var(--accent);background:rgba(233,69,96,.12);color:var(--accent2)}
+.pay-confirm{background:var(--accent);color:#fff;border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;padding:14px;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;-webkit-user-select:none;user-select:none}
+.pay-confirm:active{transform:scale(.98);background:#c73050}
+.pay-confirm:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.amount-badge{background:rgba(255,255,255,.2);border-radius:99px;padding:3px 10px;font-family:'DM Mono',monospace;font-size:13px}
+.modal-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.8);align-items:center;justify-content:center;z-index:200}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:28px 24px;width:300px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.modal-amount{font-family:'DM Mono',monospace;font-size:42px;font-weight:500;color:var(--text);letter-spacing:-1px}
+.modal-label{font-size:13px;color:var(--text2);text-align:center}
+.modal-icon{font-size:42px}
+.modal-stats{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0}
+.mstat{background:var(--surface2);border-radius:var(--r-sm);padding:10px;text-align:center}
+.mstat-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500}
+.mstat-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.modal-btn{width:100%;padding:11px;font-size:13px;font-weight:500;cursor:pointer;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;transition:all .12s}
+.modal-btn:active{transform:scale(.97)}
+.modal-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.modal-btn.success{background:transparent;border-color:var(--green);color:var(--green)}
+.modal-overlay-reset{display:none;position:absolute;inset:0;background:rgba(0,0,0,.85);align-items:center;justify-content:center;z-index:500}
+.modal-overlay-reset.open{display:flex}
+.modal-reset{background:var(--surface);border:1px solid rgba(233,69,96,.3);border-radius:20px;padding:28px 24px;width:300px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.modal-reset-icon{font-size:40px}
+.modal-reset-title{font-size:16px;font-weight:600;color:var(--text)}
+.modal-reset-sub{font-size:12px;color:var(--text2);line-height:1.5}
+.modal-reset-btns{display:flex;gap:8px;width:100%}
+.modal-reset-btns button{flex:1;padding:11px;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .12s}
+.modal-reset-btns .cancel{background:var(--surface2);border:1px solid var(--border2);color:var(--text2)}
+.modal-reset-btns .confirm{background:var(--accent);border:none;color:#fff}
+.modal-reset-btns button:active{transform:scale(.97)}
+.ticket-list{position:absolute;top:0;right:0;bottom:0;width:300px;background:var(--surface);border-left:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:150}
+.ticket-list.open{transform:translateX(0)}
+.ticket-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ticket-header h3{font-size:13px;font-weight:600}
+.tickets-body{flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:6px}
+.ticket-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px}
+.ticket-item-top{display:flex;justify-content:space-between;margin-bottom:5px}
+.ticket-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)}
+.ticket-total{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--green)}
+.ticket-meta{font-size:11px;color:var(--text3);margin-bottom:4px}
+.ticket-mode{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:500}
+.ticket-mode.cb{background:rgba(74,158,255,.15);color:var(--blue)}
+.ticket-mode.cash{background:rgba(46,204,143,.15);color:var(--green)}
+.ticket-mode.vir{background:rgba(245,166,35,.15);color:var(--amber)}
+.ticket-ca{border-top:1px solid var(--border);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;font-size:12px;flex-shrink:0}
+.ticket-ca-lbl{color:var(--text2)}
+.ticket-ca-val{font-family:'DM Mono',monospace;font-size:15px;font-weight:600;color:var(--green)}
+.excel-panel{position:absolute;top:0;left:0;bottom:0;width:360px;background:var(--surface);border-right:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .25s ease;z-index:150}
+.excel-panel.open{transform:translateX(0)}
+.ep-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ep-header h3{font-size:13px;font-weight:600}
+.ep-body{flex:1;overflow-y:auto;padding:12px}
+.ep-section{margin-bottom:18px}
+.ep-section-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.ep-kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.ep-kpi{background:var(--surface2);border-radius:var(--r-sm);padding:10px;text-align:center}
+.ep-kpi-val{font-family:'DM Mono',monospace;font-size:15px;font-weight:500}
+.ep-kpi-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.ep-table{width:100%;border-collapse:collapse;font-size:11px}
+.ep-table th{background:var(--surface3);color:var(--text2);font-weight:500;padding:6px 8px;text-align:left;border-bottom:1px solid var(--border)}
+.ep-table td{padding:6px 8px;border-bottom:1px solid var(--border);color:var(--text)}
+.ep-table tr:last-child td{border-bottom:none}
+.ep-table .num{font-family:'DM Mono',monospace;text-align:right}
+.cat-sub{color:var(--accent);font-size:10px;font-weight:600}
+.cat-3d{color:var(--purple);font-size:10px;font-weight:600}
+.ep-dl-btn{width:100%;padding:12px;background:var(--green);border:none;border-radius:var(--r-sm);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;transition:all .12s;display:flex;align-items:center;justify-content:center;gap:8px}
+.ep-dl-btn:active{transform:scale(.98)}
+.toast{position:absolute;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--green);color:#fff;padding:10px 22px;border-radius:99px;font-size:13px;font-weight:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:300;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo-dot"></div>
+    <span class="topbar-title">Ma Caisse</span>
+    <div class="event-badge"><div class="event-dot"></div><span>Convention/Marché</span></div>
+  </div>
+  <div class="topbar-right">
+    <div class="stat-pill"><span>Ventes</span><strong id="nbVentes">0</strong></div>
+    <div class="stat-pill"><span>CA</span><strong id="caJour">0,00 €</strong></div>
+    <button class="btn-sm" onclick="toggleTickets()">Tickets</button>
+    <button class="btn-xl" onclick="toggleExcel()">📊 Excel Live</button>
+    <button class="btn-reset" onclick="askReset()">↺ Nouveau jour</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="catalog">
+    <div class="cat-tabs" id="catTabs">
+      <button class="tab active" onclick="filterCat('Tous',this)">Tous</button>
+      <button class="tab" onclick="filterCat('Sublimation',this)">🎨 Sublimation</button>
+      <button class="tab" onclick="filterCat('Impression 3D',this)">🖨️ Impression 3D</button>
+      <button class="tab" onclick="filterCat('Pack',this)">🎁 Packs</button>
+    </div>
+    <div class="products-grid" id="productsGrid"></div>
+  </div>
+
+  <div class="panier">
+    <div class="panier-header">
+      <span class="panier-title">Commande</span>
+      <div class="panier-count" id="cartCount">0</div>
+    </div>
+    <div class="panier-items" id="panierItems"></div>
+    <div class="discount-row">
+      <div class="discount-inner">
+        <span class="discount-label">Remise</span>
+        <input class="discount-input" type="number" id="discountInput" min="0" max="100" placeholder="0" oninput="updateTotals()">
+        <span class="discount-pct">%</span>
+      </div>
+    </div>
+    <div class="totaux">
+      <div class="total-row"><span>Sous-total</span><span id="subTotal">0,00 €</span></div>
+      <div class="total-row" id="discountRow" style="display:none;color:var(--amber)"><span>Remise</span><span id="discountAmt"></span></div>
+      <div class="total-row main"><span class="lbl">Total TTC</span><span id="totalTTC">0,00 €</span></div>
+    </div>
+    <div class="paiement-section">
+      <div class="pay-methods">
+        <button class="pay-btn" id="btnCB" onclick="selectMode('CB')">💳 Carte CB</button>
+        <button class="pay-btn" id="btnCash" onclick="selectMode('Especes')">💵 Espèces</button>
+        <button class="pay-btn" id="btnSumup" onclick="selectMode('SumUp')">📱 SumUp</button>
+        <button class="pay-btn" id="btnVir" onclick="selectMode('Virement')">🏦 Virement</button>
+      </div>
+      <button class="pay-confirm" id="payBtn" onclick="confirmerPaiement()" disabled>
+        Encaisser <span class="amount-badge" id="payBtnAmt">0,00 €</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-icon" id="modalIcon">✅</div>
+    <div class="modal-amount" id="modalAmount">0,00 €</div>
+    <div class="modal-label" id="modalLabel">Paiement enregistré</div>
+    <div class="modal-stats">
+      <div class="mstat"><div class="mstat-val" id="mStatVentes" style="color:var(--accent)">0</div><div class="mstat-lbl">Ventes du jour</div></div>
+      <div class="mstat"><div class="mstat-val" id="mStatCA" style="color:var(--green)">0 €</div><div class="mstat-lbl">CA du jour</div></div>
+    </div>
+    <button class="modal-btn primary" onclick="closeModal()">Nouvelle commande</button>
+    <button class="modal-btn success" onclick="downloadExcel()">⬇ Télécharger Excel</button>
+  </div>
+</div>
+
+<div class="ticket-list" id="ticketPanel">
+  <div class="ticket-header">
+    <h3>Tickets du jour</h3>
+    <button class="btn-sm" onclick="toggleTickets()">✕</button>
+  </div>
+  <div class="tickets-body" id="ticketsBody"><div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Aucun ticket</div></div>
+  <div class="ticket-ca"><span class="ticket-ca-lbl">CA du jour</span><span class="ticket-ca-val" id="caTotal">0,00 €</span></div>
+</div>
+
+<div class="excel-panel" id="excelPanel">
+  <div class="ep-header">
+    <h3>📊 Excel Live</h3>
+    <button class="btn-sm" onclick="toggleExcel()">✕</button>
+  </div>
+  <div class="ep-body" id="epBody">
+    <div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Aucune vente pour le moment</div>
+  </div>
+</div>
+
+<div class="modal-overlay-reset" id="modalReset">
+  <div class="modal-reset">
+    <div class="modal-reset-icon">🔄</div>
+    <div class="modal-reset-title">Commencer un nouveau jour ?</div>
+    <div class="modal-reset-sub">
+      Toutes les ventes seront effacées.<br>
+      <strong style="color:var(--amber)">Sauvegardez votre Excel avant !</strong>
+    </div>
+    <button class="modal-btn success" style="width:100%;margin-bottom:4px" onclick="downloadExcel()">⬇ Télécharger Excel avant</button>
+    <div class="modal-reset-btns">
+      <button class="cancel" onclick="closeReset()">Annuler</button>
+      <button class="confirm" onclick="doReset()">Oui, réinitialiser</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var PRODUCTS = [
+  {id:1,  name:"Mug personnalise",    label:"Mug personnalisé",   price:9.99, cat:"Sublimation",   emoji:"☕", type:"sublim"},
+  {id:2,  name:"T-shirt sublime",     label:"T-shirt sublimé",    price:22, cat:"Sublimation",   emoji:"👕", type:"sublim"},
+  {id:3,  name:"Coussin photo",       label:"Coussin photo",      price:18, cat:"Sublimation",   emoji:"🛋️", type:"sublim"},
+  {id:4,  name:"Tote bag",            label:"Tote bag",           price:14, cat:"Sublimation",   emoji:"👜", type:"sublim"},
+  {id:5,  name:"Porte-cles",          label:"Porte-clés",         price:2.50,  cat:"Impression 3D",   emoji:"🔑", type:"print3d"},
+  {id:6,  name:"Puzzle photo",        label:"Puzzle photo",       price:25, cat:"Sublimation",   emoji:"🧩", type:"sublim"},
+  {id:7,  name:"Plaque alu",          label:"Plaque alu",         price:20, cat:"Sublimation",   emoji:"🖼️", type:"sublim"},
+  {id:8,  name:"Gourde",              label:"Gourde",             price:19, cat:"Sublimation",   emoji:"🧴", type:"sublim"},
+  {id:9,  name:"Figurine 3D",         label:"Figurine 3D",        price:15, cat:"Impression 3D", emoji:"🗿", type:"print3d"},
+  {id:10, name:"Porte-nom bureau",    label:"Porte-nom bureau",   price:10, cat:"Impression 3D", emoji:"🪧", type:"print3d"},
+  {id:11, name:"Vase design",         label:"Vase design",        price:20, cat:"Impression 3D", emoji:"🏺", type:"print3d"},
+  {id:12, name:"Boite rangement",     label:"Boîte rangement",    price:12, cat:"Impression 3D", emoji:"📦", type:"print3d"},
+  {id:13, name:"Bijou personnalise",  label:"Bijou personnalisé", price:18, cat:"Impression 3D", emoji:"💎", type:"print3d"},
+  {id:14, name:"Hueforge",   label:"Hueforge",  price:24, cat:"Impression 3D", emoji:"🌸", type:"print3d"},
+  {id:15, name:"Pack Souvenir",       label:"Pack Souvenir",      price:28, cat:"Pack",          emoji:"🎁", type:"pack", desc:"Mug + Porte-clés"},
+  {id:16, name:"Pack Duo",            label:"Pack Duo",           price:35, cat:"Pack",          emoji:"🎀", type:"pack", desc:"T-shirt + Mug"},
+  {id:17, name:"Pack Deco 3D",        label:"Pack Déco 3D",       price:40, cat:"Pack",          emoji:"✨", type:"pack", desc:"Vase + Décoration"}
+];
+
+var cart = [];
+var payMode = null;
+var tickets = [];
+var totalCA = 0;
+var currentCat = "Tous";
+var salesData = {};
+
+PRODUCTS.forEach(function(p) {
+  salesData[p.id] = {name:p.label, cat:p.cat, emoji:p.emoji, price:p.price, qty:0, ca:0};
+});
+
+function fmt(n) {
+  return n.toFixed(2).replace(".",",") + " €";
+}
+
+function renderProducts() {
+  var grid = document.getElementById("productsGrid");
+  var list = currentCat === "Tous" ? PRODUCTS : PRODUCTS.filter(function(p){ return p.cat === currentCat; });
+  var html = "";
+  list.forEach(function(p) {
+    var desc = p.desc ? "<br><span style='font-size:10px;color:var(--text3)'>" + p.desc + "</span>" : "";
+    var catLabel = p.cat === "Impression 3D" ? "3D" : p.cat === "Pack" ? "Pack" : "Sub";
+    html += "<div class='product-card " + p.type + "' onclick='addToCart(" + p.id + ")'>";
+    html += "<div class='product-icon'>" + p.emoji + "</div>";
+    html += "<div class='product-name'>" + p.label + desc + "</div>";
+    html += "<div style='display:flex;justify-content:space-between;align-items:center'>";
+    html += "<div class='product-price'>" + fmt(p.price) + "</div>";
+    html += "<div class='product-cat'>" + catLabel + "</div>";
+    html += "</div></div>";
+  });
+  grid.innerHTML = html;
+}
+
+function filterCat(cat, btn) {
+  currentCat = cat;
+  var tabs = document.querySelectorAll(".tab");
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove("active");
+  btn.classList.add("active");
+  renderProducts();
+}
+
+function addToCart(id) {
+  var prod = null;
+  for(var i=0;i<PRODUCTS.length;i++) { if(PRODUCTS[i].id===id) { prod=PRODUCTS[i]; break; } }
+  if(!prod) return;
+  var ex = null;
+  for(var i=0;i<cart.length;i++) { if(cart[i].id===id) { ex=cart[i]; break; } }
+  if(ex) { ex.qty++; } else { cart.push({id:prod.id,name:prod.label,price:prod.price,emoji:prod.emoji,cat:prod.cat,qty:1}); }
+  showToast(prod.emoji + " " + prod.label + " ajouté");
+  renderCart();
+  updateTotals();
+}
+
+function changeQty(id, delta) {
+  var idx = -1;
+  for(var i=0;i<cart.length;i++) { if(cart[i].id===id) { idx=i; break; } }
+  if(idx===-1) return;
+  cart[idx].qty += delta;
+  if(cart[idx].qty <= 0) cart.splice(idx,1);
+  renderCart();
+  updateTotals();
+}
+
+function renderCart() {
+  var container = document.getElementById("panierItems");
+  var count = 0;
+  for(var i=0;i<cart.length;i++) count += cart[i].qty;
+  document.getElementById("cartCount").textContent = count;
+  if(cart.length === 0) {
+    container.innerHTML = "<div class='empty-cart'><div style='font-size:30px;opacity:.35'>🛒</div><span>Panier vide</span><span style='font-size:11px;color:var(--text3)'>Touchez un article</span></div>";
+    return;
+  }
+  var html = "";
+  cart.forEach(function(item) {
+    html += "<div class='cart-item'>";
+    html += "<div style='font-size:18px'>" + item.emoji + "</div>";
+    html += "<div class='cart-item-info'><div class='cart-item-name'>" + item.name + "</div>";
+    html += "<div class='cart-item-sub'>" + fmt(item.price) + " / unité</div></div>";
+    html += "<div class='qty-ctrl'>";
+    html += "<button class='qty-btn' onclick='changeQty(" + item.id + ",-1)'>−</button>";
+    html += "<span class='qty-num'>" + item.qty + "</span>";
+    html += "<button class='qty-btn' onclick='changeQty(" + item.id + ",1)'>+</button>";
+    html += "</div>";
+    html += "<div class='cart-item-price'>" + fmt(item.price * item.qty) + "</div>";
+    html += "</div>";
+  });
+  container.innerHTML = html;
+}
+
+function updateTotals() {
+  var sub = 0;
+  for(var i=0;i<cart.length;i++) sub += cart[i].price * cart[i].qty;
+  var disc = parseFloat(document.getElementById("discountInput").value) || 0;
+  var discAmt = sub * disc / 100;
+  var total = sub - discAmt;
+  document.getElementById("subTotal").textContent = fmt(sub);
+  document.getElementById("totalTTC").textContent = fmt(total);
+  document.getElementById("payBtnAmt").textContent = fmt(total);
+  var dRow = document.getElementById("discountRow");
+  if(disc > 0 && sub > 0) {
+    dRow.style.display = "flex";
+    document.getElementById("discountAmt").textContent = "-" + fmt(discAmt);
+  } else {
+    dRow.style.display = "none";
+  }
+  document.getElementById("payBtn").disabled = (cart.length === 0 || !payMode);
+}
+
+function selectMode(mode) {
+  payMode = mode;
+  var ids = ["btnCB","btnCash","btnSumup","btnVir"];
+  for(var i=0;i<ids.length;i++) {
+    var b = document.getElementById(ids[i]);
+    if(b) b.classList.remove("selected");
+  }
+  var map = {"CB":"btnCB","Especes":"btnCash","SumUp":"btnSumup","Virement":"btnVir"};
+  if(map[mode]) document.getElementById(map[mode]).classList.add("selected");
+  updateTotals();
+}
+
+function confirmerPaiement() {
+  if(cart.length === 0 || !payMode) return;
+  var sub = 0;
+  for(var i=0;i<cart.length;i++) sub += cart[i].price * cart[i].qty;
+  var disc = parseFloat(document.getElementById("discountInput").value) || 0;
+  var total = sub - sub * disc / 100;
+  var now = new Date();
+  var timeStr = now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
+  var dateStr = now.toLocaleDateString("fr-FR");
+  var modeLabel = payMode === "Especes" ? "Espèces" : payMode;
+  var ticket = {
+    num: tickets.length + 1,
+    items: cart.map(function(i){ return {id:i.id,name:i.name,cat:i.cat,price:i.price,qty:i.qty,emoji:i.emoji}; }),
+    total: total, mode: modeLabel, time: timeStr, date: dateStr, disc: disc
+  };
+  tickets.unshift(ticket);
+  totalCA += total;
+  cart.forEach(function(item) {
+    salesData[item.id].qty += item.qty;
+    salesData[item.id].ca  += item.price * item.qty;
+  });
+  document.getElementById("nbVentes").textContent = tickets.length;
+  document.getElementById("caJour").textContent = fmt(totalCA);
+  document.getElementById("caTotal").textContent = fmt(totalCA);
+  var icons = {"CB":"💳","Espèces":"💵","SumUp":"📱","Virement":"🏦"};
+  document.getElementById("modalIcon").textContent = icons[modeLabel] || "✅";
+  document.getElementById("modalAmount").textContent = fmt(total);
+  document.getElementById("modalLabel").textContent = "Payé par " + modeLabel + " — Excel mis à jour !";
+  document.getElementById("mStatVentes").textContent = tickets.length;
+  document.getElementById("mStatCA").textContent = fmt(totalCA);
+  document.getElementById("modalOverlay").classList.add("open");
+  renderTickets();
+  renderExcelPanel();
+  showToast("✅ Encaissé !");
+}
+
+function closeModal() {
+  document.getElementById("modalOverlay").classList.remove("open");
+  cart = []; payMode = null;
+  document.getElementById("discountInput").value = "";
+  var ids = ["btnCB","btnCash","btnSumup","btnVir"];
+  for(var i=0;i<ids.length;i++) { var b=document.getElementById(ids[i]); if(b) b.classList.remove("selected"); }
+  renderCart(); updateTotals();
+}
+
+function renderExcelPanel() {
+  var body = document.getElementById("epBody");
+  var hasData = false;
+  for(var id in salesData) { if(salesData[id].qty > 0) { hasData=true; break; } }
+  if(!hasData) {
+    body.innerHTML = "<div style='padding:20px;text-align:center;color:var(--text3);font-size:13px'>Aucune vente pour le moment</div>";
+    return;
+  }
+  var totalSub=0, total3D=0, totalPack=0, qSub=0, q3D=0, qPack=0;
+  for(var id in salesData) {
+    var s = salesData[id];
+    if(s.cat==="Sublimation") { totalSub+=s.ca; qSub+=s.qty; }
+    else if(s.cat==="Impression 3D") { total3D+=s.ca; q3D+=s.qty; }
+    else { totalPack+=s.ca; qPack+=s.qty; }
+  }
+  var sold = [];
+  for(var id in salesData) { if(salesData[id].qty>0) sold.push(salesData[id]); }
+  sold.sort(function(a,b){ return b.qty - a.qty; });
+  var modeCA = {};
+  for(var i=0;i<tickets.length;i++) {
+    var t = tickets[i];
+    modeCA[t.mode] = (modeCA[t.mode]||0) + t.total;
+  }
+  var html = "<div class='ep-section'>";
+  html += "<div class='ep-section-title'>CA par catégorie</div>";
+  html += "<div class='ep-kpi-grid'>";
+  html += "<div class='ep-kpi'><div class='ep-kpi-val' style='color:#e94560'>" + fmt(totalSub) + "</div><div class='ep-kpi-lbl'>Sublimation (" + qSub + " art.)</div></div>";
+  html += "<div class='ep-kpi'><div class='ep-kpi-val' style='color:#7c6af7'>" + fmt(total3D) + "</div><div class='ep-kpi-lbl'>Impression 3D (" + q3D + " art.)</div></div>";
+  if(totalPack>0) html += "<div class='ep-kpi' style='grid-column:1/-1'><div class='ep-kpi-val' style='color:#f5a623'>" + fmt(totalPack) + "</div><div class='ep-kpi-lbl'>Packs (" + qPack + ")</div></div>";
+  html += "</div></div>";
+  html += "<div class='ep-section'><div class='ep-section-title'>Produits vendus (" + sold.length + ")</div>";
+  html += "<table class='ep-table'><thead><tr><th>Produit</th><th style='text-align:center'>Qté</th><th style='text-align:right'>CA TTC</th></tr></thead><tbody>";
+  sold.forEach(function(s) {
+    var catCls = s.cat==="Sublimation" ? "cat-sub" : "cat-3d";
+    var catLbl = s.cat==="Impression 3D" ? "3D" : s.cat==="Pack" ? "Pack" : "Sub";
+    html += "<tr><td>" + s.emoji + " " + s.name + "<br><span class='" + catCls + "'>" + catLbl + "</span></td>";
+    html += "<td class='num' style='color:#2ecc8f;font-weight:600'>" + s.qty + "</td>";
+    html += "<td class='num'>" + fmt(s.ca) + "</td></tr>";
+  });
+  html += "</tbody></table></div>";
+  html += "<div class='ep-section'><div class='ep-section-title'>Par mode de paiement</div>";
+  html += "<table class='ep-table'><thead><tr><th>Mode</th><th style='text-align:right'>CA TTC</th></tr></thead><tbody>";
+  for(var m in modeCA) {
+    html += "<tr><td>" + m + "</td><td class='num'>" + fmt(modeCA[m]) + "</td></tr>";
+  }
+  html += "</tbody></table></div>";
+  html += "<button class='ep-dl-btn' onclick='downloadExcel()'>⬇ Télécharger Excel complet</button>";
+  body.innerHTML = html;
+}
+
+function downloadExcel() {
+  if(!tickets.length) { showToast("Aucune vente a exporter"); return; }
+  var wb = XLSX.utils.book_new();
+  var today = new Date().toLocaleDateString("fr-FR");
+  var dd = today.split("/"); var dateFile = dd[0]+"-"+dd[1]+"-"+dd[2];
+  var modeCA = {};
+  tickets.forEach(function(t){ modeCA[t.mode] = (modeCA[t.mode]||0)+t.total; });
+  var totalCA2 = 0;
+  for(var id in salesData) totalCA2 += salesData[id].ca;
+
+  // Feuille 1 : Detail
+  var aoa1 = [
+    ["DETAIL DES VENTES TTC — " + today,"","","","","","","",""],
+    ["Micro-entreprise — franchise en base de TVA","","","","","","","",""],
+    [],
+    ["N° Ticket","Date","Heure","Produit","Categorie","Quantite","Prix TTC unit.","Total TTC","Mode paiement"]
+  ];
+  var revTickets = tickets.slice().reverse();
+  revTickets.forEach(function(t) {
+    t.items.forEach(function(item) {
+      aoa1.push([
+        "#"+("00"+t.num).slice(-3),
+        t.date, t.time, item.name, item.cat,
+        item.qty,
+        parseFloat(item.price.toFixed(2)),
+        parseFloat((item.price*item.qty).toFixed(2)),
+        t.mode
+      ]);
+    });
+    aoa1.push(["","","","","","Sous-total","",parseFloat(t.total.toFixed(2)),""]);
+  });
+  aoa1.push([]);
+  aoa1.push(["","","","","","","TOTAL TTC","",parseFloat(totalCA2.toFixed(2))]);
+
+  var ws1 = XLSX.utils.aoa_to_sheet(aoa1);
+  ws1["!cols"] = [12,11,8,24,15,12,16,14,14].map(function(w){ return {wch:w}; });
+
+  // Styles feuille 1
+  var S = {
+    hdrDark: {font:{name:"Calibri",sz:13,bold:true,color:{rgb:"FFFFFF"}}, fill:{fgColor:{rgb:"1A1A2E"},patternType:"solid"}, alignment:{horizontal:"center",vertical:"center"}},
+    hdrSub:  {font:{name:"Calibri",sz:9,italic:true,color:{rgb:"AAAAAA"}}, fill:{fgColor:{rgb:"222228"},patternType:"solid"}, alignment:{horizontal:"center",vertical:"center"}},
+    hdrCol:  {font:{name:"Calibri",sz:10,bold:true,color:{rgb:"FFFFFF"}}, fill:{fgColor:{rgb:"E94560"},patternType:"solid"}, alignment:{horizontal:"center",vertical:"center"}},
+    norm:    {font:{name:"Calibri",sz:10,color:{rgb:"333333"}}, fill:{fgColor:{rgb:"FFFFFF"},patternType:"solid"}, alignment:{vertical:"center"}},
+    normAlt: {font:{name:"Calibri",sz:10,color:{rgb:"333333"}}, fill:{fgColor:{rgb:"F8F9FA"},patternType:"solid"}, alignment:{vertical:"center"}},
+    money:   {font:{name:"Calibri",sz:10,bold:true,color:{rgb:"1A7A4A"}}, fill:{fgColor:{rgb:"FFFFFF"},patternType:"solid"}, alignment:{horizontal:"right",vertical:"center"}, numFmt:'#,##0.00\\ "\\u20ac"'},
+    moneyAlt:{font:{name:"Calibri",sz:10,bold:true,color:{rgb:"1A7A4A"}}, fill:{fgColor:{rgb:"F8F9FA"},patternType:"solid"}, alignment:{horizontal:"right",vertical:"center"}, numFmt:'#,##0.00\\ "\\u20ac"'},
+    sub:     {font:{name:"Calibri",sz:9,italic:true,color:{rgb:"E94560"}}, fill:{fgColor:{rgb:"F5F5F5"},patternType:"solid"}, alignment:{horizontal:"right",vertical:"center"}, numFmt:'#,##0.00\\ "\\u20ac"'},
+    tot:     {font:{name:"Calibri",sz:13,bold:true,color:{rgb:"2ECC8F"}}, fill:{fgColor:{rgb:"1A1A2E"},patternType:"solid"}, alignment:{horizontal:"right",vertical:"center"}, numFmt:'#,##0.00\\ "\\u20ac"'}
+  };
+  function sc(ws,r,c,style) {
+    var addr = XLSX.utils.encode_cell({r:r,c:c});
+    if(!ws[addr]) ws[addr]={t:"z",v:""};
+    ws[addr].s = style;
+  }
+  for(var col=0;col<9;col++) { sc(ws1,0,col,S.hdrDark); sc(ws1,1,col,S.hdrSub); sc(ws1,3,col,S.hdrCol); }
+
+  var dr=4; var alt=false;
+  revTickets.forEach(function(t) {
+    t.items.forEach(function(item) {
+      var bg = alt ? S.normAlt : S.norm;
+      for(var col=0;col<9;col++) sc(ws1,dr,col,bg);
+      sc(ws1,dr,6, alt ? S.moneyAlt : S.money);
+      sc(ws1,dr,7, alt ? S.moneyAlt : S.money);
+      dr++;
+    });
+    for(var col=0;col<9;col++) sc(ws1,dr,col,{font:{name:"Calibri",sz:9,italic:true,color:{rgb:"888888"}},fill:{fgColor:{rgb:"F0F0F0"},patternType:"solid"},alignment:{vertical:"center"}});
+    sc(ws1,dr,7,S.sub); dr++; alt=!alt;
+  });
+  var lastR = aoa1.length-1;
+  for(var col=0;col<9;col++) sc(ws1,lastR,col,{font:{name:"Calibri",sz:11,bold:true,color:{rgb:"FFFFFF"}},fill:{fgColor:{rgb:"1A1A2E"},patternType:"solid"},alignment:{horizontal:"center",vertical:"center"}});
+  sc(ws1,lastR,8,S.tot);
+  ws1["!merges"] = [{s:{r:0,c:0},e:{r:0,c:8}},{s:{r:1,c:0},e:{r:1,c:8}}];
+  ws1["!rows"] = [{hpt:36},{hpt:20},{hpt:8},{hpt:28}];
+  XLSX.utils.book_append_sheet(wb, ws1, "Details ventes");
+
+  // Feuille 2 : Recap produits
+  var sold2 = [];
+  for(var id in salesData) { if(salesData[id].qty>0) sold2.push(salesData[id]); }
+  sold2.sort(function(a,b){ return b.qty-a.qty; });
+  var aoa2 = [
+    ["RECAPITULATIF PAR PRODUIT — " + today,"","","","",""],
+    ["Tous les prix sont en TTC — Micro-entreprise franchise TVA","","","","",""],
+    [],
+    ["Produit","Categorie","Qte vendue","Prix TTC unit.","CA TTC total","% du CA"]
+  ];
+  sold2.forEach(function(s) {
+    aoa2.push([s.name, s.cat, s.qty, parseFloat(s.price.toFixed(2)), parseFloat(s.ca.toFixed(2)),
+      totalCA2>0 ? parseFloat((s.ca/totalCA2*100).toFixed(1)) : 0]);
+  });
+  var totQty2=0; sold2.forEach(function(s){ totQty2+=s.qty; });
+  aoa2.push([]);
+  aoa2.push(["TOTAL","",totQty2,"",parseFloat(totalCA2.toFixed(2)),100]);
+  var ws2 = XLSX.utils.aoa_to_sheet(aoa2);
+  ws2["!cols"] = [{wch:26},{wch:15},{wch:13},{wch:16},{wch:15},{wch:11}];
+  var hdrPurple = {font:{name:"Calibri",sz:10,bold:true,color:{rgb:"FFFFFF"}},fill:{fgColor:{rgb:"7C6AF7"},patternType:"solid"},alignment:{horizontal:"center",vertical:"center"}};
+  for(var col=0;col<6;col++) {
+    sc(ws2,0,col,S.hdrDark); sc(ws2,1,col,S.hdrSub); sc(ws2,3,col,hdrPurple);
+  }
+  sold2.forEach(function(s,i) {
+    var r=4+i; var bg=i%2===0?"FFFFFF":"F8F9FA";
+    var catColor = s.cat==="Sublimation"?"CC1133":s.cat==="Impression 3D"?"5A48CC":"CC7700";
+    sc(ws2,r,0,{font:{name:"Calibri",sz:10,bold:true,color:{rgb:"1A1A2E"}},fill:{fgColor:{rgb:bg},patternType:"solid"},alignment:{vertical:"center"}});
+    sc(ws2,r,1,{font:{name:"Calibri",sz:10,bold:true,color:{rgb:catColor}},fill:{fgColor:{rgb:bg},patternType:"solid"},alignment:{horizontal:"center",vertical:"center"}});
+    sc(ws2,r,2,{font:{name:"Calibri",sz:11,bold:true,color:{rgb:"1A7A4A"}},fill:{fgColor:{rgb:bg},patternType:"solid"},alignment:{horizontal:"center",vertical:"center"}});
+    sc(ws2,r,3,{font:{name:"Calibri",sz:10,color:{rgb:"555555"}},fill:{fgColor:{rgb:bg},patternType:"solid"},alignment:{horizontal:"right",vertical:"center"},numFmt:'#,##0.00\\ "\\u20ac"'});
+    sc(ws2,r,4,{font:{name:"Calibri",sz:10,bold:true,color:{rgb:"1A7A4A"}},fill:{fgColor:{rgb:bg},patternType:"solid"},alignment:{horizontal:"right",vertical:"center"},numFmt:'#,##0.00\\ "\\u20ac"'});
+    sc(ws2,r,5,{font:{name:"Calibri",sz:10,color:{rgb:"888888"}},fill:{fgColor:{rgb:bg},patternType:"solid"},alignment:{horizontal:"center",vertical:"center"},numFmt:'0.0"%"'});
+  });
+  var totR2=aoa2.length-1;
+  for(var col=0;col<6;col++) sc(ws2,totR2,col,{font:{name:"Calibri",sz:11,bold:true,color:{rgb:"FFFFFF"}},fill:{fgColor:{rgb:"1A1A2E"},patternType:"solid"},alignment:{horizontal:"center",vertical:"center"}});
+  sc(ws2,totR2,4,{font:{name:"Calibri",sz:13,bold:true,color:{rgb:"2ECC8F"}},fill:{fgColor:{rgb:"1A1A2E"},patternType:"solid"},alignment:{horizontal:"right",vertical:"center"},numFmt:'#,##0.00\\ "\\u20ac"'});
+  ws2["!merges"]=[{s:{r:0,c:0},e:{r:0,c:5}},{s:{r:1,c:0},e:{r:1,c:5}}];
+  ws2["!rows"]=[{hpt:36},{hpt:20},{hpt:8},{hpt:28}];
+  XLSX.utils.book_append_sheet(wb, ws2, "Recap produits");
+
+  // Feuille 3 : Bilan
+  var caSub3=0,ca3D3=0,caPack3=0,qTot3=0;
+  for(var id in salesData){ var s=salesData[id]; caSub3+=(s.cat==="Sublimation"?s.ca:0); ca3D3+=(s.cat==="Impression 3D"?s.ca:0); caPack3+=(s.cat==="Pack"?s.ca:0); qTot3+=s.qty; }
+  var aoa3=[
+    ["BILAN DE LA JOURNEE",""],
+    [today,""],
+    ["Micro-entreprise — Tous prix TTC",""],
+    [],
+    ["CA TOTAL TTC",parseFloat(totalCA2.toFixed(2))],
+    [],
+    ["Par categorie","CA TTC (€)"],
+    ["Sublimation",parseFloat(caSub3.toFixed(2))],
+    ["Impression 3D",parseFloat(ca3D3.toFixed(2))]
+  ];
+  if(caPack3>0) aoa3.push(["Packs",parseFloat(caPack3.toFixed(2))]);
+  aoa3.push([]);
+  aoa3.push(["Par mode de paiement","CA TTC (€)"]);
+  for(var m in modeCA) aoa3.push([m,parseFloat(modeCA[m].toFixed(2))]);
+  aoa3.push([]);
+  aoa3.push(["Statistiques",""]);
+  aoa3.push(["Nombre de transactions",tickets.length]);
+  aoa3.push(["Articles vendus",qTot3]);
+  if(tickets.length>0) aoa3.push(["Panier moyen TTC",parseFloat((totalCA2/tickets.length).toFixed(2))]);
+  aoa3.push([]);
+  aoa3.push(["Note","En micro-entreprise sous franchise TVA, le CA encaisse est votre CA a declarer a l'URSSAF."]);
+
+  var ws3=XLSX.utils.aoa_to_sheet(aoa3);
+  ws3["!cols"]=[{wch:36},{wch:20}];
+  for(var col=0;col<2;col++) { sc(ws3,0,col,S.hdrDark); sc(ws3,1,col,{font:{name:"Calibri",sz:12,bold:true,color:{rgb:"AAAAFF"}},fill:{fgColor:{rgb:"16162A"},patternType:"solid"},alignment:{horizontal:"center",vertical:"center"}}); sc(ws3,2,col,S.hdrSub); }
+  sc(ws3,4,0,{font:{name:"Calibri",sz:12,bold:true,color:{rgb:"FFFFFF"}},fill:{fgColor:{rgb:"0F3460"},patternType:"solid"},alignment:{vertical:"center"}});
+  sc(ws3,4,1,{font:{name:"Calibri",sz:16,bold:true,color:{rgb:"2ECC8F"}},fill:{fgColor:{rgb:"0A2A40"},patternType:"solid"},alignment:{horizontal:"right",vertical:"center"},numFmt:'#,##0.00\\ "\\u20ac"'});
+  var noteR=aoa3.length-1;
+  sc(ws3,noteR,0,{font:{name:"Calibri",sz:9,italic:true,color:{rgb:"888888"}},fill:{fgColor:{rgb:"FFFBE6"},patternType:"solid"},alignment:{vertical:"center",wrapText:true}});
+  sc(ws3,noteR,1,{font:{name:"Calibri",sz:9,italic:true,color:{rgb:"888888"}},fill:{fgColor:{rgb:"FFFBE6"},patternType:"solid"},alignment:{vertical:"center",wrapText:true}});
+  ws3["!merges"]=[{s:{r:0,c:0},e:{r:0,c:1}},{s:{r:1,c:0},e:{r:1,c:1}},{s:{r:2,c:0},e:{r:2,c:1}}];
+  ws3["!rows"]=[{hpt:50},{hpt:24},{hpt:20}];
+  XLSX.utils.book_append_sheet(wb, ws3, "Bilan journee");
+
+  XLSX.writeFile(wb, "ventes_" + dateFile + ".xlsx");
+  showToast("📊 Excel téléchargé !");
+}
+
+function renderTickets() {
+  var body = document.getElementById("ticketsBody");
+  if(!tickets.length) { body.innerHTML="<div style='padding:20px;text-align:center;color:var(--text3);font-size:13px'>Aucun ticket</div>"; return; }
+  var html = "";
+  tickets.forEach(function(t) {
+    var modeCls = (t.mode==="CB"||t.mode==="SumUp") ? "cb" : t.mode==="Virement" ? "vir" : "cash";
+    var items = t.items.map(function(i){ return i.qty+"× "+i.name; }).join(", ");
+    html += "<div class='ticket-item'>";
+    html += "<div class='ticket-item-top'><span class='ticket-num'>#" + ("00"+t.num).slice(-3) + " · " + t.time + "</span><span class='ticket-total'>" + fmt(t.total) + "</span></div>";
+    html += "<div class='ticket-meta'>" + items + "</div>";
+    html += "<span class='ticket-mode " + modeCls + "'>" + t.mode + "</span>";
+    html += "</div>";
+  });
+  body.innerHTML = html;
+}
+
+function toggleTickets() { document.getElementById("ticketPanel").classList.toggle("open"); }
+function toggleExcel()   { document.getElementById("excelPanel").classList.toggle("open"); renderExcelPanel(); }
+
+function askReset()   { document.getElementById("modalReset").classList.add("open"); }
+function closeReset() { document.getElementById("modalReset").classList.remove("open"); }
+function doReset() {
+  tickets=[]; totalCA=0; cart=[]; payMode=null;
+  PRODUCTS.forEach(function(p){ salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0}; });
+  document.getElementById("nbVentes").textContent="0";
+  document.getElementById("caJour").textContent="0,00 €";
+  document.getElementById("caTotal").textContent="0,00 €";
+  document.getElementById("discountInput").value="";
+  var ids=["btnCB","btnCash","btnSumup","btnVir"];
+  for(var i=0;i<ids.length;i++){var b=document.getElementById(ids[i]);if(b)b.classList.remove("selected");}
+  renderCart(); updateTotals(); renderTickets(); renderExcelPanel();
+  closeReset();
+  showToast("✅ Nouveau jour démarré !");
+}
+
+var toastTimer;
+function showToast(msg) {
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 1800);
+}
+
+renderProducts();
+renderCart();
+updateTotals();
+</script>
+</body>
+</html>
