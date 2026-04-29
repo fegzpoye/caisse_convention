@@ -204,6 +204,9 @@ function getWeightedPrize(){
 
 function spin(){
   if(isSpinning)return; isSpinning=true;
+  // Retirer le panneau du dernier gain au début du nouveau tour
+  var old = document.getElementById('permanentWin');
+  if(old) old.remove();
   const sb=document.getElementById('statusBar');
   sb.textContent='LA ROUE TOURNE...';sb.className='status-bar spinning';
   const idx=getWeightedPrize(), n=PRIZES.length, arc=(2*Math.PI)/n;
@@ -241,17 +244,64 @@ function showWin(p){
   document.getElementById('winEmoji').textContent=p.emoji;
   document.getElementById('winPrize').textContent=p.label;
   document.getElementById('winSub').textContent=p.sub;
-  document.getElementById('lastWin').textContent=p.label+' '+p.emoji;
   document.getElementById('winOverlay').classList.add('visible');
   document.getElementById('statusBar').textContent='🎉 GAGNÉ : '+p.label;
   document.getElementById('statusBar').className='status-bar won';
+
+  // Mettre à jour le panneau "dernier gain" permanent
+  const lastWinBox = document.getElementById('lastWin');
+  lastWinBox.textContent = p.label + ' ' + p.emoji;
+
+  // Afficher un panneau permanent du dernier gain
+  showPermanentLastWin(p);
+
   launchConfetti();
+  // La popup se ferme après 5 secondes MAIS le gain reste visible en bas
   setTimeout(()=>{
     document.getElementById('winOverlay').classList.remove('visible');
-    document.getElementById('statusBar').textContent="EN ATTENTE D'UN ACHAT";
-    document.getElementById('statusBar').className='status-bar';
+    // Status reste sur le gain, pas "EN ATTENTE"
+    document.getElementById('statusBar').textContent='DERNIER GAIN : '+p.emoji+' '+p.label;
+    document.getElementById('statusBar').className='status-bar won';
     stopConfetti();
   },5000);
+}
+
+function showPermanentLastWin(p){
+  // Supprimer l'ancien panneau s'il existe
+  var old = document.getElementById('permanentWin');
+  if(old) old.remove();
+
+  var div = document.createElement('div');
+  div.id = 'permanentWin';
+  div.style.cssText = [
+    'position:fixed','bottom:20px','left:50%',
+    'transform:translateX(-50%)',
+    'background:linear-gradient(135deg,#1a1a2e,#16213e)',
+    'border:2px solid #F5A623',
+    'border-radius:16px','padding:14px 32px',
+    'display:flex','align-items:center','gap:16px',
+    'box-shadow:0 4px 30px rgba(245,166,35,.35)',
+    'z-index:50','animation:slideUpIn .5s cubic-bezier(.34,1.56,.64,1)',
+    'font-family:"Exo 2",sans-serif'
+  ].join(';');
+
+  div.innerHTML = `
+    <div style="font-size:2rem">${p.emoji}</div>
+    <div>
+      <div style="font-size:10px;color:#F5A623;letter-spacing:3px;font-weight:700;text-transform:uppercase;margin-bottom:2px">DERNIER GAIN</div>
+      <div style="font-size:1.6rem;font-weight:900;color:#fff;letter-spacing:1px">${p.label}</div>
+      <div style="font-size:11px;color:#c0c0c0;margin-top:1px">${p.sub}</div>
+    </div>`;
+
+  // Ajouter l'animation dans le style si pas déjà présente
+  if(!document.getElementById('permanentWinStyle')){
+    var style = document.createElement('style');
+    style.id = 'permanentWinStyle';
+    style.textContent = '@keyframes slideUpIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
+    document.head.appendChild(style);
+  }
+
+  document.body.appendChild(div);
 }
 
 // Confetti
