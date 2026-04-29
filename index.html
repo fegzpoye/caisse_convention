@@ -342,38 +342,98 @@ window.triggerWheelFirebase = function() {
 
 // ── ÉCOUTE DU RÉSULTAT DE LA ROUE ────────────────────────────────
 var wheelHistory = [];
+var lastKnownTs = null;   // timestamp du dernier résultat déjà traité
+var firebaseReady = false; // ignore le premier appel (valeur initiale au chargement)
 
 onValue(ref(db, 'wheel/lastResult'), (snap) => {
   const result = snap.val();
+
+  // Premier appel = valeur initiale stockée en base, on l'ignore pour ne pas afficher un vieux résultat
+  if (!firebaseReady) {
+    firebaseReady = true;
+    // On mémorise le ts existant pour ne pas le retraiter
+    if (result && result.ts) lastKnownTs = result.ts;
+    return;
+  }
+
   if (!result || !result.label) return;
 
-  // Afficher dans la modale si elle est ouverte
+  // Ignorer si même timestamp (pas de nouveau résultat)
+  if (result.ts && result.ts === lastKnownTs) return;
+  lastKnownTs = result.ts;
+
+  const now = new Date();
+  const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  const item = { label: result.label, emoji: result.emoji, sub: result.sub, time: timeStr, ts: result.ts };
+
+  // 1. Historique dans le panier
+  wheelHistory.unshift(item);
+  if (wheelHistory.length > 10) wheelHistory.pop();
+  renderWheelHistory();
+
+  // 2. Bannière flottante visible partout (pas juste dans la modale)
+  showWheelResultBanner(result);
+
+  // 3. Mettre à jour la modale si elle est ouverte
   const modalResult = document.getElementById('modalWheelResult');
   if (modalResult) {
-    modalResult.innerHTML = `
-      <div class="wheel-result-box">
-        <div class="wheel-result-emoji">${result.emoji}</div>
-        <div class="wheel-result-info">
-          <div class="wheel-result-label">🎡 Résultat de la roue</div>
-          <div class="wheel-result-prize">${result.label}</div>
-          <div class="wheel-result-sub">${result.sub}</div>
-        </div>
-      </div>`;
-  }
-
-  // Ajouter à l'historique (évite les doublons avec timestamp)
-  const lastItem = wheelHistory[0];
-  if (!lastItem || lastItem.ts !== result.ts) {
-    const now = new Date();
-    const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-    wheelHistory.unshift({ label: result.label, emoji: result.emoji, sub: result.sub, time: timeStr, ts: result.ts });
-    if (wheelHistory.length > 10) wheelHistory.pop();
-    renderWheelHistory();
-
-    // Toast discret
-    showToast(result.emoji + ' Roue : ' + result.label, true);
+    modalResult.innerHTML = buildResultHTML(result);
   }
 });
+
+function buildResultHTML(result) {
+  return `<div class="wheel-result-box">
+    <div class="wheel-result-emoji">${result.emoji}</div>
+    <div class="wheel-result-info">
+      <div class="wheel-result-label">🎡 Résultat de la roue</div>
+      <div class="wheel-result-prize">${result.label}</div>
+      <div class="wheel-result-sub">${result.sub}</div>
+    </div>
+  </div>`;
+}
+
+function showWheelResultBanner(result) {
+  // Bannière centrée visible 4 secondes, par-dessus tout
+  var existing = document.getElementById('wheelBanner');
+  if (existing) existing.remove();
+
+  var banner = document.createElement('div');
+  banner.id = 'wheelBanner';
+  banner.style.cssText = [
+    'position:fixed','top:70px','left:50%',
+    'transform:translateX(-50%) translateY(-20px)',
+    'background:linear-gradient(135deg,#1a1a2e,#16213e)',
+    'border:2px solid #F5A623',
+    'border-radius:16px','padding:16px 28px',
+    'display:flex','align-items:center','gap:14px',
+    'box-shadow:0 8px 40px rgba(245,166,35,.4)',
+    'z-index:9999','transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .4s',
+    'opacity:0','min-width:280px'
+  ].join(';');
+
+  banner.innerHTML = `
+    <div style="font-size:2.5rem;line-height:1">${result.emoji}</div>
+    <div>
+      <div style="font-size:10px;color:#F5A623;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">🎡 RÉSULTAT DE LA ROUE</div>
+      <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">${result.label}</div>
+      <div style="font-size:12px;color:#9898a8;margin-top:1px">${result.sub}</div>
+    </div>`;
+
+  document.body.appendChild(banner);
+
+  // Animation entrée
+  requestAnimationFrame(() => {
+    banner.style.transform = 'translateX(-50%) translateY(0)';
+    banner.style.opacity = '1';
+  });
+
+  // Disparition après 4 secondes
+  setTimeout(() => {
+    banner.style.transform = 'translateX(-50%) translateY(-20px)';
+    banner.style.opacity = '0';
+    setTimeout(() => banner.remove(), 400);
+  }, 4000);
+}
 
 function renderWheelHistory() {
   const section = document.getElementById('wheelHistorySection');
