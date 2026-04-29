@@ -424,12 +424,12 @@ function showWheelResultBanner(result) {
     banner.style.opacity = '1';
   });
 
-  // Disparition après 1 minute 30
+  // Disparition après 30 secondes
   setTimeout(() => {
     banner.style.transform = 'translateX(-50%) translateY(-20px)';
     banner.style.opacity = '0';
     setTimeout(() => banner.remove(), 400);
-  }, 90000);
+  }, 30000);
 }
 
 function renderWheelHistory() {
@@ -444,6 +444,18 @@ function renderWheelHistory() {
       <span class="wheel-history-item-time">${item.time}</span>
     </div>`;
   }).join('');
+
+  // Masquer la section automatiquement après 8 secondes
+  clearTimeout(window._wheelHistoryTimer);
+  window._wheelHistoryTimer = setTimeout(function() {
+    section.style.transition = 'opacity .5s';
+    section.style.opacity = '0';
+    setTimeout(function() {
+      section.style.display = 'none';
+      section.style.opacity = '1';
+      section.style.transition = '';
+    }, 500);
+  }, 8000);
 }
 
 // ── WHEEL ─────────────────────────────────────────────────────────
