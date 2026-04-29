@@ -223,6 +223,14 @@ function spin(){
       document.getElementById('statTotal').textContent=stats.total;
       document.getElementById('statReductions').textContent=stats.reductions;
       document.getElementById('statGifts').textContent=stats.gifts;
+      // Écrire le résultat dans Firebase pour que la caisse le reçoive
+      set(ref(db,'wheel/lastResult'), {
+        label: PRIZES[idx].label,
+        sub: PRIZES[idx].sub,
+        emoji: PRIZES[idx].emoji,
+        type: PRIZES[idx].type,
+        ts: Date.now()
+      });
       set(ref(db,'wheel/trigger'),false);
     }
   }
