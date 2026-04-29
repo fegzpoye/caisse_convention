@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roue des Gains – Grand Écran</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap');
+  :root{--bg:#0a0a14;--gold:#F5A623;--pink:#E94560;--purple:#533483;--blue:#0F3460;--white:#ffffff;--silver:#c0c0c0}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--white);height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+  .particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .particle{position:absolute;border-radius:50%;opacity:.15;animation:float linear infinite}
+  @keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(-100px) rotate(720deg);opacity:0}}
+  .main-layout{display:flex;align-items:center;justify-content:center;gap:60px;width:100%;padding:20px 60px;position:relative;z-index:1}
+  .left-panel,.right-panel{display:flex;flex-direction:column;align-items:center;gap:20px;min-width:220px}
+  .brand-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:6px;color:var(--white);text-align:center;line-height:1;text-shadow:0 0 30px rgba(245,166,35,.5)}
+  .brand-sub{font-size:.85rem;color:var(--gold);letter-spacing:4px;text-transform:uppercase;text-align:center}
+  .prizes-list{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;width:100%;backdrop-filter:blur(10px)}
+  .prizes-list h3{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:4px;color:var(--gold);margin-bottom:14px;text-align:center}
+  .prize-item{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:.88rem;color:var(--silver);border-bottom:1px solid rgba(255,255,255,.05)}
+  .prize-item:last-child{border-bottom:none}
+  .prize-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+  .wheel-section{display:flex;flex-direction:column;align-items:center;gap:24px;position:relative}
+  .wheel-wrapper{position:relative;width:480px;height:480px}
+  .wheel-glow{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,transparent 55%,rgba(245,166,35,.15) 70%,transparent 80%);animation:glowPulse 2s ease-in-out infinite;pointer-events:none}
+  @keyframes glowPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+  .wheel-ring{position:absolute;inset:-8px;border-radius:50%;border:4px solid var(--gold);box-shadow:0 0 20px rgba(245,166,35,.4),inset 0 0 20px rgba(245,166,35,.1)}
+  canvas#wheel{border-radius:50%;display:block;filter:drop-shadow(0 0 30px rgba(233,69,96,.3))}
+  .wheel-pointer{position:absolute;top:50%;right:-28px;transform:translateY(-50%);width:0;height:0;border-top:22px solid transparent;border-bottom:22px solid transparent;border-right:38px solid var(--gold);filter:drop-shadow(0 0 8px rgba(245,166,35,.8));z-index:10}
+  .wheel-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--gold) 60%,#c07010 100%);border:4px solid #fff;box-shadow:0 0 20px rgba(245,166,35,.8);z-index:10;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+  .status-bar{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:6px;color:var(--silver);text-align:center;min-height:40px;transition:color .3s}
+  .status-bar.spinning{color:var(--gold);animation:statusPulse .5s ease-in-out infinite alternate}
+  .status-bar.won{color:#4ade80}
+  @keyframes statusPulse{from{opacity:.6}to{opacity:1}}
+  .win-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .5s;backdrop-filter:blur(6px)}
+  .win-overlay.visible{opacity:1;pointer-events:all}
+  .win-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:3px solid var(--gold);border-radius:28px;padding:60px 80px;text-align:center;box-shadow:0 0 80px rgba(245,166,35,.4);max-width:700px;animation:winCardIn .6s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes winCardIn{from{transform:scale(.3) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+  .win-emoji{font-size:5rem;margin-bottom:16px;animation:bounce .6s ease infinite alternate}
+  @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-15px)}}
+  .win-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:8px;color:var(--gold);margin-bottom:10px}
+  .win-prize{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:var(--white);letter-spacing:4px;margin-bottom:20px;line-height:1}
+  .win-sub{font-size:1.1rem;color:var(--silver);letter-spacing:2px}
+  .confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
+  .waiting-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px 20px;text-align:center;backdrop-filter:blur(10px);width:100%}
+  .waiting-icon{font-size:3rem;margin-bottom:10px;animation:spin 8s linear infinite}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  .waiting-text{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:var(--silver);margin-bottom:6px}
+  .waiting-sub{font-size:.78rem;color:rgba(255,255,255,.3)}
+  .last-win-box{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:16px;padding:18px 20px;text-align:center;width:100%}
+  .last-win-box h4{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:3px;color:var(--gold);margin-bottom:8px}
+  .last-win-value{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--white);letter-spacing:2px}
+  .stats-box{background:rgba(83,52,131,.15);border:1px solid rgba(83,52,131,.3);border-radius:16px;padding:18px 20px;text-align:center;width:100%}
+  .stats-box h4{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:3px;color:var(--purple);margin-bottom:10px}
+  .stat-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);color:var(--silver)}
+  .stat-row:last-child{border-bottom:none}
+  .stat-val{color:var(--white);font-weight:700}
+  .pulse-ring{position:absolute;inset:-30px;border-radius:50%;border:2px solid var(--pink);opacity:0;animation:pulseRing 2.5s ease-out infinite;pointer-events:none}
+  .pulse-ring:nth-child(2){animation-delay:.8s}
+  .pulse-ring:nth-child(3){animation-delay:1.6s}
+  @keyframes pulseRing{0%{transform:scale(.9);opacity:.6}100%{transform:scale(1.4);opacity:0}}
+  .firebase-status{position:fixed;top:12px;right:16px;display:flex;align-items:center;gap:6px;font-size:.7rem;color:rgba(255,255,255,.3);z-index:50;letter-spacing:2px}
+  .fb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:fbPulse 2s ease-in-out infinite}
+  .fb-dot.off{background:#e94560;box-shadow:0 0 6px #e94560}
+  @keyframes fbPulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+<canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+
+<div class="firebase-status">
+  <div class="fb-dot" id="fbDot"></div>
+  <span id="fbLabel">CONNEXION...</span>
+</div>
+
+<div class="win-overlay" id="winOverlay">
+  <div class="win-card">
+    <div class="win-emoji" id="winEmoji">🎉</div>
+    <div class="win-title">FÉLICITATIONS !</div>
+    <div class="win-prize" id="winPrize">-10%</div>
+    <div class="win-sub" id="winSub">sur votre prochaine commande</div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="left-panel">
+    <div>
+      <div class="brand-title">IMPRESSION 3D<br>&amp; SUBLIMATION</div>
+      <div class="brand-sub">Les projets de Shaya</div>
+    </div>
+    <div class="prizes-list">
+      <h3>🎁 LOTS À GAGNER</h3>
+      <div id="prizeListDisplay"></div>
+    </div>
+  </div>
+
+  <div class="wheel-section">
+    <div class="wheel-wrapper">
+      <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
+      <div class="wheel-glow"></div>
+      <div class="wheel-ring"></div>
+      <canvas id="wheel" width="480" height="480"></canvas>
+      <div class="wheel-pointer"></div>
+      <div class="wheel-hub">⭐</div>
+    </div>
+    <div class="status-bar" id="statusBar">EN ATTENTE D'UN ACHAT</div>
+  </div>
+
+  <div class="right-panel">
+    <div class="waiting-box">
+      <div class="waiting-icon">🎡</div>
+      <div class="waiting-text">PRÊT À TOURNER</div>
+      <div class="waiting-sub">Déclenchez depuis la tablette</div>
+    </div>
+    <div class="last-win-box">
+      <h4>🏆 DERNIER GAIN</h4>
+      <div class="last-win-value" id="lastWin">—</div>
+    </div>
+    <div class="stats-box">
+      <h4>📊 SESSION</h4>
+      <div class="stat-row"><span>Tours joués</span><span class="stat-val" id="statTotal">0</span></div>
+      <div class="stat-row"><span>Réductions</span><span class="stat-val" id="statReductions">0</span></div>
+      <div class="stat-row"><span>Cadeaux</span><span class="stat-val" id="statGifts">0</span></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDji8NuTjQqD2YUaN-tfSe6t9BfWvWG7EQ",
+  authDomain: "roue-shaya.firebaseapp.com",
+  databaseURL: "https://roue-shaya-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "roue-shaya",
+  storageBucket: "roue-shaya.firebasestorage.app",
+  messagingSenderId: "1096623837864",
+  appId: "1:1096623837864:web:b9a425fdce29bfb08a289d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const PRIZES = [
+  {label:"-5%",     sub:"sur votre commande",        emoji:"💰",color:"#E94560",type:"reduction",weight:4},
+  {label:"CADEAU",  sub:"Porte-clé imprimé 3D",      emoji:"🎁",color:"#533483",type:"gift",     weight:3},
+  {label:"-10%",    sub:"sur votre commande",        emoji:"🤑",color:"#F5A623",type:"reduction",weight:2},
+  {label:"BONUS",   sub:"Sticker sublimation offert",emoji:"✨",color:"#0F3460",type:"gift",     weight:3},
+  {label:"-15%",    sub:"sur votre commande",        emoji:"🔥",color:"#E94560",type:"reduction",weight:1},
+  {label:"SURPRISE",sub:"Cadeau mystère !",          emoji:"🎀",color:"#533483",type:"gift",     weight:2},
+  {label:"-5%",     sub:"sur votre commande",        emoji:"💰",color:"#1a7a4a",type:"reduction",weight:4},
+  {label:"BADGE",   sub:"Badge personnalisé offert", emoji:"🏅",color:"#8B0000",type:"gift",     weight:3},
+];
+
+let stats={total:0,reductions:0,gifts:0}, isSpinning=false, currentAngle=0;
+
+// Prize list
+const el=document.getElementById('prizeListDisplay');
+PRIZES.forEach(p=>{
+  const d=document.createElement('div'); d.className='prize-item';
+  d.innerHTML=`<div class="prize-dot" style="background:${p.color}"></div><span>${p.emoji} ${p.label} — ${p.sub}</span>`;
+  el.appendChild(d);
+});
+
+// Particles
+const pc=document.getElementById('particles');
+for(let i=0;i<25;i++){
+  const p=document.createElement('div'); p.className='particle';
+  const sz=Math.random()*6+2, cols=['#E94560','#F5A623','#533483','#0F3460','#4ade80'];
+  p.style.cssText=`width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*5)]};left:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s`;
+  pc.appendChild(p);
+}
+
+// Wheel
+const canvas=document.getElementById('wheel'), ctx=canvas.getContext('2d');
+const CX=canvas.width/2, CY=canvas.height/2, R=CX-8;
+
+function drawWheel(angle){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const n=PRIZES.length, arc=(2*Math.PI)/n;
+  PRIZES.forEach((p,i)=>{
+    const s=angle+i*arc, e=s+arc;
+    ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,R,s,e);ctx.closePath();
+    ctx.fillStyle=p.color;ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=2;ctx.stroke();
+    const mid=s+arc/2;
+    ctx.save();ctx.translate(CX+Math.cos(mid)*(R*.62),CY+Math.sin(mid)*(R*.62));ctx.rotate(mid+Math.PI/2);
+    ctx.font='22px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.emoji,0,-4);ctx.restore();
+    ctx.save();ctx.translate(CX+Math.cos(mid)*(R*.35),CY+Math.sin(mid)*(R*.35));ctx.rotate(mid+Math.PI/2);
+    ctx.font='bold 15px "Bebas Neue",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=4;ctx.fillText(p.label,0,12);ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(CX,CY,R,0,2*Math.PI);ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=3;ctx.stroke();
+}
+
+function getWeightedPrize(){
+  const tot=PRIZES.reduce((s,p)=>s+p.weight,0);let r=Math.random()*tot;
+  for(let i=0;i<PRIZES.length;i++){r-=PRIZES[i].weight;if(r<=0)return i;}return 0;
+}
+
+function spin(){
+  if(isSpinning)return; isSpinning=true;
+  const sb=document.getElementById('statusBar');
+  sb.textContent='LA ROUE TOURNE...';sb.className='status-bar spinning';
+  const idx=getWeightedPrize(), n=PRIZES.length, arc=(2*Math.PI)/n;
+  const target=-(idx*arc+arc/2);
+  const extra=(5+Math.floor(Math.random()*4))*2*Math.PI;
+  const total=extra+target-(currentAngle%(2*Math.PI));
+  const dur=4500+Math.random()*1500, t0=performance.now(), a0=currentAngle;
+  function ease(t){return 1-Math.pow(1-t,4);}
+  function anim(now){
+    const pr=Math.min((now-t0)/dur,1);
+    currentAngle=a0+total*ease(pr); drawWheel(currentAngle);
+    if(pr<1){requestAnimationFrame(anim);}
+    else{
+      isSpinning=false; currentAngle=currentAngle%(2*Math.PI);
+      showWin(PRIZES[idx]);
+      stats.total++; if(PRIZES[idx].type==='reduction')stats.reductions++;else stats.gifts++;
+      document.getElementById('statTotal').textContent=stats.total;
+      document.getElementById('statReductions').textContent=stats.reductions;
+      document.getElementById('statGifts').textContent=stats.gifts;
+      set(ref(db,'wheel/trigger'),false);
+    }
+  }
+  requestAnimationFrame(anim);
+}
+
+function showWin(p){
+  document.getElementById('winEmoji').textContent=p.emoji;
+  document.getElementById('winPrize').textContent=p.label;
+  document.getElementById('winSub').textContent=p.sub;
+  document.getElementById('lastWin').textContent=p.label+' '+p.emoji;
+  document.getElementById('winOverlay').classList.add('visible');
+  document.getElementById('statusBar').textContent='🎉 GAGNÉ : '+p.label;
+  document.getElementById('statusBar').className='status-bar won';
+  launchConfetti();
+  setTimeout(()=>{
+    document.getElementById('winOverlay').classList.remove('visible');
+    document.getElementById('statusBar').textContent="EN ATTENTE D'UN ACHAT";
+    document.getElementById('statusBar').className='status-bar';
+    stopConfetti();
+  },5000);
+}
+
+// Confetti
+const cc=document.getElementById('confettiCanvas'), cx=cc.getContext('2d');
+let conf=[],canim=null;
+function launchConfetti(){
+  cc.width=window.innerWidth;cc.height=window.innerHeight;conf=[];
+  for(let i=0;i<200;i++) conf.push({x:Math.random()*cc.width,y:-20-Math.random()*200,w:Math.random()*12+6,h:Math.random()*6+3,color:['#E94560','#F5A623','#533483','#4ade80','#fff','#60a5fa'][Math.floor(Math.random()*6)],vx:(Math.random()-.5)*4,vy:Math.random()*4+2,rot:Math.random()*360,vrot:(Math.random()-.5)*10});
+  animC();
+}
+function animC(){
+  cx.clearRect(0,0,cc.width,cc.height);
+  conf.forEach(c=>{c.x+=c.vx;c.y+=c.vy;c.rot+=c.vrot;cx.save();cx.translate(c.x,c.y);cx.rotate(c.rot*Math.PI/180);cx.fillStyle=c.color;cx.fillRect(-c.w/2,-c.h/2,c.w,c.h);cx.restore();});
+  conf=conf.filter(c=>c.y<cc.height+50);
+  if(conf.length>0)canim=requestAnimationFrame(animC);
+}
+function stopConfetti(){if(canim)cancelAnimationFrame(canim);cx.clearRect(0,0,cc.width,cc.height);}
+
+// 🔥 FIREBASE — écoute le trigger en temps réel
+onValue(ref(db,'wheel/trigger'),(snap)=>{
+  if(snap.val()===true && !isSpinning) spin();
+});
+
+// Indicateur connexion
+onValue(ref(db,'.info/connected'),(snap)=>{
+  const ok=snap.val();
+  document.getElementById('fbDot').className='fb-dot'+(ok?'':' off');
+  document.getElementById('fbLabel').textContent=ok?'FIREBASE CONNECTÉ':'HORS LIGNE';
+});
+
+drawWheel(currentAngle);
+</script>
+</body>
+</html>
