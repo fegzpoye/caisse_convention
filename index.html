@@ -313,7 +313,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDji8NuTjQqD2YUaN-tfSe6t9BfWvWG7EQ",
@@ -342,43 +342,40 @@ window.triggerWheelFirebase = function() {
 
 // ── ÉCOUTE DU RÉSULTAT DE LA ROUE ────────────────────────────────
 var wheelHistory = [];
-var lastKnownTs = null;   // timestamp du dernier résultat déjà traité
-var firebaseReady = false; // ignore le premier appel (valeur initiale au chargement)
+var lastKnownTs = null; // on stocke le ts initial au chargement pour ne pas l'afficher
 
-onValue(ref(db, 'wheel/lastResult'), (snap) => {
-  const result = snap.val();
+// On lit d'abord le ts actuel EN BASE pour le mémoriser, PUIS on écoute les changements
 
-  // Premier appel = valeur initiale stockée en base, on l'ignore pour ne pas afficher un vieux résultat
-  if (!firebaseReady) {
-    firebaseReady = true;
-    // On mémorise le ts existant pour ne pas le retraiter
-    if (result && result.ts) lastKnownTs = result.ts;
-    return;
-  }
+get(ref(db, 'wheel/lastResult')).then((snap) => {
+  // Mémorise le ts déjà en base (résultat d'une ancienne session)
+  const existing = snap.val();
+  if (existing && existing.ts) lastKnownTs = existing.ts;
 
-  if (!result || !result.label) return;
+  // Maintenant on écoute les NOUVEAUX résultats uniquement
+  onValue(ref(db, 'wheel/lastResult'), (snap) => {
+    const result = snap.val();
+    if (!result || !result.label) return;
 
-  // Ignorer si même timestamp (pas de nouveau résultat)
-  if (result.ts && result.ts === lastKnownTs) return;
-  lastKnownTs = result.ts;
+    // Ignorer si c'est le même résultat qu'au chargement
+    if (result.ts && result.ts === lastKnownTs) return;
+    lastKnownTs = result.ts;
 
-  const now = new Date();
-  const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-  const item = { label: result.label, emoji: result.emoji, sub: result.sub, time: timeStr, ts: result.ts };
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    const item = { label: result.label, emoji: result.emoji, sub: result.sub, time: timeStr, ts: result.ts };
 
-  // 1. Historique dans le panier
-  wheelHistory.unshift(item);
-  if (wheelHistory.length > 10) wheelHistory.pop();
-  renderWheelHistory();
+    // 1. Historique dans le panier
+    wheelHistory.unshift(item);
+    if (wheelHistory.length > 10) wheelHistory.pop();
+    renderWheelHistory();
 
-  // 2. Bannière flottante visible partout (pas juste dans la modale)
-  showWheelResultBanner(result);
+    // 2. Bannière flottante visible partout
+    showWheelResultBanner(result);
 
-  // 3. Mettre à jour la modale si elle est ouverte
-  const modalResult = document.getElementById('modalWheelResult');
-  if (modalResult) {
-    modalResult.innerHTML = buildResultHTML(result);
-  }
+    // 3. Mettre à jour la modale si elle est ouverte
+    const modalResult = document.getElementById('modalWheelResult');
+    if (modalResult) modalResult.innerHTML = buildResultHTML(result);
+  });
 });
 
 function buildResultHTML(result) {
@@ -427,12 +424,12 @@ function showWheelResultBanner(result) {
     banner.style.opacity = '1';
   });
 
-  // Disparition après 4 secondes
+  // Disparition après 1 minute 30
   setTimeout(() => {
     banner.style.transform = 'translateX(-50%) translateY(-20px)';
     banner.style.opacity = '0';
     setTimeout(() => banner.remove(), 400);
-  }, 4000);
+  }, 90000);
 }
 
 function renderWheelHistory() {
