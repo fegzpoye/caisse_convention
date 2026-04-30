@@ -527,9 +527,6 @@ var PRODUCTS=[
   {id:20,name:"Étoile fidgets moyen",label:"Étoile fidgets moyen",price:8,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
   {id:21,name:"Étoile fidgets petit",label:"Étoile fidgets petit",price:5,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
   {id:22,name:"Cadre-hueforge",label:"Cadre hueforge",price:3,cat:"Impression 3D",emoji:"🖼️",type:"print3d"},
-  {id:23,name:"Pack Souvenir",label:"Pack Souvenir",price:28,cat:"Pack",emoji:"🎁",type:"pack",desc:"Mug + Porte-clés"},
-  {id:24,name:"Pack Duo",label:"Pack Duo",price:35,cat:"Pack",emoji:"🎀",type:"pack",desc:"T-shirt + Mug"},
-  {id:25,name:"Pack Deco 3D",label:"Pack Déco 3D",price:40,cat:"Pack",emoji:"✨",type:"pack",desc:"Vase + Décoration"},
   {id:26,name:"Marque page",label:"Marque page",price:8,cat:"Impression 3D",emoji:"✨",type:"print3d"},
   {id:27,name:"Box bureau hueforge",label:"Box bureau hueforge",price:25,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
   {id:28,name:"Boite Gameboy carte",label:"Boite Gameboy carte",price:12,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
@@ -550,6 +547,9 @@ var PRODUCTS=[
   {id:43,name:"Albator",label:"Albator",price:10,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
   {id:44,name:"Oeuf lampe dragon",label:"Oeuf lampe dragon",price:10,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
   {id:45,name:"Oeuf bebe dragon",label:"Oeuf bébé dragon",price:10,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
+  {id:23,name:"Pack Souvenir",label:"Pack Souvenir",price:28,cat:"Pack",emoji:"🎁",type:"pack",desc:"Mug + Porte-clés"},
+  {id:24,name:"Pack Duo",label:"Pack Duo",price:35,cat:"Pack",emoji:"🎀",type:"pack",desc:"T-shirt + Mug"},
+  {id:25,name:"Pack Deco 3D",label:"Pack Déco 3D",price:40,cat:"Pack",emoji:"✨",type:"pack",desc:"Vase + Décoration"}
 ];
 var cart=[],payMode=null,tickets=[],totalCA=0,currentCat="Tous",salesData={};
 PRODUCTS.forEach(function(p){salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};});
