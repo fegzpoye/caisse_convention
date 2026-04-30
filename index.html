@@ -38,7 +38,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .btn-xl:active{transform:scale(.96)}
 .btn-reset{background:transparent;border:1px solid rgba(233,69,96,.4);border-radius:var(--r-sm);color:#e94560;font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all .12s}
 .btn-reset:active{transform:scale(.96);background:rgba(233,69,96,.1)}
-/* BOUTON ROUE */
 .btn-wheel{background:linear-gradient(135deg,#E94560,#c42d4a);border:none;border-radius:var(--r-sm);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;transition:all .12s;box-shadow:0 0 14px rgba(233,69,96,.35);animation:wheelGlow 2s ease-in-out infinite alternate}
 @keyframes wheelGlow{from{box-shadow:0 0 8px rgba(233,69,96,.3)}to{box-shadow:0 0 20px rgba(233,69,96,.6)}}
 .btn-wheel:active{transform:scale(.96)}
@@ -54,8 +53,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .wheel-result-label{font-size:10px;color:rgba(233,69,96,.8);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
 .wheel-result-prize{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
 .wheel-result-sub{font-size:11px;color:var(--text2);margin-top:1px}
-.wheel-result-empty{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;font-size:12px;color:var(--text3);text-align:center}
-/* HISTORIQUE ROUE dans panier */
 .wheel-history-section{padding:6px 10px;border-top:1px solid var(--border);flex-shrink:0}
 .wheel-history-title{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.6px;text-transform:uppercase;margin-bottom:6px}
 .wheel-history-list{display:flex;flex-direction:column;gap:4px;max-height:90px;overflow-y:auto}
@@ -114,7 +111,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .pay-confirm:active{transform:scale(.98);background:#c73050}
 .pay-confirm:disabled{opacity:.35;cursor:not-allowed;transform:none}
 .amount-badge{background:rgba(255,255,255,.2);border-radius:99px;padding:3px 10px;font-family:'DM Mono',monospace;font-size:13px}
-/* MODAL PAIEMENT */
 .modal-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.8);align-items:center;justify-content:center;z-index:200}
 .modal-overlay.open{display:flex}
 .modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:28px 24px;width:320px;display:flex;flex-direction:column;align-items:center;gap:12px}
@@ -129,7 +125,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .modal-btn:active{transform:scale(.97)}
 .modal-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .modal-btn.success{background:transparent;border-color:var(--green);color:var(--green)}
-/* BOUTON ROUE DANS LA MODALE */
 .modal-btn-wheel{width:100%;padding:14px;font-size:14px;font-weight:700;cursor:pointer;border-radius:var(--r-sm);border:none;background:linear-gradient(135deg,#E94560,#c42d4a);color:#fff;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .15s;box-shadow:0 4px 20px rgba(233,69,96,.45);animation:wheelPulse 1.5s ease-in-out infinite alternate}
 @keyframes wheelPulse{from{box-shadow:0 4px 12px rgba(233,69,96,.3)}to{box-shadow:0 4px 28px rgba(233,69,96,.7)}}
 .modal-btn-wheel:active{transform:scale(.97)}
@@ -137,7 +132,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .cooldown-bar{width:100%;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:none}
 .cooldown-bar.visible{display:block}
 .cooldown-fill{height:100%;background:#E94560;transform-origin:left;transition:transform linear}
-/* RESET */
 .modal-overlay-reset{display:none;position:absolute;inset:0;background:rgba(0,0,0,.85);align-items:center;justify-content:center;z-index:500}
 .modal-overlay-reset.open{display:flex}
 .modal-reset{background:var(--surface);border:1px solid rgba(233,69,96,.3);border-radius:20px;padding:28px 24px;width:300px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
@@ -149,7 +143,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .modal-reset-btns .cancel{background:var(--surface2);border:1px solid var(--border2);color:var(--text2)}
 .modal-reset-btns .confirm{background:var(--accent);border:none;color:#fff}
 .modal-reset-btns button:active{transform:scale(.97)}
-/* TICKETS & EXCEL */
 .ticket-list{position:absolute;top:0;right:0;bottom:0;width:300px;background:var(--surface);border-left:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:150}
 .ticket-list.open{transform:translateX(0)}
 .ticket-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
@@ -190,6 +183,24 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .toast{position:absolute;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--green);color:#fff;padding:10px 22px;border-radius:99px;font-size:13px;font-weight:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:300;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.wheel{background:linear-gradient(135deg,#E94560,#c42d4a)}
+/* MODAL FICHE CLIENT */
+.modal-client{position:absolute;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:600}
+.modal-client.open{display:flex}
+.modal-client-box{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:24px;width:340px;display:flex;flex-direction:column;gap:14px;max-height:90dvh;overflow-y:auto}
+.modal-client-header{display:flex;align-items:center;gap:10px}
+.modal-client-icon{font-size:2rem}
+.modal-client-title{font-size:16px;font-weight:700;color:var(--text)}
+.modal-client-gain{background:rgba(46,204,143,.08);border:1px solid rgba(46,204,143,.25);border-radius:var(--r-sm);padding:10px 14px;font-size:13px;color:var(--green);font-weight:600;text-align:center}
+.client-field{display:flex;flex-direction:column;gap:5px}
+.client-field label{font-size:11px;color:var(--text2);font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.client-field input{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border .15s}
+.client-field input:focus{border-color:var(--accent)}
+.client-field input::placeholder{color:var(--text3)}
+.client-btns{display:flex;gap:8px}
+.client-btns button{flex:1;padding:12px;border-radius:var(--r-sm);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s}
+.client-btns .skip{background:var(--surface2);border:1px solid var(--border);color:var(--text2)}
+.client-btns .save{background:var(--green);border:none;color:#fff}
+.client-btns button:active{transform:scale(.97)}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
@@ -270,14 +281,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       <div class="mstat"><div class="mstat-val" id="mStatVentes" style="color:var(--accent)">0</div><div class="mstat-lbl">Ventes du jour</div></div>
       <div class="mstat"><div class="mstat-val" id="mStatCA" style="color:var(--green)">0 €</div><div class="mstat-lbl">CA du jour</div></div>
     </div>
-    <!-- 🎡 BOUTON ROUE -->
     <button class="modal-btn-wheel" id="modalWheelBtn" onclick="launchWheelFromModal()">
       🎡 LANCER LA ROUE DES GAINS !
     </button>
     <div class="cooldown-bar" id="cooldownBar">
       <div class="cooldown-fill" id="cooldownFill"></div>
     </div>
-    <!-- RÉSULTAT ROUE dans la modale -->
     <div id="modalWheelResult"></div>
     <button class="modal-btn primary" onclick="closeModal()">Nouvelle commande</button>
     <button class="modal-btn success" onclick="downloadExcel()">⬇ Télécharger Excel</button>
@@ -308,9 +317,28 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   </div>
 </div>
 
+<!-- MODAL FICHE CLIENT -->
+<div class="modal-client" id="modalClient">
+  <div class="modal-client-box">
+    <div class="modal-client-header">
+      <div class="modal-client-icon">🎉</div>
+      <div class="modal-client-title">Fiche client — Gain roue</div>
+    </div>
+    <div class="modal-client-gain" id="clientGainLabel">Gain : —</div>
+    <div class="client-field"><label>Prénom *</label><input id="cPrenom" placeholder="Prénom" autocomplete="given-name"></div>
+    <div class="client-field"><label>Nom *</label><input id="cNom" placeholder="Nom de famille" autocomplete="family-name"></div>
+    <div class="client-field"><label>Téléphone</label><input id="cTel" placeholder="06 XX XX XX XX" type="tel" autocomplete="tel"></div>
+    <div class="client-field"><label>Email</label><input id="cEmail" placeholder="email@exemple.fr" type="email" autocomplete="email"></div>
+    <div class="client-field"><label>Adresse postale</label><input id="cAdresse" placeholder="Numéro, rue, ville..."></div>
+    <div class="client-btns">
+      <button class="skip" onclick="skipClient()">Passer</button>
+      <button class="save" onclick="saveClient()">✅ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -324,243 +352,209 @@ const firebaseConfig = {
   messagingSenderId: "1096623837864",
   appId: "1:1096623837864:web:b9a425fdce29bfb08a289d"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Indicateur connexion
-onValue(ref(db, '.info/connected'), (snap) => {
-  const ok = snap.val();
-  document.getElementById('fbDotSmall').className = 'fb-dot-small' + (ok ? '' : ' off');
-  document.getElementById('fbLabelSmall').textContent = ok ? 'Firebase ✓' : 'Hors ligne';
+onValue(ref(db,'.info/connected'),(snap)=>{
+  const ok=snap.val();
+  document.getElementById('fbDotSmall').className='fb-dot-small'+(ok?'':' off');
+  document.getElementById('fbLabelSmall').textContent=ok?'Firebase ✓':'Hors ligne';
 });
 
-// Fonction globale pour déclencher la roue via Firebase
-window.triggerWheelFirebase = function() {
-  set(ref(db, 'wheel/trigger'), true);
-};
+window.triggerWheelFirebase=function(){set(ref(db,'wheel/trigger'),true);};
 
-// ── ÉCOUTE DU RÉSULTAT DE LA ROUE ────────────────────────────────
-var wheelHistory = [];
-var lastKnownTs = null; // on stocke le ts initial au chargement pour ne pas l'afficher
+// ── ROUE RÉSULTAT ────────────────────────────────────────────────
+var wheelHistory=[],lastKnownTs=null,wheelGains=[],clients=[],pendingClientGain=null;
 
-// On lit d'abord le ts actuel EN BASE pour le mémoriser, PUIS on écoute les changements
-
-get(ref(db, 'wheel/lastResult')).then((snap) => {
-  // Mémorise le ts déjà en base (résultat d'une ancienne session)
-  const existing = snap.val();
-  if (existing && existing.ts) lastKnownTs = existing.ts;
-
-  // Maintenant on écoute les NOUVEAUX résultats uniquement
-  onValue(ref(db, 'wheel/lastResult'), (snap) => {
-    const result = snap.val();
-    if (!result || !result.label) return;
-
-    // Ignorer si c'est le même résultat qu'au chargement
-    if (result.ts && result.ts === lastKnownTs) return;
-    lastKnownTs = result.ts;
-
-    const now = new Date();
-    const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
-    const item = { label: result.label, emoji: result.emoji, sub: result.sub, time: timeStr, ts: result.ts };
-
-    // 1. Historique dans le panier
+get(ref(db,'wheel/lastResult')).then((snap)=>{
+  const existing=snap.val();
+  if(existing&&existing.ts) lastKnownTs=existing.ts;
+  onValue(ref(db,'wheel/lastResult'),(snap)=>{
+    const result=snap.val();
+    if(!result||!result.label) return;
+    if(result.ts&&result.ts===lastKnownTs) return;
+    lastKnownTs=result.ts;
+    const now=new Date();
+    const timeStr=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+    const item={label:result.label,emoji:result.emoji,sub:result.sub,time:timeStr,ts:result.ts};
     wheelHistory.unshift(item);
-    if (wheelHistory.length > 10) wheelHistory.pop();
+    if(wheelHistory.length>10) wheelHistory.pop();
     renderWheelHistory();
-
-    // 2. Bannière flottante visible partout
     showWheelResultBanner(result);
-
-    // 3. Mettre à jour la modale si elle est ouverte
-    const modalResult = document.getElementById('modalWheelResult');
-    if (modalResult) modalResult.innerHTML = buildResultHTML(result);
+    const modalResult=document.getElementById('modalWheelResult');
+    if(modalResult) modalResult.innerHTML=buildResultHTML(result);
+    if(tickets.length>0&&result.type!=='lose'){
+      tickets[0].wheelGain=result.label;
+      tickets[0].wheelSub=result.sub;
+      tickets[0].wheelEmoji=result.emoji;
+    }
+    wheelGains.unshift({
+      ticket:tickets.length>0?'#'+('00'+tickets[0].num).slice(-3):'—',
+      time:timeStr,label:result.label,sub:result.sub,emoji:result.emoji,type:result.type
+    });
+    if(result.type!=='lose'){
+      pendingClientGain=result;
+      setTimeout(function(){openClientModal(result);},500);
+    }
   });
 });
 
-function buildResultHTML(result) {
-  return `<div class="wheel-result-box">
-    <div class="wheel-result-emoji">${result.emoji}</div>
-    <div class="wheel-result-info">
-      <div class="wheel-result-label">🎡 Résultat de la roue</div>
-      <div class="wheel-result-prize">${result.label}</div>
-      <div class="wheel-result-sub">${result.sub}</div>
-    </div>
-  </div>`;
+function buildResultHTML(r){
+  return`<div class="wheel-result-box"><div class="wheel-result-emoji">${r.emoji}</div><div class="wheel-result-info"><div class="wheel-result-label">🎡 Résultat de la roue</div><div class="wheel-result-prize">${r.label}</div><div class="wheel-result-sub">${r.sub}</div></div></div>`;
 }
 
-function showWheelResultBanner(result) {
-  // Bannière centrée visible 4 secondes, par-dessus tout
-  var existing = document.getElementById('wheelBanner');
-  if (existing) existing.remove();
-
-  var banner = document.createElement('div');
-  banner.id = 'wheelBanner';
-  banner.style.cssText = [
-    'position:fixed','top:70px','left:50%',
-    'transform:translateX(-50%) translateY(-20px)',
-    'background:linear-gradient(135deg,#1a1a2e,#16213e)',
-    'border:2px solid #F5A623',
-    'border-radius:16px','padding:16px 28px',
-    'display:flex','align-items:center','gap:14px',
-    'box-shadow:0 8px 40px rgba(245,166,35,.4)',
-    'z-index:9999','transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .4s',
-    'opacity:0','min-width:280px'
-  ].join(';');
-
-  banner.innerHTML = `
-    <div style="font-size:2.5rem;line-height:1">${result.emoji}</div>
-    <div>
-      <div style="font-size:10px;color:#F5A623;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">🎡 RÉSULTAT DE LA ROUE</div>
-      <div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">${result.label}</div>
-      <div style="font-size:12px;color:#9898a8;margin-top:1px">${result.sub}</div>
-    </div>`;
-
-  document.body.appendChild(banner);
-
-  // Animation entrée
-  requestAnimationFrame(() => {
-    banner.style.transform = 'translateX(-50%) translateY(0)';
-    banner.style.opacity = '1';
-  });
-
-  // Disparition après 30 secondes
-  setTimeout(() => {
-    banner.style.transform = 'translateX(-50%) translateY(-20px)';
-    banner.style.opacity = '0';
-    setTimeout(() => banner.remove(), 400);
-  }, 30000);
+function showWheelResultBanner(result){
+  var ex=document.getElementById('wheelBanner');if(ex)ex.remove();
+  var b=document.createElement('div');b.id='wheelBanner';
+  b.style.cssText=['position:fixed','top:70px','left:50%','transform:translateX(-50%) translateY(-20px)','background:linear-gradient(135deg,#1a1a2e,#16213e)','border:2px solid #F5A623','border-radius:16px','padding:16px 28px','display:flex','align-items:center','gap:14px','box-shadow:0 8px 40px rgba(245,166,35,.4)','z-index:9999','transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .4s','opacity:0','min-width:280px'].join(';');
+  b.innerHTML=`<div style="font-size:2.5rem;line-height:1">${result.emoji}</div><div><div style="font-size:10px;color:#F5A623;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">🎡 RÉSULTAT DE LA ROUE</div><div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">${result.label}</div><div style="font-size:12px;color:#9898a8;margin-top:1px">${result.sub}</div></div>`;
+  document.body.appendChild(b);
+  requestAnimationFrame(()=>{b.style.transform='translateX(-50%) translateY(0)';b.style.opacity='1';});
+  setTimeout(()=>{b.style.transform='translateX(-50%) translateY(-20px)';b.style.opacity='0';setTimeout(()=>b.remove(),400);},30000);
 }
 
-function renderWheelHistory() {
-  const section = document.getElementById('wheelHistorySection');
-  const list = document.getElementById('wheelHistoryList');
-  if (!wheelHistory.length) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-  list.innerHTML = wheelHistory.map(function(item) {
-    return `<div class="wheel-history-item">
-      <span class="wheel-history-item-emoji">${item.emoji}</span>
-      <span class="wheel-history-item-prize">${item.label} — ${item.sub}</span>
-      <span class="wheel-history-item-time">${item.time}</span>
-    </div>`;
-  }).join('');
-
-  // Masquer la section automatiquement après 8 secondes
+function renderWheelHistory(){
+  const section=document.getElementById('wheelHistorySection');
+  const list=document.getElementById('wheelHistoryList');
+  if(!wheelHistory.length){section.style.display='none';return;}
+  section.style.display='block';
+  list.innerHTML=wheelHistory.map(function(item){return`<div class="wheel-history-item"><span class="wheel-history-item-emoji">${item.emoji}</span><span class="wheel-history-item-prize">${item.label} — ${item.sub}</span><span class="wheel-history-item-time">${item.time}</span></div>`;}).join('');
   clearTimeout(window._wheelHistoryTimer);
-  window._wheelHistoryTimer = setTimeout(function() {
-    section.style.transition = 'opacity .5s';
-    section.style.opacity = '0';
-    setTimeout(function() {
-      section.style.display = 'none';
-      section.style.opacity = '1';
-      section.style.transition = '';
-    }, 500);
-  }, 8000);
+  window._wheelHistoryTimer=setTimeout(function(){
+    section.style.transition='opacity .5s';section.style.opacity='0';
+    setTimeout(function(){section.style.display='none';section.style.opacity='1';section.style.transition='';},500);
+  },8000);
 }
 
-// ── WHEEL ─────────────────────────────────────────────────────────
-var wheelOnCooldown = false;
-
-window.launchWheelFromModal = function() {
-  if (wheelOnCooldown) return;
-  wheelOnCooldown = true;
+// ── WHEEL CONTROLS ───────────────────────────────────────────────
+var wheelOnCooldown=false;
+window.launchWheelFromModal=function(){
+  if(wheelOnCooldown)return; wheelOnCooldown=true;
   window.triggerWheelFirebase();
-  var btn = document.getElementById('modalWheelBtn');
-  btn.textContent = '✅ Roue lancée sur le grand écran !';
-  btn.classList.add('used');
-  var bar = document.getElementById('cooldownBar');
-  var fill = document.getElementById('cooldownFill');
-  bar.classList.add('visible');
-  fill.style.transition = 'none';
-  fill.style.transform = 'scaleX(1)';
-  setTimeout(function(){
-    fill.style.transition = 'transform 6.5s linear';
-    fill.style.transform = 'scaleX(0)';
-  }, 50);
-  showToast('🎡 Roue lancée !', true);
+  var btn=document.getElementById('modalWheelBtn');
+  btn.textContent='✅ Roue lancée sur le grand écran !';btn.classList.add('used');
+  var bar=document.getElementById('cooldownBar'),fill=document.getElementById('cooldownFill');
+  bar.classList.add('visible');fill.style.transition='none';fill.style.transform='scaleX(1)';
+  setTimeout(function(){fill.style.transition='transform 6.5s linear';fill.style.transform='scaleX(0)';},50);
+  showToast('🎡 Roue lancée !',true);
 };
-
-window.quickSpin = function() {
-  if (wheelOnCooldown) { showToast('⏳ Roue en cours...'); return; }
-  wheelOnCooldown = true;
-  window.triggerWheelFirebase();
-  var btn = document.getElementById('topWheelBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ En cours...';
-  showToast('🎡 Roue lancée !', true);
-  setTimeout(function(){
-    wheelOnCooldown = false;
-    btn.disabled = false;
-    btn.textContent = '🎡 Roue';
-  }, 6500);
+window.quickSpin=function(){
+  if(wheelOnCooldown){showToast('⏳ Roue en cours...');return;}
+  wheelOnCooldown=true; window.triggerWheelFirebase();
+  var btn=document.getElementById('topWheelBtn');btn.disabled=true;btn.textContent='⏳ En cours...';
+  showToast('🎡 Roue lancée !',true);
+  setTimeout(function(){wheelOnCooldown=false;btn.disabled=false;btn.textContent='🎡 Roue';},6500);
 };
-
-window.resetWheelBtn = function() {
-  wheelOnCooldown = false;
-  var btn = document.getElementById('modalWheelBtn');
-  btn.textContent = '🎡 LANCER LA ROUE DES GAINS !';
-  btn.classList.remove('used');
+window.resetWheelBtn=function(){
+  wheelOnCooldown=false;
+  var btn=document.getElementById('modalWheelBtn');
+  btn.textContent='🎡 LANCER LA ROUE DES GAINS !';btn.classList.remove('used');
   document.getElementById('cooldownBar').classList.remove('visible');
 };
 
-// ── CAISSE ─────────────────────────────────────────────────────────
+// ── FICHE CLIENT ─────────────────────────────────────────────────
+function openClientModal(result){
+  document.getElementById('clientGainLabel').textContent=result.emoji+' Gain : '+result.label+' — '+result.sub;
+  ['cPrenom','cNom','cTel','cEmail','cAdresse'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('modalClient').classList.add('open');
+}
+window.saveClient=function(){
+  var prenom=document.getElementById('cPrenom').value.trim();
+  var nom=document.getElementById('cNom').value.trim();
+  if(!prenom&&!nom){showToast('⚠️ Prénom ou nom requis');return;}
+  var now=new Date();
+  clients.unshift({
+    prenom:prenom,nom:nom,
+    tel:document.getElementById('cTel').value.trim(),
+    email:document.getElementById('cEmail').value.trim(),
+    adresse:document.getElementById('cAdresse').value.trim(),
+    gain:pendingClientGain?pendingClientGain.label:'—',
+    gainSub:pendingClientGain?pendingClientGain.sub:'—',
+    ticket:tickets.length>0?'#'+('00'+tickets[0].num).slice(-3):'—',
+    date:now.toLocaleDateString('fr-FR'),
+    time:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
+  });
+  pendingClientGain=null;
+  document.getElementById('modalClient').classList.remove('open');
+  showToast('✅ Client enregistré !');
+};
+window.skipClient=function(){
+  pendingClientGain=null;
+  document.getElementById('modalClient').classList.remove('open');
+};
+
+// ── PRODUITS classés intelligemment ─────────────────────────────
 var PRODUCTS=[
-  {id:1,name:"Mug personnalise",label:"Mug personnalisé",price:9.99,cat:"Sublimation",emoji:"☕",type:"sublim"},
-  {id:2,name:"T-shirt sublime",label:"T-shirt sublimé",price:22,cat:"Sublimation",emoji:"🎽",type:"sublim"},
-  {id:3,name:"Pull sublime",label:"Pull sublimé",price:35.90,cat:"Sublimation",emoji:"👕",type:"sublim"},
-  {id:4,name:"Magnette frigo",label:"Magnette frigo",price:3.90,cat:"Sublimation",emoji:"⭐",type:"sublim"},
-  {id:5,name:"Stylo",label:"Stylo",price:5.50,cat:"Sublimation",emoji:"✏️",type:"sublim"},
-  {id:6,name:"Tote bag",label:"Sac personalisé",price:14,cat:"Sublimation",emoji:"👜",type:"sublim"},
-  {id:7,name:"Puzzle photo",label:"Puzzle photo",price:25,cat:"Sublimation",emoji:"🧩",type:"sublim"},
-  {id:8,name:"Plaque alu moyen",label:"Petite plaque alu",price:12,cat:"Sublimation",emoji:"🎴",type:"sublim"},
-  {id:9,name:"Plaque alu Grand",label:"Grande plaque alu",price:20,cat:"Sublimation",emoji:"🎴",type:"sublim"},
-  {id:10,name:"Casquette",label:"Casquette",price:19,cat:"Sublimation",emoji:"🧴",type:"sublim"},
-  {id:11,name:"Dragon 3 couleurs",label:"Dragon 3 couleurs",price:10,cat:"Impression 3D",emoji:"🐉",type:"print3d"},
-  {id:12,name:"Animaux Flex",label:"Animaux Flex",price:5,cat:"Impression 3D",emoji:"🐲",type:"print3d"},
-  {id:13,name:"Serpent XXL",label:"Serpent XXL",price:18,cat:"Impression 3D",emoji:"🪧",type:"print3d"},
-  {id:14,name:"Dragon Cristal",label:"Dragon Cristal",price:15,cat:"Impression 3D",emoji:"🏺",type:"print3d"},
-  {id:15,name:"Dragon XXL aile",label:"Dragon XXL aile",price:20,cat:"Impression 3D",emoji:"📦",type:"print3d"},
-  {id:16,name:"Figurine 3D",label:"Figurine 3D",price:15,cat:"Impression 3D",emoji:"💎",type:"print3d"},
-  {id:17,name:"Hueforge",label:"Hueforge",price:15,cat:"Impression 3D",emoji:"🦋",type:"print3d"},
-  {id:18,name:"Porte-cles",label:"Porte-clés",price:3.50,cat:"Impression 3D",emoji:"🔑",type:"print3d"},
-  {id:19,name:"Étoile fidgets grand",label:"Étoile fidgets grand",price:10,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:20,name:"Étoile fidgets moyen",label:"Étoile fidgets moyen",price:8,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:21,name:"Étoile fidgets petit",label:"Étoile fidgets petit",price:5,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:22,name:"Cadre-hueforge",label:"Cadre hueforge",price:3,cat:"Impression 3D",emoji:"🖼️",type:"print3d"},
-  {id:26,name:"Marque page",label:"Marque page",price:8,cat:"Impression 3D",emoji:"✨",type:"print3d"},
-  {id:27,name:"Box bureau hueforge",label:"Box bureau hueforge",price:25,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:28,name:"Boite Gameboy carte",label:"Boite Gameboy carte",price:12,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:29,name:"Handspinner",label:"Handspinner",price:3,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:30,name:"Anti stresse",label:"Anti stresse",price:8,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:31,name:"Balle anti stresse",label:"Balle anti stresse",price:8,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:32,name:"Lampe dinosaure XXL",label:"Lampe dinosaure XXL",price:30,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:33,name:"Veilleuse petit dinosaure",label:"Veilleuse petit dinosaure",price:15,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:34,name:"Baguette Dragon",label:"Baguette Dragon",price:8,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:35,name:"Oeuf raptor fils",label:"Oeuf raptor (fils)",price:15,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:36,name:"Poisson pecheur",label:"Poisson pêcheur",price:12,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:37,name:"Mosasaurus squelette",label:"Mosasaurus squelette",price:18,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:38,name:"Spinosaurus squelette",label:"Spinosaurus squelette",price:15,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:39,name:"Ankylosaure squelette",label:"Ankylosaure squelette",price:18,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:40,name:"Cadre star wars",label:"Cadre star wars",price:15,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:41,name:"Aliens support stylo",label:"Aliens support stylo",price:15,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:42,name:"Aliens support telephone",label:"Aliens support téléphone",price:15,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:43,name:"Albator",label:"Albator",price:10,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:44,name:"Oeuf lampe dragon",label:"Oeuf lampe dragon",price:10,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:45,name:"Oeuf bebe dragon",label:"Oeuf bébé dragon",price:10,cat:"Impression 3D",emoji:"⭕",type:"print3d"},
-  {id:23,name:"Pack Souvenir",label:"Pack Souvenir",price:28,cat:"Pack",emoji:"🎁",type:"pack",desc:"Mug + Porte-clés"},
-  {id:24,name:"Pack Duo",label:"Pack Duo",price:35,cat:"Pack",emoji:"🎀",type:"pack",desc:"T-shirt + Mug"},
-  {id:25,name:"Pack Deco 3D",label:"Pack Déco 3D",price:40,cat:"Pack",emoji:"✨",type:"pack",desc:"Vase + Décoration"}
+  // ── 🎨 SUBLIMATION ──────────────────────────────────────────────
+  {id:1, label:"Mug personnalisé",      price:9.99, cat:"Sublimation",   emoji:"☕", type:"sublim"},
+  {id:2, label:"T-shirt sublimé",       price:22,   cat:"Sublimation",   emoji:"🎽", type:"sublim"},
+  {id:3, label:"Pull sublimé",          price:35.90,cat:"Sublimation",   emoji:"👕", type:"sublim"},
+  {id:4, label:"Casquette",             price:19,   cat:"Sublimation",   emoji:"🧢", type:"sublim"},
+  {id:5, label:"Tote bag",              price:14,   cat:"Sublimation",   emoji:"👜", type:"sublim"},
+  {id:6, label:"Puzzle photo",          price:25,   cat:"Sublimation",   emoji:"🧩", type:"sublim"},
+  {id:7, label:"Petite plaque alu",     price:12,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
+  {id:8, label:"Grande plaque alu",     price:20,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
+  {id:9, label:"Magnette frigo",        price:3.90, cat:"Sublimation",   emoji:"🧲", type:"sublim"},
+  {id:10,label:"Stylo",                 price:5.50, cat:"Sublimation",   emoji:"✏️", type:"sublim"},
+
+  // ── 🖨️ IMPRESSION 3D ────────────────────────────────────────────
+  // 🐉 Dragons
+  {id:11,label:"Dragon 3 couleurs",     price:10,   cat:"Impression 3D", emoji:"🐉", type:"print3d"},
+  {id:14,label:"Dragon XXL aile",       price:20,   cat:"Impression 3D", emoji:"🐲", type:"print3d"},
+  {id:12,label:"Dragon Cristal",        price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
+  {id:44,label:"Oeuf lampe dragon",     price:10,   cat:"Impression 3D", emoji:"🥚", type:"print3d"},
+  {id:45,label:"Oeuf bébé dragon",      price:10,   cat:"Impression 3D", emoji:"🐣", type:"print3d"},
+  {id:34,label:"Baguette Dragon",       price:8,    cat:"Impression 3D", emoji:"🪄", type:"print3d"},
+  // 🐍 Animaux articulés
+  {id:13,label:"Serpent XXL",           price:18,   cat:"Impression 3D", emoji:"🐍", type:"print3d"},
+  {id:46,label:"Animaux Flex",          price:5,    cat:"Impression 3D", emoji:"🐾", type:"print3d"},
+  {id:36,label:"Poisson pêcheur",       price:12,   cat:"Impression 3D", emoji:"🐟", type:"print3d"},
+  // 🦕 Dinosaures
+  {id:32,label:"Lampe dinosaure XXL",   price:30,   cat:"Impression 3D", emoji:"🦕", type:"print3d"},
+  {id:33,label:"Veilleuse dino petit",  price:15,   cat:"Impression 3D", emoji:"🌙", type:"print3d"},
+  {id:37,label:"Mosasaurus squelette",  price:18,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
+  {id:38,label:"Spinosaurus squelette", price:15,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
+  {id:39,label:"Ankylosaure squelette", price:18,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
+  {id:35,label:"Oeuf raptor (fils)",    price:15,   cat:"Impression 3D", emoji:"🥚", type:"print3d"},
+  // 🌀 Fidgets & Jeux
+  {id:19,label:"Étoile fidgets grand",  price:10,   cat:"Impression 3D", emoji:"⭐", type:"print3d"},
+  {id:20,label:"Étoile fidgets moyen",  price:8,    cat:"Impression 3D", emoji:"🌟", type:"print3d"},
+  {id:21,label:"Étoile fidgets petit",  price:5,    cat:"Impression 3D", emoji:"✨", type:"print3d"},
+  {id:29,label:"Handspinner",           price:3,    cat:"Impression 3D", emoji:"🌀", type:"print3d"},
+  {id:30,label:"Anti stress",           price:8,    cat:"Impression 3D", emoji:"🫶", type:"print3d"},
+  {id:31,label:"Balle anti stress",     price:8,    cat:"Impression 3D", emoji:"🎾", type:"print3d"},
+  {id:28,label:"Boite Gameboy cartes",  price:12,   cat:"Impression 3D", emoji:"🎮", type:"print3d"},
+  // 🖼️ Déco & Bureau
+  {id:17,label:"Hueforge",             price:15,   cat:"Impression 3D", emoji:"🦋", type:"print3d"},
+  {id:22,label:"Cadre hueforge",        price:3,    cat:"Impression 3D", emoji:"🖼️", type:"print3d"},
+  {id:27,label:"Box bureau hueforge",   price:25,   cat:"Impression 3D", emoji:"📦", type:"print3d"},
+  {id:16,label:"Figurine 3D",           price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
+  {id:26,label:"Marque page",           price:8,    cat:"Impression 3D", emoji:"📖", type:"print3d"},
+  {id:18,label:"Porte-clés",            price:3.50, cat:"Impression 3D", emoji:"🔑", type:"print3d"},
+  // 🚀 Geek & Univers
+  {id:40,label:"Cadre Star Wars",       price:15,   cat:"Impression 3D", emoji:"⚔️", type:"print3d"},
+  {id:41,label:"Aliens support stylo",  price:15,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
+  {id:42,label:"Aliens support tél",    price:15,   cat:"Impression 3D", emoji:"📱", type:"print3d"},
+  {id:43,label:"Albator",              price:10,   cat:"Impression 3D", emoji:"🏴‍☠️", type:"print3d"},
+
+  // ── 🎁 PACKS ────────────────────────────────────────────────────
+  {id:23,label:"Pack Souvenir",         price:28,   cat:"Pack",          emoji:"🎁", type:"pack", desc:"Mug + Porte-clés"},
+  {id:24,label:"Pack Duo",              price:35,   cat:"Pack",          emoji:"🎀", type:"pack", desc:"T-shirt + Mug"},
+  {id:25,label:"Pack Déco 3D",          price:40,   cat:"Pack",          emoji:"✨", type:"pack", desc:"Vase + Décoration"},
 ];
+
 var cart=[],payMode=null,tickets=[],totalCA=0,currentCat="Tous",salesData={};
 PRODUCTS.forEach(function(p){salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};});
+
 function fmt(n){return n.toFixed(2).replace(".",",")+"\u00a0€";}
+
 function renderProducts(){
   var grid=document.getElementById("productsGrid");
   var list=currentCat==="Tous"?PRODUCTS:PRODUCTS.filter(function(p){return p.cat===currentCat;});
   var html="";
   list.forEach(function(p){
     var desc=p.desc?"<br><span style='font-size:10px;color:var(--text3)'>"+p.desc+"</span>":"";
-    var cl=p.cat==="Impression 3D"?"3D":p.cat==="Pack"?"Pack":"Sub";
+    var cl=p.type==="sublim"?"Sub":p.type==="pack"?"Pack":"3D";
     html+="<div class='product-card "+p.type+"' onclick='addToCart("+p.id+")'>";
     html+="<div class='product-icon'>"+p.emoji+"</div>";
     html+="<div class='product-name'>"+p.label+desc+"</div>";
@@ -569,6 +563,7 @@ function renderProducts(){
   });
   grid.innerHTML=html;
 }
+
 window.filterCat=function(cat,btn){
   currentCat=cat;
   document.querySelectorAll(".tab").forEach(function(t){t.classList.remove("active");});
@@ -605,7 +600,7 @@ function renderCart(){
 function updateTotals(){
   var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
   var disc=parseFloat(document.getElementById("discountInput").value)||0;
-  var discAmt=sub*disc/100, total=sub-discAmt;
+  var discAmt=sub*disc/100,total=sub-discAmt;
   document.getElementById("subTotal").textContent=fmt(sub);
   document.getElementById("totalTTC").textContent=fmt(total);
   document.getElementById("payBtnAmt").textContent=fmt(total);
@@ -655,7 +650,11 @@ function renderExcelPanel(){
   var hasData=Object.values(salesData).some(function(s){return s.qty>0;});
   if(!hasData){body.innerHTML="<div style='padding:20px;text-align:center;color:var(--text3);font-size:13px'>Aucune vente pour le moment</div>";return;}
   var tSub=0,t3D=0,tPack=0,qSub=0,q3D=0,qPack=0;
-  Object.values(salesData).forEach(function(s){if(s.cat==="Sublimation"){tSub+=s.ca;qSub+=s.qty;}else if(s.cat==="Impression 3D"){t3D+=s.ca;q3D+=s.qty;}else{tPack+=s.ca;qPack+=s.qty;}});
+  Object.values(salesData).forEach(function(s){
+    if(s.cat==="Sublimation"){tSub+=s.ca;qSub+=s.qty;}
+    else if(s.cat==="Pack"){tPack+=s.ca;qPack+=s.qty;}
+    else{t3D+=s.ca;q3D+=s.qty;}
+  });
   var sold=Object.values(salesData).filter(function(s){return s.qty>0;}).sort(function(a,b){return b.qty-a.qty;});
   var modeCA={};tickets.forEach(function(t){modeCA[t.mode]=(modeCA[t.mode]||0)+t.total;});
   var html="<div class='ep-section'><div class='ep-section-title'>CA par catégorie</div><div class='ep-kpi-grid'>";
@@ -664,7 +663,7 @@ function renderExcelPanel(){
   if(tPack>0)html+="<div class='ep-kpi' style='grid-column:1/-1'><div class='ep-kpi-val' style='color:#f5a623'>"+fmt(tPack)+"</div><div class='ep-kpi-lbl'>Packs ("+qPack+")</div></div>";
   html+="</div></div><div class='ep-section'><div class='ep-section-title'>Produits vendus ("+sold.length+")</div>";
   html+="<table class='ep-table'><thead><tr><th>Produit</th><th style='text-align:center'>Qté</th><th style='text-align:right'>CA TTC</th></tr></thead><tbody>";
-  sold.forEach(function(s){var cc=s.cat==="Sublimation"?"cat-sub":"cat-3d";var cl=s.cat==="Impression 3D"?"3D":s.cat==="Pack"?"Pack":"Sub";html+="<tr><td>"+s.emoji+" "+s.name+"<br><span class='"+cc+"'>"+cl+"</span></td><td class='num' style='color:#2ecc8f;font-weight:600'>"+s.qty+"</td><td class='num'>"+fmt(s.ca)+"</td></tr>";});
+  sold.forEach(function(s){var cc=s.cat==="Sublimation"?"cat-sub":"cat-3d";var cl=s.cat==="Pack"?"Pack":s.cat==="Sublimation"?"Sub":"3D";html+="<tr><td>"+s.emoji+" "+s.name+"<br><span class='"+cc+"'>"+cl+"</span></td><td class='num' style='color:#2ecc8f;font-weight:600'>"+s.qty+"</td><td class='num'>"+fmt(s.ca)+"</td></tr>";});
   html+="</tbody></table></div><div class='ep-section'><div class='ep-section-title'>Par mode de paiement</div><table class='ep-table'><thead><tr><th>Mode</th><th style='text-align:right'>CA TTC</th></tr></thead><tbody>";
   Object.entries(modeCA).forEach(function(e){html+="<tr><td>"+e[0]+"</td><td class='num'>"+fmt(e[1])+"</td></tr>";});
   html+="</tbody></table></div><button class='ep-dl-btn' onclick='downloadExcel()'>⬇ Télécharger Excel complet</button>";
@@ -677,19 +676,30 @@ window.downloadExcel=function(){
   var dd=today.split("/");var dateFile=dd[0]+"-"+dd[1]+"-"+dd[2];
   var modeCA={};tickets.forEach(function(t){modeCA[t.mode]=(modeCA[t.mode]||0)+t.total;});
   var totalCA2=Object.values(salesData).reduce(function(s,d){return s+d.ca;},0);
-  var aoa1=[["DETAIL DES VENTES TTC — "+today,"","","","","","","",""],["Les projets de Shaya — Micro-entreprise franchise TVA","","","","","","","",""],[], ["N° Ticket","Date","Heure","Produit","Categorie","Quantite","Prix TTC unit.","Total TTC","Mode paiement"]];
-  tickets.slice().reverse().forEach(function(t){t.items.forEach(function(item){aoa1.push(["#"+("00"+t.num).slice(-3),t.date,t.time,item.name,item.cat,item.qty,parseFloat(item.price.toFixed(2)),parseFloat((item.price*item.qty).toFixed(2)),t.mode]);});aoa1.push(["","","","","","Sous-total","",parseFloat(t.total.toFixed(2)),""]);});
+
+  // Feuille 1 — Détail ventes
+  var aoa1=[["DETAIL DES VENTES TTC — "+today,"","","","","","","","",""],["Les projets de Shaya — Micro-entreprise franchise TVA","","","","","","","","",""],[], ["N° Ticket","Date","Heure","Produit","Categorie","Quantite","Prix TTC unit.","Total TTC","Mode paiement","Gain roue"]];
+  tickets.slice().reverse().forEach(function(t){
+    t.items.forEach(function(item){
+      aoa1.push(["#"+("00"+t.num).slice(-3),t.date,t.time,item.name,item.cat,item.qty,parseFloat(item.price.toFixed(2)),parseFloat((item.price*item.qty).toFixed(2)),t.mode,t.wheelGain?t.wheelEmoji+" "+t.wheelGain:"—"]);
+    });
+    aoa1.push(["","","","","","Sous-total","",parseFloat(t.total.toFixed(2)),"",""]);
+  });
   aoa1.push([]);aoa1.push(["","","","","","","TOTAL TTC","",parseFloat(totalCA2.toFixed(2))]);
-  var ws1=XLSX.utils.aoa_to_sheet(aoa1);ws1["!cols"]=[12,11,8,24,15,12,16,14,14].map(function(w){return{wch:w};});
+  var ws1=XLSX.utils.aoa_to_sheet(aoa1);ws1["!cols"]=[12,11,8,24,15,12,16,14,14,16].map(function(w){return{wch:w};});
   XLSX.utils.book_append_sheet(wb,ws1,"Details ventes");
+
+  // Feuille 2 — Recap produits
   var sold2=Object.values(salesData).filter(function(s){return s.qty>0;}).sort(function(a,b){return b.qty-a.qty;});
   var totQty2=sold2.reduce(function(s,d){return s+d.qty;},0);
   var aoa2=[["RECAPITULATIF PAR PRODUIT — "+today,"","","","",""],["Les projets de Shaya","","","","",""],[], ["Produit","Categorie","Qte vendue","Prix TTC unit.","CA TTC total","% du CA"]];
   sold2.forEach(function(s){aoa2.push([s.name,s.cat,s.qty,parseFloat(s.price.toFixed(2)),parseFloat(s.ca.toFixed(2)),totalCA2>0?parseFloat((s.ca/totalCA2*100).toFixed(1)):0]);});
   aoa2.push([]);aoa2.push(["TOTAL","",totQty2,"",parseFloat(totalCA2.toFixed(2)),100]);
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(aoa2),"Recap produits");
+
+  // Feuille 3 — Bilan
   var caSub=0,ca3D=0,caPack=0,qTot=0;
-  Object.values(salesData).forEach(function(s){caSub+=(s.cat==="Sublimation"?s.ca:0);ca3D+=(s.cat==="Impression 3D"?s.ca:0);caPack+=(s.cat==="Pack"?s.ca:0);qTot+=s.qty;});
+  Object.values(salesData).forEach(function(s){caSub+=(s.cat==="Sublimation"?s.ca:0);ca3D+=(s.cat!=="Sublimation"&&s.cat!=="Pack"?s.ca:0);caPack+=(s.cat==="Pack"?s.ca:0);qTot+=s.qty;});
   var aoa3=[["BILAN DE LA JOURNEE",""],["Les projets de Shaya — "+today,""],["Micro-entreprise franchise TVA",""],[], ["CA TOTAL TTC",parseFloat(totalCA2.toFixed(2))],[],["Par categorie","CA TTC"],["Sublimation",parseFloat(caSub.toFixed(2))],["Impression 3D",parseFloat(ca3D.toFixed(2))]];
   if(caPack>0)aoa3.push(["Packs",parseFloat(caPack.toFixed(2))]);
   aoa3.push([]);aoa3.push(["Par mode de paiement","CA TTC"]);
@@ -697,14 +707,39 @@ window.downloadExcel=function(){
   aoa3.push([]);aoa3.push(["Transactions",tickets.length]);aoa3.push(["Articles vendus",qTot]);
   if(tickets.length>0)aoa3.push(["Panier moyen",parseFloat((totalCA2/tickets.length).toFixed(2))]);
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(aoa3),"Bilan journee");
+
+  // Feuille 4 — Roue des gains
+  var aoa4=[["ROUE DES GAINS — "+today,"","","",""],["Les projets de Shaya","","","",""],[], ["Ticket","Heure","Gain","Détail","Type"]];
+  if(wheelGains.length){
+    wheelGains.slice().reverse().forEach(function(g){aoa4.push([g.ticket,g.time,g.emoji+" "+g.label,g.sub,g.type==="lose"?"Perdu":"Gain"]);});
+    var nbG=wheelGains.filter(function(g){return g.type!=="lose";}).length;
+    var nbP=wheelGains.filter(function(g){return g.type==="lose";}).length;
+    aoa4.push([]);aoa4.push(["Total tours",wheelGains.length,"Gains",nbG,"Perdus",nbP]);
+  }else{aoa4.push(["Aucun tour joué","","","",""]);}
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(aoa4),"Roue des gains");
+
+  // Feuille 5 — Clients
+  var aoa5=[["BASE CLIENTS — "+today,"","","","","","",""],["Les projets de Shaya","","","","","","",""],[], ["Date","Heure","Prénom","Nom","Téléphone","Email","Adresse","Gain roue","Ticket"]];
+  if(clients.length){
+    clients.slice().reverse().forEach(function(c){aoa5.push([c.date,c.time,c.prenom,c.nom,c.tel,c.email,c.adresse,c.gain+" — "+c.gainSub,c.ticket]);});
+  }else{aoa5.push(["Aucun client enregistré","","","","","","","",""]);}
+  var ws5=XLSX.utils.aoa_to_sheet(aoa5);ws5["!cols"]=[10,8,12,14,14,24,30,20,8].map(function(w){return{wch:w};});
+  XLSX.utils.book_append_sheet(wb,ws5,"Clients");
+
   XLSX.writeFile(wb,"ventes_"+dateFile+".xlsx");
   showToast("📊 Excel téléchargé !");
 };
+
 function renderTickets(){
   var body=document.getElementById("ticketsBody");
   if(!tickets.length){body.innerHTML="<div style='padding:20px;text-align:center;color:var(--text3);font-size:13px'>Aucun ticket</div>";return;}
   var html="";
-  tickets.forEach(function(t){var mc=(t.mode==="CB"||t.mode==="SumUp")?"cb":t.mode==="Virement"?"vir":"cash";var items=t.items.map(function(i){return i.qty+"× "+i.name;}).join(", ");html+="<div class='ticket-item'><div class='ticket-item-top'><span class='ticket-num'>#"+("00"+t.num).slice(-3)+" · "+t.time+"</span><span class='ticket-total'>"+fmt(t.total)+"</span></div><div class='ticket-meta'>"+items+"</div><span class='ticket-mode "+mc+"'>"+t.mode+"</span></div>";});
+  tickets.forEach(function(t){
+    var mc=(t.mode==="CB"||t.mode==="SumUp")?"cb":t.mode==="Virement"?"vir":"cash";
+    var items=t.items.map(function(i){return i.qty+"× "+i.name;}).join(", ");
+    var gainBadge=t.wheelGain?"<br><span style='font-size:10px;color:var(--amber)'>🎡 "+t.wheelEmoji+" "+t.wheelGain+"</span>":"";
+    html+="<div class='ticket-item'><div class='ticket-item-top'><span class='ticket-num'>#"+("00"+t.num).slice(-3)+" · "+t.time+"</span><span class='ticket-total'>"+fmt(t.total)+"</span></div><div class='ticket-meta'>"+items+gainBadge+"</div><span class='ticket-mode "+mc+"'>"+t.mode+"</span></div>";
+  });
   body.innerHTML=html;
 }
 window.toggleTickets=function(){document.getElementById("ticketPanel").classList.toggle("open");};
@@ -712,7 +747,7 @@ window.toggleExcel=function(){document.getElementById("excelPanel").classList.to
 window.askReset=function(){document.getElementById("modalReset").classList.add("open");};
 window.closeReset=function(){document.getElementById("modalReset").classList.remove("open");};
 window.doReset=function(){
-  tickets=[];totalCA=0;cart=[];payMode=null;
+  tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];
   PRODUCTS.forEach(function(p){salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};});
   document.getElementById("nbVentes").textContent="0";
   document.getElementById("caJour").textContent="0,00 €";
@@ -725,11 +760,8 @@ window.doReset=function(){
 var toastTimer;
 function showToast(msg,isWheel){
   var el=document.getElementById("toast");
-  el.textContent=msg;
-  el.className='toast'+(isWheel?' wheel':'');
-  el.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(function(){el.classList.remove("show");},1800);
+  el.textContent=msg;el.className='toast'+(isWheel?' wheel':'');el.classList.add("show");
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove("show");},1800);
 }
 renderProducts();renderCart();updateTotals();
 </script>
