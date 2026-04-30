@@ -6,14 +6,15 @@
 <title>Roue des Gains – Grand Écran</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap');
-  :root{--bg:#0a0a14;--gold:#F5A623;--pink:#E94560;--purple:#533483;--blue:#0F3460;--white:#ffffff;--silver:#c0c0c0}
+  :root{--bg:#0a0a14;--gold:#860680;--pink:#E94560;--purple:#533483;--blue:#0F3460;--white:#ffffff;--silver:#c0c0c0}
   *{margin:0;padding:0;box-sizing:border-box}
   body{background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--white);height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
   .particles{position:fixed;inset:0;pointer-events:none;z-index:0}
   .particle{position:absolute;border-radius:50%;opacity:.15;animation:float linear infinite}
   @keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(-100px) rotate(720deg);opacity:0}}
   .main-layout{display:flex;align-items:center;justify-content:center;gap:60px;width:100%;padding:20px 60px;position:relative;z-index:1}
-  .left-panel,.right-panel{display:flex;flex-direction:column;align-items:center;gap:20px;min-width:220px}
+  /* Les panneaux gauche et droit passent AU DESSUS des pulsations */
+  .left-panel,.right-panel{display:flex;flex-direction:column;align-items:center;gap:20px;min-width:220px;position:relative;z-index:2}
   .brand-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:6px;color:var(--white);text-align:center;line-height:1;text-shadow:0 0 30px rgba(245,166,35,.5)}
   .brand-sub{font-size:.85rem;color:var(--gold);letter-spacing:4px;text-transform:uppercase;text-align:center}
   .prizes-list{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;width:100%;backdrop-filter:blur(10px)}
@@ -21,14 +22,14 @@
   .prize-item{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:.88rem;color:var(--silver);border-bottom:1px solid rgba(255,255,255,.05)}
   .prize-item:last-child{border-bottom:none}
   .prize-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-  .wheel-section{display:flex;flex-direction:column;align-items:center;gap:24px;position:relative}
+  .wheel-section{display:flex;flex-direction:column;align-items:center;gap:44px;position:relative;z-index:2}
   .wheel-wrapper{position:relative;width:480px;height:480px}
-  .wheel-glow{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,transparent 55%,rgba(245,166,35,.15) 70%,transparent 80%);animation:glowPulse 2s ease-in-out infinite;pointer-events:none}
+  .wheel-glow{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,transparent 55%,rgb(66, 2, 58) 70%,transparent 80%);animation:glowPulse 2s ease-in-out infinite;pointer-events:none}
   @keyframes glowPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
-  .wheel-ring{position:absolute;inset:-8px;border-radius:50%;border:4px solid var(--gold);box-shadow:0 0 20px rgba(245,166,35,.4),inset 0 0 20px rgba(245,166,35,.1)}
+  .wheel-ring{position:absolute;inset:-8px;border-radius:50%;border:4px solid var(--gold);box-shadow:0 0 20px rgba(245, 35, 175, 0.4),inset 0 0 20px rgba(245,166,35,.1)}
   canvas#wheel{border-radius:50%;display:block;filter:drop-shadow(0 0 30px rgba(233,69,96,.3))}
   .wheel-pointer{position:absolute;top:50%;right:-28px;transform:translateY(-50%);width:0;height:0;border-top:22px solid transparent;border-bottom:22px solid transparent;border-right:38px solid var(--gold);filter:drop-shadow(0 0 8px rgba(245,166,35,.8));z-index:10}
-  .wheel-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--gold) 60%,#c07010 100%);border:4px solid #fff;box-shadow:0 0 20px rgba(245,166,35,.8);z-index:10;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
+  .wheel-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--gold) 60%,#530636 100%);border:4px solid #fff;box-shadow:0 0 20px rgba(245,166,35,.8);z-index:10;display:flex;align-items:center;justify-content:center;font-size:1.4rem}
   .status-bar{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:6px;color:var(--silver);text-align:center;min-height:40px;transition:color .3s}
   .status-bar.spinning{color:var(--gold);animation:statusPulse .5s ease-in-out infinite alternate}
   .status-bar.won{color:#4ade80}
@@ -56,10 +57,9 @@
   .stat-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);color:var(--silver)}
   .stat-row:last-child{border-bottom:none}
   .stat-val{color:var(--white);font-weight:700}
-  .pulse-ring{position:absolute;inset:-30px;border-radius:50%;border:2px solid var(--pink);opacity:0;animation:pulseRing 2.5s ease-out infinite;pointer-events:none}
-  .pulse-ring:nth-child(2){animation-delay:.8s}
-  .pulse-ring:nth-child(3){animation-delay:1.6s}
   @keyframes pulseRing{0%{transform:scale(.9);opacity:.6}100%{transform:scale(1.4);opacity:0}}
+  /* Flèche en haut au centre */
+  .wheel-pointer{position:absolute;top:-34px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:34px solid var(--gold);filter:drop-shadow(0 0 8px rgba(86, 8, 88, 0.8));z-index:10}
   .firebase-status{position:fixed;top:12px;right:16px;display:flex;align-items:center;gap:6px;font-size:.7rem;color:rgba(255,255,255,.3);z-index:50;letter-spacing:2px}
   .fb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:fbPulse 2s ease-in-out infinite}
   .fb-dot.off{background:#e94560;box-shadow:0 0 6px #e94560}
@@ -91,29 +91,32 @@
       <div class="brand-title">IMPRESSION 3D<br>&amp; SUBLIMATION</div>
       <div class="brand-sub">Les projets de Shaya</div>
     </div>
-    <div class="prizes-list">
-      <h3>🎁 LOTS À GAGNER</h3>
-      <div id="prizeListDisplay"></div>
+    <!-- LOGO à la place de la liste des gains -->
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;backdrop-filter:blur(10px)">
+      <img src="images/logo.png" alt="Les projets de Shaya" style="width:140px;height:140px;object-fit:contain;border-radius:12px;filter:drop-shadow(0 0 16px rgba(245,166,35,.3))">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:4px;color:var(--gold);text-align:center">TENTEZ VOTRE CHANCE !</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.35);text-align:center;line-height:1.5">1 achat = 1 tour de roue<br>Gains exclusifs sur le stand</div>
     </div>
   </div>
 
   <div class="wheel-section">
     <div class="wheel-wrapper">
-      <div class="pulse-ring"></div><div class="pulse-ring"></div><div class="pulse-ring"></div>
       <div class="wheel-glow"></div>
       <div class="wheel-ring"></div>
       <canvas id="wheel" width="480" height="480"></canvas>
       <div class="wheel-pointer"></div>
-      <div class="wheel-hub">⭐</div>
+      <div class="wheel-hub">
+        <img src="images/logo.png" alt="logo" style="width:44px;height:44px;object-fit:cover;border-radius:50%">
+      </div>
     </div>
-    <div class="status-bar" id="statusBar">EN ATTENTE D'UN ACHAT</div>
+    <div class="status-bar" id="statusBar">LE MARCHÉ DU GEEK</div>
   </div>
 
   <div class="right-panel">
     <div class="waiting-box">
       <div class="waiting-icon">🎡</div>
       <div class="waiting-text">PRÊT À TOURNER</div>
-      <div class="waiting-sub">Déclenchez depuis la tablette</div>
+      <div class="waiting-sub">"Votre destin est entre nos mains !"</div>
     </div>
     <div class="last-win-box">
       <h4>🏆 DERNIER GAIN</h4>
@@ -146,25 +149,32 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const PRIZES = [
-  {label:"-5%",     sub:"sur votre commande",        emoji:"💰",color:"#E94560",type:"reduction",weight:4},
-  {label:"CADEAU",  sub:"Porte-clé imprimé 3D",      emoji:"🎁",color:"#533483",type:"gift",     weight:3},
-  {label:"-10%",    sub:"sur votre commande",        emoji:"🤑",color:"#F5A623",type:"reduction",weight:2},
-  {label:"BONUS",   sub:"Sticker sublimation offert",emoji:"✨",color:"#0F3460",type:"gift",     weight:3},
-  {label:"-15%",    sub:"sur votre commande",        emoji:"🔥",color:"#E94560",type:"reduction",weight:1},
-  {label:"SURPRISE",sub:"Cadeau mystère !",          emoji:"🎀",color:"#533483",type:"gift",     weight:2},
-  {label:"-5%",     sub:"sur votre commande",        emoji:"💰",color:"#1a7a4a",type:"reduction",weight:4},
-  {label:"BADGE",   sub:"Badge personnalisé offert", emoji:"🏅",color:"#8B0000",type:"gift",     weight:3},
+  {label:"Retente !",  sub:"Rejoue si perdu 🎲",         emoji:"🎲",color:"#2a2a3a",type:"lose",     weight:10},
+  {label:"-5%",        sub:"sur votre commande",          emoji:"💰",color:"#1a7a4a",type:"reduction",weight:4},
+  {label:"Pas de bol", sub:"Presque... la prochaine !",   emoji:"😬",color:"#1e1e2e",type:"lose",     weight:10},
+  {label:"-5%",        sub:"sur votre commande",          emoji:"💰",color:"#E94560",type:"reduction",weight:4},
+  {label:"Dommage !",  sub:"Tente encore ta chance !",    emoji:"🙈",color:"#252535",type:"lose",     weight:10},
+  {label:"CADEAU",     sub:"Porte-clé imprimé 3D",        emoji:"🎁",color:"#533483",type:"gift",     weight:1},
+  {label:"-10%",       sub:"sur votre commande",          emoji:"🤑",color:"#F5A623",type:"reduction",weight:1},
+  {label:"BONUS",      sub:"Rejouer si perdu",            emoji:"✨",color:"#0F3460",type:"gift",     weight:3},
+  {label:"Oh non !",   sub:"La chance tourne... bientôt !",emoji:"😅",color:"#1e2a1e",type:"lose",   weight:10},
+  {label:"-15%",       sub:"sur votre commande",          emoji:"🔥",color:"#8B0000",type:"reduction",weight:1},
+  {label:"SURPRISE",   sub:"Cadeau mystère !",            emoji:"🎀",color:"#533483",type:"gift",     weight:1},
+  {label:"-5%",        sub:"sur votre commande",          emoji:"💰",color:"#1a7a4a",type:"reduction",weight:4},
+  {label:"Raté !",     sub:"Achète encore et retente !",  emoji:"😤",color:"#2a1a1a",type:"lose",     weight:10},
+  {label:"DRAGON",     sub:"Petit dragon offert",         emoji:"🐉",color:"#8B0000",type:"gift",     weight:1},
 ];
 
-let stats={total:0,reductions:0,gifts:0}, isSpinning=false, currentAngle=0;
+// Textes attractifs pour les "perdants" affichés dans la popup
+const LOSE_MESSAGES = [
+  { title:"PRESQUE !", sub:"La chance tourne... retente au prochain achat !" },
+  { title:"OH NON !", sub:"Tu étais si proche ! Un autre achat = une autre chance 🎯" },
+  { title:"DOMMAGE !", sub:"La roue ne ment pas... mais elle réessaie ! 😄" },
+  { title:"RATÉ !", sub:"Achète encore et la fortune sourira ! 🍀" },
+  { title:"PAS DE CHANCE !", sub:"Le destin te réserve quelque chose de mieux... bientôt !" },
+];
 
-// Prize list
-const el=document.getElementById('prizeListDisplay');
-PRIZES.forEach(p=>{
-  const d=document.createElement('div'); d.className='prize-item';
-  d.innerHTML=`<div class="prize-dot" style="background:${p.color}"></div><span>${p.emoji} ${p.label} — ${p.sub}</span>`;
-  el.appendChild(d);
-});
+let stats={total:0,reductions:0,gifts:0,loses:0}, isSpinning=false, currentAngle=0;
 
 // Particles
 const pc=document.getElementById('particles');
@@ -186,15 +196,20 @@ function drawWheel(angle){
     const s=angle+i*arc, e=s+arc;
     ctx.beginPath();ctx.moveTo(CX,CY);ctx.arc(CX,CY,R,s,e);ctx.closePath();
     ctx.fillStyle=p.color;ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=2;ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=2;ctx.stroke();
     const mid=s+arc/2;
-    ctx.save();ctx.translate(CX+Math.cos(mid)*(R*.62),CY+Math.sin(mid)*(R*.62));ctx.rotate(mid+Math.PI/2);
-    ctx.font='22px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.emoji,0,-4);ctx.restore();
-    ctx.save();ctx.translate(CX+Math.cos(mid)*(R*.35),CY+Math.sin(mid)*(R*.35));ctx.rotate(mid+Math.PI/2);
-    ctx.font='bold 15px "Bebas Neue",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=4;ctx.fillText(p.label,0,12);ctx.restore();
+    // Emoji — partie externe
+    ctx.save();ctx.translate(CX+Math.cos(mid)*(R*.58),CY+Math.sin(mid)*(R*.58));ctx.rotate(mid+Math.PI/2);
+    ctx.font='18px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.emoji,0,0);ctx.restore();
+    // Label — partie large (extérieur)
+    ctx.save();ctx.translate(CX+Math.cos(mid)*(R*.78),CY+Math.sin(mid)*(R*.78));ctx.rotate(mid+Math.PI/2);
+    ctx.font=`bold ${p.type==='lose'?12:14}px "Bebas Neue",sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillStyle= p.type==='lose' ? 'rgba(255,255,255,.4)' : '#fff';
+    ctx.shadowColor='rgba(0,0,0,.8)';ctx.shadowBlur=4;
+    ctx.fillText(p.label,0,0);ctx.restore();
   });
-  ctx.beginPath();ctx.arc(CX,CY,R,0,2*Math.PI);ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=3;ctx.stroke();
+  ctx.beginPath();ctx.arc(CX,CY,R,0,2*Math.PI);ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=3;ctx.stroke();
 }
 
 function getWeightedPrize(){
@@ -210,7 +225,8 @@ function spin(){
   const sb=document.getElementById('statusBar');
   sb.textContent='LA ROUE TOURNE...';sb.className='status-bar spinning';
   const idx=getWeightedPrize(), n=PRIZES.length, arc=(2*Math.PI)/n;
-  const target=-(idx*arc+arc/2);
+  // Flèche en haut = angle -PI/2, on aligne le centre du segment gagnant dessus
+  const target = -Math.PI/2 - (idx*arc + arc/2);
   const extra=(5+Math.floor(Math.random()*4))*2*Math.PI;
   const total=extra+target-(currentAngle%(2*Math.PI));
   const dur=4500+Math.random()*1500, t0=performance.now(), a0=currentAngle;
@@ -241,33 +257,46 @@ function spin(){
 }
 
 function showWin(p){
-  document.getElementById('winEmoji').textContent=p.emoji;
-  document.getElementById('winPrize').textContent=p.label;
-  document.getElementById('winSub').textContent=p.sub;
+  const isLose = p.type === 'lose';
+  const loseMsg = LOSE_MESSAGES[Math.floor(Math.random()*LOSE_MESSAGES.length)];
+
+  document.getElementById('winEmoji').textContent = isLose ? p.emoji : p.emoji;
+  document.getElementById('winPrize').textContent = isLose ? loseMsg.title : p.label;
+  document.getElementById('winSub').textContent   = isLose ? loseMsg.sub   : p.sub;
+
+  // Couleur de la bordure selon gain ou perte
+  const card = document.querySelector('.win-card');
+  card.style.borderColor = isLose ? '#555' : '#F5A623';
+  card.style.boxShadow   = isLose ? '0 0 40px rgba(100,100,100,.3)' : '0 0 80px rgba(245,166,35,.4)';
+
+  // Titre dynamique
+  const titleEl = document.querySelector('.win-title');
+  titleEl.textContent   = isLose ? 'DOMMAGE !' : 'FÉLICITATIONS !';
+  titleEl.style.color   = isLose ? '#888' : '#F5A623';
+
   document.getElementById('winOverlay').classList.add('visible');
-  document.getElementById('statusBar').textContent='🎉 GAGNÉ : '+p.label;
-  document.getElementById('statusBar').className='status-bar won';
+  document.getElementById('statusBar').textContent = isLose ? '😬 ' + loseMsg.title : '🎉 GAGNÉ : ' + p.label;
+  document.getElementById('statusBar').className   = 'status-bar ' + (isLose ? '' : 'won');
 
-  // Mettre à jour le panneau "dernier gain" permanent
+  // Confettis seulement si gain
+  if(!isLose) launchConfetti();
+
   const lastWinBox = document.getElementById('lastWin');
-  lastWinBox.textContent = p.label + ' ' + p.emoji;
+  lastWinBox.textContent = isLose ? '😬 Perdu' : p.label + ' ' + p.emoji;
 
-  // Afficher un panneau permanent du dernier gain
-  showPermanentLastWin(p);
+  showPermanentLastWin(p, isLose, isLose ? loseMsg.title : null);
 
-  launchConfetti();
-  // La popup se ferme après 5 secondes MAIS le gain reste visible en bas
   setTimeout(()=>{
     document.getElementById('winOverlay').classList.remove('visible');
-    // Status reste sur le gain, pas "EN ATTENTE"
-    document.getElementById('statusBar').textContent='DERNIER GAIN : '+p.emoji+' '+p.label;
-    document.getElementById('statusBar').className='status-bar won';
-    stopConfetti();
-  },5000);
+    document.getElementById('statusBar').textContent = isLose
+      ? 'RETENTE AU PROCHAIN ACHAT !'
+      : 'DERNIER GAIN : ' + p.emoji + ' ' + p.label;
+    document.getElementById('statusBar').className = 'status-bar ' + (isLose ? '' : 'won');
+    if(!isLose) stopConfetti();
+  }, 5000);
 }
 
-function showPermanentLastWin(p){
-  // Supprimer l'ancien panneau s'il existe
+function showPermanentLastWin(p, isLose, loseTitle){
   var old = document.getElementById('permanentWin');
   if(old) old.remove();
 
@@ -277,30 +306,32 @@ function showPermanentLastWin(p){
     'position:fixed','bottom:20px','left:50%',
     'transform:translateX(-50%)',
     'background:linear-gradient(135deg,#1a1a2e,#16213e)',
-    'border:2px solid #F5A623',
+    `border:2px solid ${isLose ? '#444' : '#F5A623'}`,
     'border-radius:16px','padding:14px 32px',
     'display:flex','align-items:center','gap:16px',
-    'box-shadow:0 4px 30px rgba(245,166,35,.35)',
+    `box-shadow:0 4px 30px ${isLose ? 'rgba(80,80,80,.2)' : 'rgba(245,166,35,.35)'}`,
     'z-index:50','animation:slideUpIn .5s cubic-bezier(.34,1.56,.64,1)',
     'font-family:"Exo 2",sans-serif'
   ].join(';');
 
+  const label = isLose ? (loseTitle || 'DOMMAGE !') : p.label;
+  const sub   = isLose ? 'Retente au prochain achat !' : p.sub;
+  const color = isLose ? '#888' : '#F5A623';
+
   div.innerHTML = `
     <div style="font-size:2rem">${p.emoji}</div>
     <div>
-      <div style="font-size:10px;color:#F5A623;letter-spacing:3px;font-weight:700;text-transform:uppercase;margin-bottom:2px">DERNIER GAIN</div>
-      <div style="font-size:1.6rem;font-weight:900;color:#fff;letter-spacing:1px">${p.label}</div>
-      <div style="font-size:11px;color:#c0c0c0;margin-top:1px">${p.sub}</div>
+      <div style="font-size:10px;color:${color};letter-spacing:3px;font-weight:700;text-transform:uppercase;margin-bottom:2px">${isLose ? 'PAS DE CHANCE' : 'DERNIER GAIN'}</div>
+      <div style="font-size:1.6rem;font-weight:900;color:${isLose ? '#aaa' : '#fff'};letter-spacing:1px">${label}</div>
+      <div style="font-size:11px;color:#c0c0c0;margin-top:1px">${sub}</div>
     </div>`;
 
-  // Ajouter l'animation dans le style si pas déjà présente
   if(!document.getElementById('permanentWinStyle')){
     var style = document.createElement('style');
     style.id = 'permanentWinStyle';
     style.textContent = '@keyframes slideUpIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
     document.head.appendChild(style);
   }
-
   document.body.appendChild(div);
 }
 
