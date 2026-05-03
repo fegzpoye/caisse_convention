@@ -18,7 +18,7 @@
   --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);
   --text:#f0f0f4;--text2:#9898a8;--text3:#5a5a6a;
   --accent:#7C3F9E;--accent2:#ff6b82;--purple:#7c6af7;
-  --green:#2ecc8f;--amber:#f5a623;--blue:#4a9eff;
+  --green:#2ecc8f;--amber:#f5a623;--blue:#4a9eff;--brown:#49230b;
   --r:14px;--r-sm:8px;
 }
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100dvh;overflow:hidden;display:flex;flex-direction:column;font-size:15px;position:relative}
@@ -60,7 +60,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .wheel-history-item-prize{font-weight:600;color:var(--text);flex:1}
 .wheel-history-item-time{color:var(--text3);font-size:10px;font-family:'DM Mono',monospace}
 /* ── STOCK ─────────────────────────────────────────────────── */
-.stock-badge{position:absolute;top:5px;right:5px;border-radius:99px;font-size:9px;font-weight:700;padding:2px 6px;line-height:1.4;z-index:2}
+.stock-badge{position:absolute;top:5px;left:5px;border-radius:99px;font-size:9px;font-weight:700;padding:2px 6px;line-height:1.4;z-index:2}
 .stock-ok{background:rgba(46,204,143,.2);color:#2ecc8f}
 .stock-low{background:rgba(245,166,35,.25);color:#f5a623}
 .stock-out{background:rgba(233,69,96,.25);color:#e94560}
@@ -97,8 +97,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .tab:active{transform:scale(.96)}
 .products-grid{flex:1;overflow-y:auto;padding:6px 14px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;align-content:start;scrollbar-width:thin;scrollbar-color:var(--surface3) transparent}
 .product-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 10px;cursor:pointer;display:flex;flex-direction:column;gap:7px;transition:all .12s;-webkit-user-select:none;user-select:none;position:relative;overflow:hidden}
-.product-card.sublim{border-top:2px solid var(--accent)}
+.product-card.sublim{border-top:2px solid var(--accent2)}
 .product-card.print3d{border-top:2px solid var(--purple)}
+.product-card.brod{border-top:2px solid var(--blue)}
+.product-card.flex{border-top:2px solid var(--brown)}
 .product-card.pack{border-top:2px solid var(--amber)}
 .product-card:active{transform:scale(.96)}
 .product-icon{font-size:26px;line-height:1}
@@ -237,6 +239,62 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+
+/* CODES PROMO */
+.promo-panel{position:absolute;top:0;right:0;bottom:0;width:300px;background:var(--surface);border-left:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:160}
+.promo-panel.open{transform:translateX(0)}
+.pp-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pp-header h3{font-size:13px;font-weight:600}
+.pp-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.pp-code-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:10px}
+.pp-code-item.active{border-color:var(--green)}
+.pp-code-badge{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--text);flex:1;letter-spacing:1px}
+.pp-code-pct{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--green)}
+.pp-code-uses{font-size:10px;color:var(--text3);margin-top:2px}
+.pp-code-del{width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);background:transparent;color:var(--accent);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pp-add-form{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:12px}
+.pp-add-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.pp-input{width:100%;background:var(--surface3);border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;outline:none;margin-bottom:6px;box-sizing:border-box}
+.pp-input::placeholder{color:var(--text3);font-family:'DM Sans',sans-serif}
+.pp-add-btn{width:100%;padding:10px;background:var(--accent);border:none;border-radius:var(--r-sm);color:#fff;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer}
+.pp-add-btn:active{transform:scale(.97)}
+.promo-input-row{padding:6px 10px;border-top:1px solid var(--border);flex-shrink:0}
+.promo-input-inner{display:flex;gap:6px;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:5px 8px}
+.promo-input-field{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:'DM Mono',monospace;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.promo-input-field::placeholder{color:var(--text3);font-family:'DM Sans',sans-serif;font-weight:400;font-size:12px;text-transform:none;letter-spacing:0}
+.promo-apply-btn{padding:4px 10px;background:var(--accent);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:600;cursor:pointer}
+.promo-apply-btn:active{transform:scale(.96)}
+.promo-status{font-size:11px;padding:3px 0;text-align:center}
+.promo-status.ok{color:var(--green)}
+.promo-status.err{color:var(--accent)}
+/* OFFRE FLASH */
+.flash-panel{position:absolute;top:0;left:0;bottom:0;width:290px;background:var(--surface);border-right:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .25s ease;z-index:160}
+.flash-panel.open{transform:translateX(0)}
+.flash-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(135deg,#E94560,#c42d4a)}
+.flash-header h3{font-size:13px;font-weight:700;color:#fff}
+.flash-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+.flash-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px}
+.flash-input{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:10px 12px;color:var(--text);font-family:'DM Mono',monospace;font-size:20px;font-weight:700;outline:none;width:100%;box-sizing:border-box;text-align:center}
+.flash-input:focus{border-color:#E94560}
+.flash-presets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:4px}
+.flash-preset{padding:8px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-family:'DM Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:all .12s}
+.flash-preset.sel{background:#E94560;border-color:#E94560;color:#fff}
+.flash-time-presets{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:5px;margin-top:4px}
+.flash-time{padding:7px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--surface2);color:var(--text2);font-size:11px;font-weight:500;cursor:pointer;text-align:center;transition:all .12s}
+.flash-time.sel{background:var(--amber);border-color:var(--amber);color:#fff}
+.flash-launch{width:100%;padding:14px;background:linear-gradient(135deg,#E94560,#c42d4a);border:none;border-radius:var(--r);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(233,69,96,.35);transition:all .15s}
+.flash-launch:active{transform:scale(.97)}
+.flash-launch:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.flash-stop{width:100%;padding:11px;background:var(--surface2);border:1px solid rgba(233,69,96,.4);border-radius:var(--r-sm);color:#E94560;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:6px}
+.flash-countdown-box{background:var(--surface2);border:1px solid rgba(233,69,96,.3);border-radius:var(--r-sm);padding:14px;text-align:center}
+.flash-countdown-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.flash-countdown-val{font-family:'DM Mono',monospace;font-size:36px;font-weight:700;color:#E94560;animation:fcp 1s ease-in-out infinite alternate}
+@keyframes fcp{from{color:#E94560}to{color:#F5A623}}
+.flash-active-dot{width:6px;height:6px;border-radius:50%;background:#E94560;animation:pulse 1s infinite;display:inline-block;margin-right:4px}
+.btn-flash{background:linear-gradient(135deg,#E94560,#c42d4a);border:none;border-radius:var(--r-sm);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all .12s;box-shadow:0 0 10px rgba(233,69,96,.3)}
+.btn-flash:active{transform:scale(.96)}
+.btn-flash.on{animation:flashBtnGlow 1s ease-in-out infinite alternate}
+@keyframes flashBtnGlow{from{box-shadow:0 0 8px rgba(233,69,96,.4)}to{box-shadow:0 0 22px rgba(233,69,96,.8)}}
 </style>
 </head>
 <body>
@@ -256,6 +314,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <button class="btn-sm" onclick="toggleStock()">📦 Stock</button>
     <button class="btn-xl" onclick="toggleExcel()">📊 Excel Live</button>
     <button class="btn-wheel" id="topWheelBtn" onclick="quickSpin()">🎡 Roue</button>
+    <button class="btn-sm" onclick="togglePromo()">🏷️ Promos</button>
+    <button class="btn-flash" id="btnFlash" onclick="toggleFlash()">⚡ Flash</button>
     <button class="btn-reset" onclick="askReset()">↺ Nouveau jour</button>
   </div>
 </div>
@@ -266,6 +326,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       <button class="tab active" onclick="filterCat('Tous',this)">Tous</button>
       <button class="tab" onclick="filterCat('Sublimation',this)">🎨 Sublimation</button>
       <button class="tab" onclick="filterCat('Impression 3D',this)">🖨️ Impression 3D</button>
+      <button class="tab" onclick="filterCat('Broderie',this)">🧵 Broderie</button>
+      <button class="tab" onclick="filterCat('Flex',this)">🧴 Flex</button>
       <button class="tab" onclick="filterCat('Pack',this)">🎁 Packs</button>
     </div>
     <div class="products-grid" id="productsGrid"></div>
@@ -292,6 +354,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="wheel-history-section" id="wheelHistorySection" style="display:none">
       <div class="wheel-history-title">🎡 Gains roue</div>
       <div class="wheel-history-list" id="wheelHistoryList"></div>
+    </div>
+    <div class="promo-input-row">
+      <div class="promo-input-inner">
+        <span style="font-size:12px;color:var(--text2);white-space:nowrap">🏷️</span>
+        <input class="promo-input-field" id="promoCodeInput" placeholder="Code promo" maxlength="20" oninput="this.value=this.value.toUpperCase()">
+        <button class="promo-apply-btn" onclick="appliquerCode()">OK</button>
+      </div>
+      <div class="promo-status" id="promoStatus"></div>
     </div>
     <div class="paiement-section">
       <div class="pay-methods">
@@ -334,6 +404,65 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 </div>
 
 <!-- Modal paiement -->
+<!-- Panel Codes Promo -->
+<div class="promo-panel" id="promoPanel">
+  <div class="pp-header">
+    <h3>🏷️ Codes Promo</h3>
+    <button class="btn-sm" onclick="togglePromo()">✕</button>
+  </div>
+  <div class="pp-body" id="ppBody">
+    <div class="pp-add-form">
+      <div class="pp-add-title">Créer un code</div>
+      <input class="pp-input" id="ppNewCode" type="text" placeholder="Ex: SHAYA10" maxlength="20">
+      <input class="pp-input" id="ppNewPct" type="number" min="1" max="99" placeholder="Remise en % (ex: 10)">
+      <button class="pp-add-btn" onclick="addPromoCode()">+ Ajouter ce code</button>
+    </div>
+    <div id="ppCodesList"></div>
+  </div>
+</div>
+
+<!-- Panel Offre Flash -->
+<div class="flash-panel" id="flashPanel">
+  <div class="flash-header">
+    <h3>⚡ Offre Flash</h3>
+    <button style="background:rgba(255,255,255,.2);border:none;border-radius:6px;color:#fff;padding:5px 10px;cursor:pointer;font-size:12px" onclick="toggleFlash()">✕</button>
+  </div>
+  <div class="flash-body">
+    <div>
+      <div class="flash-label">Remise (%)</div>
+      <input class="flash-input" id="flashPct" type="number" min="1" max="99" placeholder="Ex: 20">
+      <div class="flash-presets">
+        <button class="flash-preset" onclick="setFlashPct(10,this)">-10%</button>
+        <button class="flash-preset" onclick="setFlashPct(15,this)">-15%</button>
+        <button class="flash-preset" onclick="setFlashPct(20,this)">-20%</button>
+        <button class="flash-preset" onclick="setFlashPct(25,this)">-25%</button>
+        <button class="flash-preset" onclick="setFlashPct(30,this)">-30%</button>
+        <button class="flash-preset" onclick="setFlashPct(50,this)">-50%</button>
+      </div>
+    </div>
+    <div>
+      <div class="flash-label">Durée (minutes)</div>
+      <input class="flash-input" id="flashMin" type="number" min="1" max="60" placeholder="Ex: 10">
+      <div class="flash-time-presets">
+        <button class="flash-time" onclick="setFlashTime(5,this)">5 min</button>
+        <button class="flash-time" onclick="setFlashTime(10,this)">10 min</button>
+        <button class="flash-time" onclick="setFlashTime(15,this)">15 min</button>
+        <button class="flash-time" onclick="setFlashTime(30,this)">30 min</button>
+      </div>
+    </div>
+    <div id="flashPreview" style="display:none;background:rgba(233,69,96,.08);border:1px solid rgba(233,69,96,.2);border-radius:var(--r-sm);padding:10px;text-align:center;font-size:12px;color:var(--text2)"></div>
+    <button class="flash-launch" id="flashLaunchBtn" onclick="lancerOffreFlash()">⚡ LANCER L'OFFRE FLASH !</button>
+    <div id="flashCountdownBox" style="display:none">
+      <div class="flash-countdown-box">
+        <div class="flash-countdown-lbl"><span class="flash-active-dot"></span>OFFRE EN COURS</div>
+        <div class="flash-countdown-val" id="flashCountdownVal">--:--</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px" id="flashActiveLabel"></div>
+      </div>
+      <button class="flash-stop" onclick="stopOffreFlash()">⏹ Arrêter l'offre flash</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-icon" id="modalIcon">✅</div>
@@ -570,6 +699,8 @@ var PRODUCTS=[
   {id:41,label:"Aliens support stylo",  price:15,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
   {id:42,label:"Aliens support tél",    price:15,   cat:"Impression 3D", emoji:"📱", type:"print3d"},
   {id:43,label:"Albator",               price:10,   cat:"Impression 3D", emoji:"🏴‍☠️", type:"print3d"},
+  {id:47,label:"Serviette",               price:10,   cat:"Broderie", emoji:"🏴‍☠️", type:"brod"},
+  {id:48,label:"Gobelet",               price:10,   cat:"Flex", emoji:"🏴‍☠️", type:"flex"},
   {id:23,label:"Pack Souvenir",         price:28,   cat:"Pack",          emoji:"🎁", type:"pack", desc:"Mug + Porte-clés"},
   {id:24,label:"Pack Duo",              price:35,   cat:"Pack",          emoji:"🎀", type:"pack", desc:"T-shirt + Mug"},
   {id:25,label:"Pack Déco 3D",          price:40,   cat:"Pack",          emoji:"✨", type:"pack", desc:"Vase + Décoration"},
@@ -577,10 +708,72 @@ var PRODUCTS=[
 
 // ── ÉTAT ──────────────────────────────────────────────────────
 var cart=[],payMode=null,tickets=[],totalCA=0,currentCat="Tous",salesData={},stockData={};
+var promoCodes={};
+var activePromo=null;
+var flashTimer=null;
+var flashActive=false;
+
+// Stock de départ — ne s'applique QUE si aucun localStorage n'existe
+var STOCK_DEPART = {
+  // 🎨 SUBLIMATION
+  1:99,  // Mug personnalisé
+  2:99,  // T-shirt sublimé
+  3:99,  // Pull sublimé
+  4:99,  // Casquette
+  5:99,  // Tote bag
+  6:99,  // Puzzle photo
+  7:99,  // Petite plaque alu
+  8:99,  // Grande plaque alu
+  9:99,  // Magnette frigo
+  10:99, // Stylo
+  // 🐉 Dragons
+  11:99, // Dragon 3 couleurs
+  14:99, // Dragon XXL aile
+  12:99, // Dragon Cristal
+  44:99, // Oeuf lampe dragon
+  45:99, // Oeuf bébé dragon
+  34:99, // Baguette Dragon
+  // 🐍 Animaux
+  13:99, // Serpent XXL
+  46:99, // Animaux Flex
+  36:99, // Poisson pecheur
+  // 🦕 Dinosaures
+  32:99, // Lampe dinosaure XXL
+  33:99, // Veilleuse dino petit
+  37:99, // Mosasaurus squelette
+  38:99, // Spinosaurus squelette
+  39:99, // Ankylosaure squelette
+  35:99, // Oeuf raptor (fils)
+  // 🌀 Fidgets
+  19:99, // Etoile fidgets grand
+  20:99, // Etoile fidgets moyen
+  21:99, // Etoile fidgets petit
+  29:99, // Handspinner
+  30:99, // Anti stress
+  31:99, // Balle anti stress
+  28:99, // Boite Gameboy cartes
+  // 🖼 Deco
+  17:99, // Hueforge
+  22:99, // Cadre hueforge
+  27:99, // Box bureau hueforge
+  16:99, // Figurine 3D
+  26:99, // Marque page
+  18:99, // Porte-cles
+  // 🚀 Geek
+  40:99, // Cadre Star Wars
+  41:99, // Aliens support stylo
+  42:99, // Aliens support tel
+  43:99, // Albator
+  // 🎁 Packs
+  23:99, // Pack Souvenir
+  24:99, // Pack Duo
+  25:99, // Pack Deco 3D
+};
 
 PRODUCTS.forEach(function(p){
   salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};
-  stockData[p.id]=99; // 99 = illimité par défaut
+  // Stock par défaut depuis STOCK_DEPART — sera écrasé par localStorage si existant
+  stockData[p.id] = STOCK_DEPART[p.id] !== undefined ? STOCK_DEPART[p.id] : 99;
 });
 
 // ── LOCALSTORAGE ───────────────────────────────────────────────
@@ -590,7 +783,7 @@ function sauvegarder(){
   try{
     localStorage.setItem(SAVE_KEY,JSON.stringify({
       tickets:tickets,totalCA:totalCA,salesData:salesData,
-      stockData:stockData,wheelGains:wheelGains,clients:clients,
+      stockData:stockData,wheelGains:wheelGains,clients:clients,promoCodes:promoCodes,
       date:new Date().toLocaleDateString("fr-FR")
     }));
     var ind=document.getElementById("saveIndicator");
@@ -615,6 +808,7 @@ function restaurer(){
     totalCA=data.totalCA||0;
     if(data.salesData){for(var sid in data.salesData){salesData[parseInt(sid)]=data.salesData[sid];}}
     if(data.stockData){for(var sid2 in data.stockData){stockData[parseInt(sid2)]=data.stockData[sid2];}}
+    if(data.promoCodes){promoCodes=data.promoCodes;}
     wheelGains=data.wheelGains||[];
     clients=data.clients||[];
     return tickets.length>0;
@@ -712,13 +906,18 @@ function renderCart(){
 function updateTotals(){
   var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
   var disc=parseFloat(document.getElementById("discountInput").value)||0;
-  var discAmt=sub*disc/100,total=sub-discAmt;
+  var totalDisc=disc+(activePromo?activePromo.pct:0);
+  if(totalDisc>100)totalDisc=100;
+  var discAmt=sub*totalDisc/100,total=sub-discAmt;
   document.getElementById("subTotal").textContent=fmt(sub);
   document.getElementById("totalTTC").textContent=fmt(total);
   document.getElementById("payBtnAmt").textContent=fmt(total);
   var dRow=document.getElementById("discountRow");
-  if(disc>0&&sub>0){dRow.style.display="flex";document.getElementById("discountAmt").textContent="-"+fmt(discAmt);}
-  else{dRow.style.display="none";}
+  if(totalDisc>0&&sub>0){
+    dRow.style.display="flex";
+    var lbl=activePromo?" (code "+activePromo.code+")":"";
+    document.getElementById("discountAmt").textContent="-"+fmt(discAmt)+lbl;
+  }else{dRow.style.display="none";}
   document.getElementById("payBtn").disabled=(cart.length===0||!payMode);
 }
 
@@ -749,7 +948,7 @@ window.confirmerPaiement=function(){
   var disc=parseFloat(document.getElementById("discountInput").value)||0;
   var total=sub-sub*disc/100;
   var now=new Date();
-  var ticket={num:tickets.length+1,items:cart.map(function(i){return{id:i.id,name:i.name,cat:i.cat,price:i.price,qty:i.qty,emoji:i.emoji};}),total:total,mode:payMode==="Especes"?"Espèces":payMode,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR"),disc:disc};
+  var ticket={num:tickets.length+1,items:cart.map(function(i){return{id:i.id,name:i.name,cat:i.cat,price:i.price,qty:i.qty,emoji:i.emoji};}),total:total,mode:payMode==="Especes"?"Espèces":payMode,promoCode:activePromo?activePromo.code:null,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR"),disc:disc};
   tickets.unshift(ticket);totalCA+=total;
   cart.forEach(function(item){
     salesData[item.id].qty+=item.qty;
@@ -777,7 +976,9 @@ window.confirmerPaiement=function(){
 
 window.closeModal=function(){
   document.getElementById("modalOverlay").classList.remove("open");
-  cart=[];payMode=null;document.getElementById("discountInput").value="";
+  cart=[];payMode=null;activePromo=null;document.getElementById("discountInput").value="";
+  var pci2=document.getElementById("promoCodeInput");if(pci2)pci2.value="";
+  var ps2=document.getElementById("promoStatus");if(ps2){ps2.textContent="";ps2.className="promo-status";}
   ["btnCB","btnCash","btnSumup","btnVir"].forEach(function(id){var b=document.getElementById(id);if(b)b.classList.remove("selected");});
   // Reset monnaie
   var zone=document.getElementById("billetZone");if(zone)zone.classList.remove("open");
@@ -788,9 +989,6 @@ window.closeModal=function(){
 };
 
 // ── STOCK ─────────────────────────────────────────────────────
-// Stub renderPromoCodes si codes promo pas encore ajoutés
-function renderPromoCodes(){}
-
 window.toggleStock=function(){
   document.getElementById("stockPanel").classList.toggle("open");
   renderStockPanel();
@@ -889,6 +1087,35 @@ window.downloadExcel=function(){
   else{aoa5.push(["Aucun client enregistré","","","","","","","",""]);}
   var ws5=XLSX.utils.aoa_to_sheet(aoa5);ws5["!cols"]=[10,8,12,14,14,24,30,20,8].map(function(w){return{wch:w};});
   XLSX.utils.book_append_sheet(wb,ws5,"Clients");
+  // ── Feuille Stock restant ──────────────────────────────────
+  var aoa_stock = [
+    ["STOCK RESTANT — "+today,"","","",""],
+    ["Les projets de Shaya — A mettre a jour dans STOCK_DEPART pour le jour suivant","","","",""],
+    [],
+    ["ID","Produit","Categorie","Stock restant","Stock initial","Vendus"]
+  ];
+  PRODUCTS.forEach(function(p){
+    var restant = stockData[p.id] !== undefined ? stockData[p.id] : 99;
+    var initial = STOCK_DEPART[p.id] !== undefined ? STOCK_DEPART[p.id] : 99;
+    var vendus  = salesData[p.id] ? salesData[p.id].qty : 0;
+    var restantLabel = restant >= 99 ? "Illimite" : restant;
+    var initialLabel = initial >= 99 ? "Illimite" : initial;
+    aoa_stock.push([p.id, p.label, p.cat, restantLabel, initialLabel, vendus]);
+  });
+  // Ligne total
+  aoa_stock.push([]);
+  var totalVendus = Object.values(salesData).reduce(function(s,d){return s+d.qty;},0);
+  aoa_stock.push(["","TOTAL ARTICLES VENDUS","",totalVendus,"",""]);
+
+  var ws_stock = XLSX.utils.aoa_to_sheet(aoa_stock);
+  ws_stock["!cols"] = [{wch:6},{wch:26},{wch:16},{wch:14},{wch:14},{wch:10}];
+
+  // Styles basiques
+  var hdr_style = {font:{bold:true,color:{rgb:"FFFFFF"}},fill:{fgColor:{rgb:"1A1A2E"},patternType:"solid"},alignment:{horizontal:"center"}};
+  var title_style = {font:{bold:true,sz:14,color:{rgb:"FFFFFF"}},fill:{fgColor:{rgb:"1A1A2E"},patternType:"solid"},alignment:{horizontal:"center"}};
+
+  XLSX.utils.book_append_sheet(wb, ws_stock, "Stock restant");
+
   XLSX.writeFile(wb,"ventes_"+dateFile+".xlsx");
   showToast("📊 Excel téléchargé !");
 };
@@ -912,8 +1139,12 @@ window.toggleExcel=function(){document.getElementById("excelPanel").classList.to
 window.askReset=function(){document.getElementById("modalReset").classList.add("open");};
 window.closeReset=function(){document.getElementById("modalReset").classList.remove("open");};
 window.doReset=function(){
-  tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];
-  PRODUCTS.forEach(function(p){salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};});
+  tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];activePromo=null;if(typeof stopOffreFlash==="function")stopOffreFlash();
+  PRODUCTS.forEach(function(p){
+    salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};
+    // Remettre le stock de départ défini dans STOCK_DEPART
+    stockData[p.id] = STOCK_DEPART[p.id] !== undefined ? STOCK_DEPART[p.id] : 99;
+  });
   document.getElementById("nbVentes").textContent="0";
   document.getElementById("caJour").textContent="0,00\u00a0€";
   document.getElementById("caTotal").textContent="0,00\u00a0€";
@@ -962,6 +1193,131 @@ function calcMonnaie(){
   }
 }
 
+// ── CODES PROMO ────────────────────────────────────────────────
+window.togglePromo=function(){
+  document.getElementById("promoPanel").classList.toggle("open");
+  renderPromoCodes();
+};
+function renderPromoCodes(){
+  var list=document.getElementById("ppCodesList");
+  if(!list)return;
+  var codes=Object.keys(promoCodes);
+  if(!codes.length){
+    list.innerHTML="<div style=\"text-align:center;color:var(--text3);font-size:12px;padding:10px\">Aucun code - ajoutez-en un ci-dessus</div>";
+    return;
+  }
+  var h="<div style=\"font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px\">Codes actifs</div>";
+  codes.forEach(function(code){
+    var p=promoCodes[code];
+    var isAct=activePromo&&activePromo.code===code;
+    var cls=isAct?"pp-code-item active":"pp-code-item";
+    h+="<div class=\""+cls+"\"><div style=\"flex:1\">";
+    h+="<div class=\"pp-code-badge\">"+code+"</div>";
+    h+="<div class=\"pp-code-uses\">"+p.uses+" utilisation(s)</div>";
+    h+="</div><div class=\"pp-code-pct\">-"+p.pct+"%</div>";
+    h+="<button class=\"pp-code-del\" onclick=\"deletePromoCode('"+code+"')\">X</button>";
+    h+="</div>";
+  });
+  list.innerHTML=h;
+}
+
+window.addPromoCode=function(){
+  var code=document.getElementById("ppNewCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+  var pct=parseInt(document.getElementById("ppNewPct").value)||0;
+  if(!code){showToast("Entrez un nom de code");return;}
+  if(pct<1||pct>99){showToast("Remise entre 1 et 99%");return;}
+  promoCodes[code]={pct:pct,uses:0};
+  document.getElementById("ppNewCode").value="";
+  document.getElementById("ppNewPct").value="";
+  renderPromoCodes();sauvegarder();
+  showToast("Code "+code+" cree (-"+pct+"%)");
+};
+window.deletePromoCode=function(code){
+  if(activePromo&&activePromo.code===code){
+    activePromo=null;
+    var pci=document.getElementById("promoCodeInput");if(pci)pci.value="";
+    var ps=document.getElementById("promoStatus");if(ps){ps.textContent="";ps.className="promo-status";}
+    updateTotals();
+  }
+  delete promoCodes[code];renderPromoCodes();sauvegarder();
+};
+window.appliquerCode=function(){
+  var input=document.getElementById("promoCodeInput");
+  var status=document.getElementById("promoStatus");
+  var code=input?input.value.trim().toUpperCase():"";
+  if(!code){activePromo=null;if(status){status.textContent="";status.className="promo-status";}updateTotals();return;}
+  if(promoCodes[code]){
+    activePromo={code:code,pct:promoCodes[code].pct};
+    promoCodes[code].uses++;
+    if(status){status.textContent="OK -"+promoCodes[code].pct+"% applique";status.className="promo-status ok";}
+    renderPromoCodes();sauvegarder();updateTotals();
+    showToast("Code "+code+" -"+promoCodes[code].pct+"% !");
+  }else{
+    activePromo=null;
+    if(status){status.textContent="Code inconnu";status.className="promo-status err";}
+    updateTotals();
+  }
+};
+
+// ── OFFRE FLASH ─────────────────────────────────────────────────
+window.toggleFlash=function(){
+  document.getElementById("flashPanel").classList.toggle("open");
+};
+window.setFlashPct=function(val,btn){
+  document.getElementById("flashPct").value=val;
+  document.querySelectorAll(".flash-preset").forEach(function(b){b.classList.remove("sel");});
+  if(btn)btn.classList.add("sel");
+  updateFlashPreview();
+};
+window.setFlashTime=function(val,btn){
+  document.getElementById("flashMin").value=val;
+  document.querySelectorAll(".flash-time").forEach(function(b){b.classList.remove("sel");});
+  if(btn)btn.classList.add("sel");
+  updateFlashPreview();
+};
+function updateFlashPreview(){
+  var pct=parseInt(document.getElementById("flashPct").value)||0;
+  var min=parseInt(document.getElementById("flashMin").value)||0;
+  var prev=document.getElementById("flashPreview");
+  if(pct>0&&min>0){
+    prev.style.display="block";
+    prev.innerHTML="<strong style='color:#E94560;font-size:15px'>-"+pct+"%</strong> pendant <strong style='color:var(--amber)'>"+min+" min</strong><br><span style='font-size:10px;color:var(--text3)'>Visible sur le grand ecran</span>";
+  }else{prev.style.display="none";}
+}
+window.lancerOffreFlash=function(){
+  var pct=parseInt(document.getElementById("flashPct").value)||0;
+  var min=parseInt(document.getElementById("flashMin").value)||0;
+  if(pct<1||pct>99){showToast("Entrez une remise entre 1 et 99%");return;}
+  if(min<1||min>60){showToast("Entrez une duree entre 1 et 60 min");return;}
+  var endTime=Date.now()+(min*60*1000);
+  set(ref(db,"flash/offer"),{pct:pct,endTime:endTime,active:true,startTime:Date.now()});
+  flashActive=true;
+  document.getElementById("flashLaunchBtn").disabled=true;
+  document.getElementById("flashCountdownBox").style.display="block";
+  document.getElementById("flashActiveLabel").textContent="-"+pct+"% sur tout le stand";
+  document.getElementById("btnFlash").classList.add("on");
+  if(flashTimer)clearInterval(flashTimer);
+  flashTimer=setInterval(function(){
+    var remaining=endTime-Date.now();
+    if(remaining<=0){window.stopOffreFlash();return;}
+    var m=Math.floor(remaining/60000);
+    var s=Math.floor((remaining%60000)/1000);
+    document.getElementById("flashCountdownVal").textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+  },1000);
+  showToast("Offre flash -"+pct+"% lancee pour "+min+" min !");
+};
+window.stopOffreFlash=function(){
+  if(flashTimer){clearInterval(flashTimer);flashTimer=null;}
+  flashActive=false;
+  try{set(ref(db,"flash/offer"),{active:false});}catch(e){}
+  var lb=document.getElementById("flashLaunchBtn");if(lb)lb.disabled=false;
+  var cb=document.getElementById("flashCountdownBox");if(cb)cb.style.display="none";
+  var cv=document.getElementById("flashCountdownVal");if(cv)cv.textContent="--:--";
+  var bf=document.getElementById("btnFlash");if(bf)bf.classList.remove("on");
+  showToast("Offre flash terminee");
+};
+function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
+
 var toastTimer;
 function showToast(msg,isWheel){
   var el=document.getElementById("toast");
@@ -1007,6 +1363,7 @@ if(restored){
 }
 renderProducts();
 renderStockPanel();
+renderPromoCodes();
 renderPromoCodes();
 renderCart();
 updateTotals();
