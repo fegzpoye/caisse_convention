@@ -286,11 +286,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .flash-launch:active{transform:scale(.97)}
 .flash-launch:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
 .flash-stop{width:100%;padding:11px;background:var(--surface2);border:1px solid rgba(233,69,96,.4);border-radius:var(--r-sm);color:#E94560;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;margin-top:6px}
-.flash-countdown-box{background:var(--surface2);border:1px solid rgba(233,69,96,.3);border-radius:var(--r-sm);padding:14px;text-align:center}
-.flash-countdown-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.flash-countdown-val{font-family:'DM Mono',monospace;font-size:36px;font-weight:700;color:#E94560;animation:fcp 1s ease-in-out infinite alternate}
-@keyframes fcp{from{color:#E94560}to{color:#F5A623}}
-.flash-active-dot{width:6px;height:6px;border-radius:50%;background:#E94560;animation:pulse 1s infinite;display:inline-block;margin-right:4px}
+.flash-countdown-box{background:linear-gradient(135deg,rgba(233,69,96,.1),rgba(245,166,35,.05));border:1px solid rgba(233,69,96,.4);border-radius:var(--r-sm);padding:14px;text-align:center;position:relative;overflow:hidden}
+.flash-countdown-box::before{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent);animation:flashScanPanel 2s linear infinite}
+@keyframes flashScanPanel{0%{left:-100%}100%{left:200%}}
+.flash-countdown-lbl{font-size:10px;color:rgba(233,69,96,.8);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px}
+.flash-countdown-val{font-family:'DM Mono',monospace;font-size:48px;font-weight:700;color:#E94560;line-height:1;animation:fcp 1s ease-in-out infinite alternate;letter-spacing:2px}
+@keyframes fcp{from{color:#E94560;text-shadow:0 0 10px rgba(233,69,96,.3)}to{color:#F5A623;text-shadow:0 0 20px rgba(245,166,35,.5)}}
+.flash-countdown-pct{font-size:13px;font-weight:700;color:rgba(255,215,0,.9);margin-top:6px;font-family:'DM Mono',monospace}
+.flash-active-dot{width:7px;height:7px;border-radius:50%;background:#E94560;animation:pulse 1s infinite;display:inline-block}
 .btn-flash{background:linear-gradient(135deg,#E94560,#c42d4a);border:none;border-radius:var(--r-sm);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all .12s;box-shadow:0 0 10px rgba(233,69,96,.3)}
 .btn-flash:active{transform:scale(.96)}
 .btn-flash.on{animation:flashBtnGlow 1s ease-in-out infinite alternate}
@@ -454,9 +457,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <button class="flash-launch" id="flashLaunchBtn" onclick="lancerOffreFlash()">⚡ LANCER L'OFFRE FLASH !</button>
     <div id="flashCountdownBox" style="display:none">
       <div class="flash-countdown-box">
-        <div class="flash-countdown-lbl"><span class="flash-active-dot"></span>OFFRE EN COURS</div>
+        <div class="flash-countdown-lbl">
+          <span class="flash-active-dot"></span>
+          OFFRE FLASH EN COURS
+        </div>
         <div class="flash-countdown-val" id="flashCountdownVal">--:--</div>
-        <div style="font-size:12px;color:var(--text2);margin-top:4px" id="flashActiveLabel"></div>
+        <div class="flash-countdown-pct" id="flashActiveLabel"></div>
       </div>
       <button class="flash-stop" onclick="stopOffreFlash()">⏹ Arrêter l'offre flash</button>
     </div>
@@ -1294,7 +1300,7 @@ window.lancerOffreFlash=function(){
   flashActive=true;
   document.getElementById("flashLaunchBtn").disabled=true;
   document.getElementById("flashCountdownBox").style.display="block";
-  document.getElementById("flashActiveLabel").textContent="-"+pct+"% sur tout le stand";
+  document.getElementById("flashActiveLabel").textContent="⚡ -"+pct+"% SUR TOUT LE STAND ⚡";
   document.getElementById("btnFlash").classList.add("on");
   if(flashTimer)clearInterval(flashTimer);
   flashTimer=setInterval(function(){
@@ -1302,7 +1308,13 @@ window.lancerOffreFlash=function(){
     if(remaining<=0){window.stopOffreFlash();return;}
     var m=Math.floor(remaining/60000);
     var s=Math.floor((remaining%60000)/1000);
-    document.getElementById("flashCountdownVal").textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+    var cv=document.getElementById("flashCountdownVal");
+    if(cv){
+      cv.textContent=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+      if(remaining<30000){cv.style.color="#FF3333";cv.style.fontSize="52px";}
+      else if(remaining<60000){cv.style.color="#FF8C00";cv.style.fontSize="48px";}
+      else{cv.style.color="#E94560";cv.style.fontSize="48px";}
+    }
   },1000);
   showToast("Offre flash -"+pct+"% lancee pour "+min+" min !");
 };
