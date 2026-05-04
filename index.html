@@ -1325,7 +1325,12 @@ window.stopOffreFlash=function(){
   var lb=document.getElementById("flashLaunchBtn");if(lb)lb.disabled=false;
   var cb=document.getElementById("flashCountdownBox");if(cb)cb.style.display="none";
   var cv=document.getElementById("flashCountdownVal");if(cv)cv.textContent="--:--";
-  var bf=document.getElementById("btnFlash");if(bf)bf.classList.remove("on");
+  var bf=document.getElementById("btnFlash");
+  if(bf){
+    bf.classList.remove("on");
+    bf.textContent="⚡ Flash";
+    bf.style.background="linear-gradient(135deg,#E94560,#c42d4a)";
+  }
   showToast("Offre flash terminee");
 };
 function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
