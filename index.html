@@ -239,37 +239,34 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
-/* CAISSE & AUTRES */
-.caisse-panel{position:absolute;top:0;right:0;bottom:0;width:320px;background:var(--surface);border-left:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:155}
-.caisse-panel.open{transform:translateX(0)}
+/* CAISSE & AUTRES & DONS */
+.caisse-panel,.dons-panel{position:absolute;top:0;right:0;bottom:0;width:320px;background:var(--surface);border-left:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:155}
+.caisse-panel.open,.dons-panel.open{transform:translateX(0)}
 .autres-panel{position:absolute;top:0;left:0;bottom:0;width:340px;background:var(--surface);border-right:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .25s ease;z-index:155}
 .autres-panel.open{transform:translateX(0)}
 .cp-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .cp-header h3{font-size:13px;font-weight:600}
 .cp-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
 .cp-section-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
-.cp-solde-box{background:linear-gradient(135deg,rgba(46,204,143,.1),rgba(46,204,143,.05));border:1px solid rgba(46,204,143,.3);border-radius:var(--r-sm);padding:14px;text-align:center}
+.cp-solde-box{background:linear-gradient(135deg,rgba(46,204,143,.1),rgba(46,204,143,.05));border:1px solid rgba(46,204,143,.3);border-radius:var(--r-sm);padding:14px;text-align:center;position:relative;overflow:hidden}
 .cp-solde-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.cp-solde-val{font-family:'DM Mono',monospace;font-size:32px;font-weight:700;color:var(--green);line-height:1}
+.cp-solde-val{font-family:'DM Mono',monospace;font-size:28px;font-weight:700;color:var(--green);line-height:1}
 .cp-solde-detail{font-size:10px;color:var(--text3);margin-top:4px}
 .cp-fond-row{display:flex;gap:6px;align-items:center}
-.cp-input{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;font-weight:600;outline:none;text-align:center}
+.cp-input{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;font-weight:600;outline:none;text-align:center;box-sizing:border-box}
 .cp-input:focus{border-color:var(--green)}
 .cp-input::placeholder{color:var(--text3);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;text-align:left}
-.cp-btn{padding:8px 14px;border-radius:var(--r-sm);border:none;background:var(--green);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.cp-btn{padding:8px 12px;border-radius:var(--r-sm);border:none;background:var(--green);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .cp-btn:active{transform:scale(.97)}
-.cp-btn-danger{background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.3);color:#e94560}
-.cp-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:8px}
+.cp-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;display:flex;align-items:center;gap:8px}
 .cp-item-info{flex:1}
 .cp-item-label{font-size:12px;font-weight:500;color:var(--text)}
 .cp-item-time{font-size:10px;color:var(--text3);margin-top:1px}
-.cp-item-amount{font-family:'DM Mono',monospace;font-size:13px;font-weight:600}
-.cp-item-amount.neg{color:#e94560}
-.cp-item-amount.pos{color:var(--green)}
+.cp-item-amount{font-family:'DM Mono',monospace;font-size:12px;font-weight:600}
 .cp-del{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cp-add-row{display:flex;flex-direction:column;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px}
-.btn-caisse{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all .12s}
-.btn-caisse:active{transform:scale(.96)}
+.btn-extra{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 10px;cursor:pointer;white-space:nowrap;transition:all .12s}
+.btn-extra:active{transform:scale(.96)}
 .stat-pill-solde{background:var(--surface2);border:1px solid var(--green);border-radius:99px;padding:5px 12px;font-size:12px;font-family:'DM Mono',monospace;white-space:nowrap;color:var(--green)}
 
 /* CODES PROMO */
@@ -344,12 +341,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   <div class="topbar-right">
     <div class="stat-pill"><span>Ventes</span><strong id="nbVentes">0</strong></div>
     <div class="stat-pill"><span>CA</span><strong id="caJour">0,00 €</strong></div>
-    <div class="stat-pill-solde"><span style="color:var(--text2);margin-right:4px">Solde</span><strong id="soldeCaisse">0,00 €</strong></div>
+    <div class="stat-pill-solde"><span style="color:var(--text2);margin-right:4px">Solde</span><strong id="soldeCaisse">0,00 €</strong></div>
     <div class="fb-indicator"><div class="fb-dot-small" id="fbDotSmall"></div><span id="fbLabelSmall">...</span></div>
     <button class="btn-sm" onclick="toggleTickets()">Tickets</button>
     <button class="btn-sm" onclick="toggleStock()">📦 Stock</button>
-    <button class="btn-caisse" onclick="toggleCaisse()">💰 Caisse</button>
-    <button class="btn-caisse" onclick="toggleAutres()">📦 Autres</button>
+    <button class="btn-extra" onclick="toggleCaisse()">💰 Caisse</button>
+    <button class="btn-extra" onclick="toggleAutres()">📦 Autres</button>
+    <button class="btn-extra" onclick="toggleDons()">🎁 Dons</button>
     <button class="btn-xl" onclick="toggleExcel()">📊 Excel Live</button>
     <button class="btn-wheel" id="topWheelBtn" onclick="quickSpin()">🎡 Roue</button>
     <button class="btn-sm" onclick="togglePromo()">🏷️ Promos</button>
@@ -431,10 +429,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 
 <!-- Panel Caisse -->
 <div class="caisse-panel" id="caissePanel">
-  <div class="cp-header">
-    <h3>💰 Caisse</h3>
-    <button class="btn-sm" onclick="toggleCaisse()">✕</button>
-  </div>
+  <div class="cp-header"><h3>💰 Caisse</h3><button class="btn-sm" onclick="toggleCaisse()">✕</button></div>
   <div class="cp-body">
     <div>
       <div class="cp-section-title">Solde en temps réel</div>
@@ -455,44 +450,63 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div>
       <div class="cp-section-title">Sortie de caisse</div>
       <div class="cp-add-row">
-        <input class="cp-input" id="cpSortieLabel" type="text" placeholder="Motif (ex: Repas, Parking...)" style="text-align:left;font-size:13px;font-weight:400;font-family:'DM Sans',sans-serif">
-        <div style="display:flex;gap:6px">
-          <input class="cp-input" id="cpSortieMontant" type="text" inputmode="decimal" placeholder="Montant €">
-          <button class="cp-btn cp-btn-danger" onclick="addSortie()">− Sortie</button>
-        </div>
+        <input class="cp-input" id="cpSortieLabel" type="text" placeholder="Motif (Repas, Parking...)" style="text-align:left;font-size:13px;font-weight:400;font-family:'DM Sans',sans-serif">
+        <div style="display:flex;gap:6px"><input class="cp-input" id="cpSortieMontant" type="text" inputmode="decimal" placeholder="Montant €"><button class="cp-btn" style="background:#e94560" onclick="addSortie()">− Sortie</button></div>
       </div>
     </div>
     <div>
-      <div class="cp-section-title">Historique</div>
-      <div id="cpHistorique"><div style="text-align:center;color:var(--text3);font-size:12px;padding:10px">Aucune opération</div></div>
+      <div class="cp-section-title">Historique sorties</div>
+      <div id="cpHistorique"><div style="text-align:center;color:var(--text3);font-size:12px;padding:10px">Aucune sortie</div></div>
     </div>
   </div>
 </div>
 
 <!-- Panel Autres ventes -->
 <div class="autres-panel" id="autresPanel">
-  <div class="cp-header">
-    <h3>📦 Autres ventes</h3>
-    <button class="btn-sm" onclick="toggleAutres()">✕</button>
-  </div>
+  <div class="cp-header"><h3>📦 Autres ventes</h3><button class="btn-sm" onclick="toggleAutres()">✕</button></div>
   <div class="cp-body">
     <div>
-      <div class="cp-section-title">Ajouter une vente hors catalogue</div>
+      <div class="cp-section-title">Vente hors catalogue</div>
       <div class="cp-add-row">
-        <input class="cp-input" id="autreLabel" type="text" placeholder="Description (ex: Dragon custom...)" style="text-align:left;font-size:13px;font-weight:400;font-family:'DM Sans',sans-serif">
-        <div style="display:flex;gap:6px">
-          <input class="cp-input" id="autreMontant" type="text" inputmode="decimal" placeholder="Prix €">
-          <button class="cp-btn" onclick="addAutreVente()">+ Vente</button>
-        </div>
+        <input class="cp-input" id="autreLabel" type="text" placeholder="Description..." style="text-align:left;font-size:13px;font-weight:400;font-family:'DM Sans',sans-serif">
+        <div style="display:flex;gap:6px"><input class="cp-input" id="autreMontant" type="text" inputmode="decimal" placeholder="Prix €"><button class="cp-btn" onclick="addAutreVente()">+ Vente</button></div>
       </div>
     </div>
     <div>
-      <div class="cp-section-title">Ventes hors catalogue (<span id="autresCount">0</span>)</div>
-      <div id="autresListe"><div style="text-align:center;color:var(--text3);font-size:12px;padding:10px">Aucune vente hors catalogue</div></div>
+      <div class="cp-section-title">Liste (<span id="autresCount">0</span>)</div>
+      <div id="autresListe"><div style="text-align:center;color:var(--text3);font-size:12px;padding:10px">Aucune vente</div></div>
     </div>
-    <div class="cp-solde-box" style="margin-top:4px">
-      <div class="cp-solde-lbl">Total autres ventes</div>
-      <div class="cp-solde-val" id="autresTotalVal" style="font-size:24px">0,00 €</div>
+    <div class="cp-solde-box"><div class="cp-solde-lbl">Total autres ventes</div><div class="cp-solde-val" id="autresTotalVal" style="font-size:22px">0,00 €</div></div>
+  </div>
+</div>
+
+<!-- Panel Dons & Gains Objets -->
+<div class="dons-panel" id="donsPanel">
+  <div class="cp-header"><h3>🎁 Dons & Gains</h3><button class="btn-sm" onclick="toggleDons()">✕</button></div>
+  <div class="cp-body">
+    <div>
+      <div class="cp-section-title" style="color:var(--amber)">🎪 Dons tombola</div>
+      <div class="cp-add-row">
+        <input class="cp-input" id="donLabel" type="text" placeholder="Article donné..." style="text-align:left;font-size:13px;font-weight:400;font-family:'DM Sans',sans-serif">
+        <div style="display:flex;gap:6px"><input class="cp-input" id="donValeur" type="text" inputmode="decimal" placeholder="Valeur €"><button class="cp-btn" style="background:var(--amber)" onclick="addDon()">+ Don</button></div>
+      </div>
+      <div id="donsListe" style="margin-top:6px"><div style="text-align:center;color:var(--text3);font-size:12px;padding:8px">Aucun don</div></div>
+      <div class="cp-solde-box" style="background:rgba(245,166,35,.08);border-color:rgba(245,166,35,.25)"><div class="cp-solde-lbl">Total dons</div><div class="cp-solde-val" id="donsTotalVal" style="font-size:20px;color:var(--amber)">0,00 €</div></div>
+    </div>
+    <div style="height:1px;background:var(--border)"></div>
+    <div>
+      <div class="cp-section-title" style="color:var(--purple)">🎡 Gains objets roue</div>
+      <div class="cp-add-row">
+        <input class="cp-input" id="gainLabel" type="text" placeholder="Objet remis..." style="text-align:left;font-size:13px;font-weight:400;font-family:'DM Sans',sans-serif">
+        <div style="display:flex;gap:6px"><input class="cp-input" id="gainValeur" type="text" inputmode="decimal" placeholder="Valeur €"><button class="cp-btn" style="background:var(--purple)" onclick="addGainObjet()">+ Gain</button></div>
+      </div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px">
+        <button class="billet-btn" onclick="setGainPreset('Porte-cle 3D',3.5,this)">🔑 Porte-clé</button>
+        <button class="billet-btn" onclick="setGainPreset('Dragon 3D',10,this)">🐉 Dragon</button>
+        <button class="billet-btn" onclick="setGainPreset('Figurine 3D',15,this)">💎 Figurine</button>
+      </div>
+      <div id="gainsObjetsListe" style="margin-top:6px"><div style="text-align:center;color:var(--text3);font-size:12px;padding:8px">Aucun gain noté</div></div>
+      <div class="cp-solde-box" style="background:rgba(124,106,247,.08);border-color:rgba(124,106,247,.25)"><div class="cp-solde-lbl">Valeur totale gains</div><div class="cp-solde-val" id="gainsTotalVal" style="font-size:20px;color:var(--purple)">0,00 €</div></div>
     </div>
   </div>
 </div>
@@ -817,13 +831,13 @@ var PRODUCTS=[
 
 // ── ÉTAT ──────────────────────────────────────────────────────
 var cart=[],payMode=null,tickets=[],totalCA=0,currentCat="Tous",salesData={},stockData={};
+var promoCodes={};var activePromo=null;var flashTimer=null;var flashActive=false;
+var fondCaisse=0;var sortiesCaisse=[];var autresVentes=[];
+var donsTombola=[];var gainsObjets=[];
 var promoCodes={};
 var activePromo=null;
 var flashTimer=null;
 var flashActive=false;
-var fondCaisse=0;
-var sortiesCaisse=[];
-var autresVentes=[];
 
 // Stock de départ — ne s'applique QUE si aucun localStorage n'existe
 var STOCK_DEPART = {
@@ -895,8 +909,9 @@ function sauvegarder(){
   try{
     localStorage.setItem(SAVE_KEY,JSON.stringify({
       tickets:tickets,totalCA:totalCA,salesData:salesData,
-      stockData:stockData,wheelGains:wheelGains,clients:clients,promoCodes:promoCodes,
-      fondCaisse:fondCaisse,sortiesCaisse:sortiesCaisse,autresVentes:autresVentes,
+      stockData:stockData,wheelGains:wheelGains,clients:clients,
+      promoCodes:promoCodes,fondCaisse:fondCaisse,sortiesCaisse:sortiesCaisse,
+      autresVentes:autresVentes,donsTombola:donsTombola,gainsObjets:gainsObjets,promoCodes:promoCodes,
       date:new Date().toLocaleDateString("fr-FR")
     }));
     var ind=document.getElementById("saveIndicator");
@@ -922,9 +937,12 @@ function restaurer(){
     if(data.salesData){for(var sid in data.salesData){salesData[parseInt(sid)]=data.salesData[sid];}}
     if(data.stockData){for(var sid2 in data.stockData){stockData[parseInt(sid2)]=data.stockData[sid2];}}
     if(data.promoCodes){promoCodes=data.promoCodes;}
+    if(data.promoCodes){promoCodes=data.promoCodes;}
     if(data.fondCaisse!==undefined){fondCaisse=data.fondCaisse;}
     if(data.sortiesCaisse){sortiesCaisse=data.sortiesCaisse;}
     if(data.autresVentes){autresVentes=data.autresVentes;}
+    if(data.donsTombola){donsTombola=data.donsTombola;}
+    if(data.gainsObjets){gainsObjets=data.gainsObjets;}
     wheelGains=data.wheelGains||[];
     clients=data.clients||[];
     return tickets.length>0;
@@ -953,7 +971,7 @@ function renderProducts(){
     var isOut=stock<=0;
     var isLow=stock>0&&stock<=3;
     var desc=p.desc?"<br><span style='font-size:10px;color:var(--text3)'>"+p.desc+"</span>":"";
-    var cl=p.type==="sublim"?"Sub":p.type==="pack"?"Pack":p.type==="brod"?"Brod":p.type==="flex"?"Flex":"3D";
+    var cl=p.type==="sublim"?"Sub":p.type==="pack"?"Pack":"3D";
     var stockBadge="";
     if(stock<99){
       if(isOut) stockBadge="<span class='stock-badge stock-out'>0 restant</span>";
@@ -1234,52 +1252,35 @@ window.downloadExcel=function(){
 
   XLSX.utils.book_append_sheet(wb, ws_stock, "Stock restant");
 
-  // ── Feuille Caisse ─────────────────────────────────────────
-  var caEspeces2=0;
-  tickets.forEach(function(t){if(t.mode==="Espèces")caEspeces2+=t.total;});
-  var autresTotal2=autresVentes.reduce(function(s,v){return s+v.montant;},0);
-  var totalSorties2=sortiesCaisse.reduce(function(s,v){return s+v.montant;},0);
-  var soldeFinal=fondCaisse+caEspeces2+autresTotal2-totalSorties2;
-  var aoa_caisse=[
-    ["CAISSE — "+today,"","",""],
-    ["Les projets de Shaya","","",""],
-    [],
-    ["FOND DE CAISSE DE DEPART","",parseFloat(fondCaisse.toFixed(2)),""],
-    ["CA ESPECES DU JOUR","",parseFloat(caEspeces2.toFixed(2)),""],
-    ["AUTRES VENTES","",parseFloat(autresTotal2.toFixed(2)),""],
-    ["TOTAL SORTIES","",parseFloat((-totalSorties2).toFixed(2)),""],
-    [],
-    ["SOLDE FINAL EN CAISSE","",parseFloat(soldeFinal.toFixed(2)),""],
-    [],
-    ["DETAIL DES SORTIES","","",""],
-    ["Date","Heure","Motif","Montant"]
-  ];
-  if(sortiesCaisse.length){
-    sortiesCaisse.forEach(function(s){
-      aoa_caisse.push([s.date,s.time,s.label,parseFloat((-s.montant).toFixed(2))]);
-    });
-  }else{aoa_caisse.push(["Aucune sortie","","",""]);}
-  var ws_caisse=XLSX.utils.aoa_to_sheet(aoa_caisse);
-  ws_caisse["!cols"]=[{wch:12},{wch:8},{wch:30},{wch:14}];
-  XLSX.utils.book_append_sheet(wb,ws_caisse,"Caisse");
-
-  // ── Feuille Autres ventes ───────────────────────────────────
-  var aoa_autres=[
-    ["AUTRES VENTES — "+today,"",""],
-    ["Les projets de Shaya — Ventes hors catalogue","",""],
-    [],
-    ["Heure","Description","Montant TTC"]
-  ];
-  if(autresVentes.length){
-    autresVentes.forEach(function(v){
-      aoa_autres.push([v.time,v.label,parseFloat(v.montant.toFixed(2))]);
-    });
-    aoa_autres.push([]);
-    aoa_autres.push(["","TOTAL",parseFloat(autresVentes.reduce(function(s,v){return s+v.montant;},0).toFixed(2))]);
-  }else{aoa_autres.push(["Aucune vente hors catalogue","",""]);}
-  var ws_autres=XLSX.utils.aoa_to_sheet(aoa_autres);
-  ws_autres["!cols"]=[{wch:8},{wch:32},{wch:14}];
-  XLSX.utils.book_append_sheet(wb,ws_autres,"Autres ventes");
+  // Caisse
+  var caEspX=0;tickets.forEach(function(t){if(t.mode==="Espèces")caEspX+=t.total;});
+  var autTotX=autresVentes.reduce(function(s,v){return s+v.montant;},0);
+  var sorTotX=sortiesCaisse.reduce(function(s,v){return s+v.montant;},0);
+  var soldeX=fondCaisse+caEspX+autTotX-sorTotX;
+  var aoaC=[["CAISSE — "+today,"",""],["Les projets de Shaya","",""],[], ["FOND DE CAISSE",parseFloat(fondCaisse.toFixed(2)),""],["CA ESPECES",parseFloat(caEspX.toFixed(2)),""],["AUTRES VENTES",parseFloat(autTotX.toFixed(2)),""],["SORTIES",parseFloat((-sorTotX).toFixed(2)),""],["SOLDE FINAL",parseFloat(soldeX.toFixed(2)),""],[],"DETAIL SORTIES","Motif","Montant"];
+  if(sortiesCaisse.length){sortiesCaisse.forEach(function(s){aoaC.push([s.time,s.label,parseFloat((-s.montant).toFixed(2))]);});}
+  var wsC=XLSX.utils.aoa_to_sheet(aoaC);wsC["!cols"]=[{wch:12},{wch:30},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,wsC,"Caisse");
+  // Autres ventes
+  var aoaAut=[["AUTRES VENTES — "+today,"",""],["Les projets de Shaya","",""],[], ["Heure","Description","Montant"]];
+  if(autresVentes.length){autresVentes.forEach(function(v){aoaAut.push([v.time,v.label,parseFloat(v.montant.toFixed(2))]);});aoaAut.push([]);aoaAut.push(["","TOTAL",parseFloat(autTotX.toFixed(2))]);}
+  else{aoaAut.push(["Aucune","",""]);}
+  var wsAut=XLSX.utils.aoa_to_sheet(aoaAut);wsAut["!cols"]=[{wch:8},{wch:32},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,wsAut,"Autres ventes");
+  // Dons tombola
+  var aoaDons=[["DONS TOMBOLA — "+today,"",""],["Les projets de Shaya","",""],[], ["Heure","Article donné","Valeur"]];
+  var donsTotX=donsTombola.reduce(function(s,d){return s+d.valeur;},0);
+  if(donsTombola.length){donsTombola.forEach(function(d){aoaDons.push([d.time,d.label,parseFloat(d.valeur.toFixed(2))]);});aoaDons.push([]);aoaDons.push(["TOTAL",donsTombola.length+" don(s)",parseFloat(donsTotX.toFixed(2))]);}
+  else{aoaDons.push(["Aucun don","",""]);}
+  var wsDons=XLSX.utils.aoa_to_sheet(aoaDons);wsDons["!cols"]=[{wch:8},{wch:32},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,wsDons,"Dons tombola");
+  // Gains objets roue
+  var aoaGains=[["GAINS OBJETS ROUE — "+today,"",""],["Les projets de Shaya","",""],[], ["Heure","Objet remis","Valeur"]];
+  var gainsTotX=gainsObjets.reduce(function(s,g){return s+g.valeur;},0);
+  if(gainsObjets.length){gainsObjets.forEach(function(g){aoaGains.push([g.time,g.label,parseFloat(g.valeur.toFixed(2))]);});aoaGains.push([]);aoaGains.push(["TOTAL",gainsObjets.length+" gain(s)",parseFloat(gainsTotX.toFixed(2))]);}
+  else{aoaGains.push(["Aucun gain noté","",""]);}
+  var wsGains=XLSX.utils.aoa_to_sheet(aoaGains);wsGains["!cols"]=[{wch:8},{wch:32},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,wsGains,"Gains objets roue");
 
   XLSX.writeFile(wb,"ventes_"+dateFile+".xlsx");
   showToast("📊 Excel téléchargé !");
@@ -1305,8 +1306,8 @@ window.askReset=function(){document.getElementById("modalReset").classList.add("
 window.closeReset=function(){document.getElementById("modalReset").classList.remove("open");};
 window.doReset=function(){
   tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];activePromo=null;
-  fondCaisse=0;sortiesCaisse=[];autresVentes=[];
-  if(typeof stopOffreFlash==="function")stopOffreFlash();
+  fondCaisse=0;sortiesCaisse=[];autresVentes=[];donsTombola=[];gainsObjets=[];
+  if(typeof stopOffreFlash==="function")stopOffreFlash();activePromo=null;if(typeof stopOffreFlash==="function")stopOffreFlash();
   PRODUCTS.forEach(function(p){
     salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};
     // Remettre le stock de départ défini dans STOCK_DEPART
@@ -1319,7 +1320,7 @@ window.doReset=function(){
   ["btnCB","btnCash","btnSumup","btnVir"].forEach(function(id){var b=document.getElementById(id);if(b)b.classList.remove("selected");});
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   renderCart();updateTotals();renderTickets();renderExcelPanel();renderStockPanel();renderProducts();
-  renderCaisse();renderAutres();
+  renderCaisse();renderAutres();renderDons();
   closeReset();
   showToast("✅ Nouveau jour démarré !");
 };
@@ -1497,100 +1498,128 @@ window.stopOffreFlash=function(){
 };
 function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
 
-// ── CAISSE ──────────────────────────────────────────────────────
-window.toggleCaisse=function(){
-  document.getElementById("caissePanel").classList.toggle("open");
-  renderCaisse();
+// ── CODES PROMO ────────────────────────────────────────────────
+window.togglePromo=function(){document.getElementById("promoPanel").classList.toggle("open");renderPromoCodes();};
+function renderPromoCodes(){
+  var list=document.getElementById("ppCodesList");if(!list)return;
+  var codes=Object.keys(promoCodes);
+  if(!codes.length){list.innerHTML="<div style=\"text-align:center;color:var(--text3);font-size:12px;padding:10px\">Aucun code - ajoutez-en un ci-dessus</div>";return;}
+  var h="<div style=\"font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px\">Codes actifs</div>";
+  codes.forEach(function(code){
+    var p=promoCodes[code];var isAct=activePromo&&activePromo.code===code;
+    var cls=isAct?"pp-code-item active":"pp-code-item";
+    h+="<div class=\""+cls+"\"><div style=\"flex:1\"><div class=\"pp-code-badge\">"+code+"</div><div class=\"pp-code-uses\">"+p.uses+" utilisation(s)</div></div>";
+    h+="<div class=\"pp-code-pct\">-"+p.pct+"%</div>";
+    h+="<button class=\"pp-code-del\" onclick=\"deletePromoCode('"+code+"')\">X</button></div>";
+  });
+  list.innerHTML=h;
+}
+window.addPromoCode=function(){
+  var code=document.getElementById("ppNewCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+  var pct=parseInt(document.getElementById("ppNewPct").value)||0;
+  if(!code){showToast("Entrez un nom de code");return;}
+  if(pct<1||pct>99){showToast("Remise entre 1 et 99%");return;}
+  promoCodes[code]={pct:pct,uses:0};
+  document.getElementById("ppNewCode").value="";document.getElementById("ppNewPct").value="";
+  renderPromoCodes();sauvegarder();showToast("Code "+code+" cree (-"+pct+"%)");
 };
-window.toggleAutres=function(){
-  document.getElementById("autresPanel").classList.toggle("open");
-  renderAutres();
+window.deletePromoCode=function(code){
+  if(activePromo&&activePromo.code===code){activePromo=null;var pci=document.getElementById("promoCodeInput");if(pci)pci.value="";var ps=document.getElementById("promoStatus");if(ps){ps.textContent="";ps.className="promo-status";}updateTotals();}
+  delete promoCodes[code];renderPromoCodes();sauvegarder();
+};
+window.appliquerCode=function(){
+  var input=document.getElementById("promoCodeInput");var status=document.getElementById("promoStatus");
+  var code=input?input.value.trim().toUpperCase():"";
+  if(!code){activePromo=null;if(status){status.textContent="";status.className="promo-status";}updateTotals();return;}
+  if(promoCodes[code]){
+    activePromo={code:code,pct:promoCodes[code].pct};promoCodes[code].uses++;
+    if(status){status.textContent="OK -"+promoCodes[code].pct+"% applique";status.className="promo-status ok";}
+    renderPromoCodes();sauvegarder();updateTotals();showToast("Code "+code+" -"+promoCodes[code].pct+"% !");
+  }else{activePromo=null;if(status){status.textContent="Code inconnu";status.className="promo-status err";}updateTotals();}
 };
 
+// ── OFFRE FLASH ─────────────────────────────────────────────────
+window.toggleFlash=function(){var p=document.getElementById("flashPanel");p.classList.toggle("open");if(p.classList.contains("open")&&flashActive){document.getElementById("flashCountdownBox").style.display="block";document.getElementById("flashLaunchBtn").disabled=true;}};
+window.setFlashPct=function(val,btn){document.getElementById("flashPct").value=val;document.querySelectorAll(".flash-preset").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");updateFlashPreview();};
+window.setFlashTime=function(val,btn){document.getElementById("flashMin").value=val;document.querySelectorAll(".flash-time").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");updateFlashPreview();};
+function updateFlashPreview(){
+  var pct=parseInt(document.getElementById("flashPct").value)||0;var min=parseInt(document.getElementById("flashMin").value)||0;
+  var prev=document.getElementById("flashPreview");
+  if(pct>0&&min>0){prev.style.display="block";prev.innerHTML="<strong style='color:#E94560;font-size:15px'>-"+pct+"%</strong> pendant <strong style='color:var(--amber)'>"+min+" min</strong>";}
+  else{prev.style.display="none";}
+}
+window.lancerOffreFlash=function(){
+  var pct=parseInt(document.getElementById("flashPct").value)||0;var min=parseInt(document.getElementById("flashMin").value)||0;
+  if(pct<1||pct>99){showToast("Remise entre 1 et 99%");return;}if(min<1||min>60){showToast("Duree entre 1 et 60 min");return;}
+  var endTime=Date.now()+(min*60*1000);
+  set(ref(db,"flash/offer"),{pct:pct,endTime:endTime,active:true,startTime:Date.now()});
+  flashActive=true;document.getElementById("flashLaunchBtn").disabled=true;
+  document.getElementById("flashCountdownBox").style.display="block";
+  document.getElementById("flashActiveLabel").textContent="⚡ -"+pct+"% SUR TOUT LE STAND ⚡";
+  document.getElementById("btnFlash").classList.add("on");
+  if(flashTimer)clearInterval(flashTimer);
+  flashTimer=setInterval(function(){
+    var remaining=endTime-Date.now();if(remaining<=0){window.stopOffreFlash();return;}
+    var m=Math.floor(remaining/60000),s=Math.floor((remaining%60000)/1000);
+    var timeStr=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+    var cv=document.getElementById("flashCountdownVal");
+    if(cv){cv.textContent=timeStr;if(remaining<30000){cv.style.color="#FF3333";cv.style.fontSize="52px";}else if(remaining<60000){cv.style.color="#FF8C00";cv.style.fontSize="48px";}else{cv.style.color="#E94560";cv.style.fontSize="48px";}}
+    var btn=document.getElementById("btnFlash");
+    if(btn){btn.textContent="⚡ "+timeStr;if(remaining<30000){btn.style.background="linear-gradient(135deg,#FF3333,#cc0000)";}else if(remaining<60000){btn.style.background="linear-gradient(135deg,#FF8C00,#cc7000)";}else{btn.style.background="linear-gradient(135deg,#E94560,#c42d4a)";}}
+  },1000);
+  showToast("Offre flash -"+pct+"% lancee pour "+min+" min !");
+};
+window.stopOffreFlash=function(){
+  if(flashTimer){clearInterval(flashTimer);flashTimer=null;}flashActive=false;
+  try{set(ref(db,"flash/offer"),{active:false});}catch(e){}
+  var lb=document.getElementById("flashLaunchBtn");if(lb)lb.disabled=false;
+  var cb=document.getElementById("flashCountdownBox");if(cb)cb.style.display="none";
+  var cv=document.getElementById("flashCountdownVal");if(cv)cv.textContent="--:--";
+  var bf=document.getElementById("btnFlash");if(bf){bf.classList.remove("on");bf.textContent="⚡ Flash";bf.style.background="linear-gradient(135deg,#E94560,#c42d4a)";}
+  showToast("Offre flash terminee");
+};
+function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
+
+// ── CAISSE ──────────────────────────────────────────────────────
+window.toggleCaisse=function(){document.getElementById("caissePanel").classList.toggle("open");renderCaisse();};
+window.toggleAutres=function(){document.getElementById("autresPanel").classList.toggle("open");renderAutres();};
+window.toggleDons=function(){document.getElementById("donsPanel").classList.toggle("open");renderDons();};
+
 function updateSoldeCaisse(){
-  // CA espèces du jour
-  var caEspeces=0;
-  tickets.forEach(function(t){
-    if(t.mode==="Espèces")caEspeces+=t.total;
-  });
-  // Total autres ventes espèces (toutes comptées)
+  var caEspeces=0;tickets.forEach(function(t){if(t.mode==="Espèces")caEspeces+=t.total;});
   var autresTotal=autresVentes.reduce(function(s,v){return s+v.montant;},0);
-  // Total sorties
   var totalSorties=sortiesCaisse.reduce(function(s,v){return s+v.montant;},0);
-  // Solde = fond + CA espèces + autres - sorties
   var solde=fondCaisse+caEspeces+autresTotal-totalSorties;
-  // Mettre à jour topbar
-  var st=document.getElementById("soldeCaisse");
-  if(st){st.textContent=fmt(solde);}
-  // Mettre à jour panel
-  var sv=document.getElementById("cpSoldeVal");
-  if(sv){
-    sv.textContent=fmt(solde);
-    sv.style.color=solde>=0?"var(--green)":"#e94560";
-  }
-  var sd=document.getElementById("cpSoldeDetail");
-  if(sd){sd.textContent="Fond: "+fmt(fondCaisse)+" + Espèces: "+fmt(caEspeces)+" + Autres: "+fmt(autresTotal)+" - Sorties: "+fmt(totalSorties);}
+  var st=document.getElementById("soldeCaisse");if(st)st.textContent=fmt(solde);
+  var sv=document.getElementById("cpSoldeVal");if(sv){sv.textContent=fmt(solde);sv.style.color=solde>=0?"var(--green)":"#e94560";}
+  var sd=document.getElementById("cpSoldeDetail");if(sd)sd.textContent="Fond: "+fmt(fondCaisse)+" + Espèces: "+fmt(caEspeces)+" + Autres: "+fmt(autresTotal)+" - Sorties: "+fmt(totalSorties);
 }
 
 window.setFondCaisse=function(){
-  var raw=(document.getElementById("cpFond").value||"").replace(",",".");
-  var val=parseFloat(raw)||0;
-  fondCaisse=val;
-  document.getElementById("cpFond").value=val;
-  updateSoldeCaisse();
-  renderCaisse();
-  sauvegarder();
-  showToast("Fond de caisse: "+fmt(val));
+  var raw=(document.getElementById("cpFond").value||"").replace(",",".");var val=parseFloat(raw)||0;
+  fondCaisse=val;document.getElementById("cpFond").value=val;updateSoldeCaisse();renderCaisse();sauvegarder();showToast("Fond: "+fmt(val));
 };
-
 window.addSortie=function(){
   var label=document.getElementById("cpSortieLabel").value.trim();
-  var raw=(document.getElementById("cpSortieMontant").value||"").replace(",",".");
-  var montant=parseFloat(raw)||0;
-  if(!label){showToast("Entrez un motif");return;}
-  if(montant<=0){showToast("Entrez un montant");return;}
+  var raw=(document.getElementById("cpSortieMontant").value||"").replace(",",".");var montant=parseFloat(raw)||0;
+  if(!label){showToast("Entrez un motif");return;}if(montant<=0){showToast("Entrez un montant");return;}
   var now=new Date();
-  sortiesCaisse.push({
-    label:label,montant:montant,
-    time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
-    date:now.toLocaleDateString("fr-FR")
-  });
-  document.getElementById("cpSortieLabel").value="";
-  document.getElementById("cpSortieMontant").value="";
-  updateSoldeCaisse();
-  renderCaisse();
-  sauvegarder();
-  showToast("Sortie: -"+fmt(montant));
+  sortiesCaisse.push({label:label,montant:montant,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR")});
+  document.getElementById("cpSortieLabel").value="";document.getElementById("cpSortieMontant").value="";
+  updateSoldeCaisse();renderCaisse();sauvegarder();showToast("Sortie: -"+fmt(montant));
 };
-
-window.deleteSortie=function(idx){
-  sortiesCaisse.splice(idx,1);
-  updateSoldeCaisse();renderCaisse();sauvegarder();
-};
-
+window.deleteSortie=function(idx){sortiesCaisse.splice(idx,1);updateSoldeCaisse();renderCaisse();sauvegarder();};
 function renderCaisse(){
-  // Fond
-  var cpFond=document.getElementById("cpFond");
-  if(cpFond&&!cpFond.value)cpFond.value=fondCaisse||"";
+  var cpFond=document.getElementById("cpFond");if(cpFond&&!cpFond.value)cpFond.value=fondCaisse||"";
   updateSoldeCaisse();
-  // Historique
-  var histo=document.getElementById("cpHistorique");
-  if(!histo)return;
-  if(!sortiesCaisse.length){
-    histo.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:10px'>Aucune sortie de caisse</div>";
-    return;
-  }
+  var histo=document.getElementById("cpHistorique");if(!histo)return;
+  if(!sortiesCaisse.length){histo.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:10px'>Aucune sortie</div>";return;}
   var h="";
   sortiesCaisse.slice().reverse().forEach(function(s,i){
     var realIdx=sortiesCaisse.length-1-i;
-    h+="<div class='cp-item'>";
-    h+="<div class='cp-item-info'>";
-    h+="<div class='cp-item-label'>"+s.label+"</div>";
-    h+="<div class='cp-item-time'>"+s.time+" · "+s.date+"</div>";
-    h+="</div>";
-    h+="<div class='cp-item-amount neg'>-"+fmt(s.montant)+"</div>";
-    h+="<button class='cp-del' onclick='deleteSortie("+realIdx+")'>✕</button>";
-    h+="</div>";
+    h+="<div class='cp-item'><div class='cp-item-info'><div class='cp-item-label'>"+s.label+"</div><div class='cp-item-time'>"+s.time+"</div></div>";
+    h+="<div class='cp-item-amount' style='color:#e94560'>-"+fmt(s.montant)+"</div>";
+    h+="<button class='cp-del' onclick='deleteSortie("+realIdx+")'>✕</button></div>";
   });
   histo.innerHTML=h;
 }
@@ -1598,63 +1627,105 @@ function renderCaisse(){
 // ── AUTRES VENTES ────────────────────────────────────────────────
 window.addAutreVente=function(){
   var label=document.getElementById("autreLabel").value.trim();
-  var raw=(document.getElementById("autreMontant").value||"").replace(",",".");
-  var montant=parseFloat(raw)||0;
-  if(!label){showToast("Entrez une description");return;}
-  if(montant<=0){showToast("Entrez un montant");return;}
+  var raw=(document.getElementById("autreMontant").value||"").replace(",",".");var montant=parseFloat(raw)||0;
+  if(!label){showToast("Entrez une description");return;}if(montant<=0){showToast("Entrez un montant");return;}
   var now=new Date();
-  autresVentes.push({
-    label:label,montant:montant,
-    time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
-    date:now.toLocaleDateString("fr-FR")
-  });
+  autresVentes.push({label:label,montant:montant,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR")});
   totalCA+=montant;
   document.getElementById("nbVentes").textContent=tickets.length+autresVentes.length;
   document.getElementById("caJour").textContent=fmt(totalCA);
   document.getElementById("caTotal").textContent=fmt(totalCA);
-  document.getElementById("autreLabel").value="";
-  document.getElementById("autreMontant").value="";
-  updateSoldeCaisse();
-  renderAutres();
-  sauvegarder();
-  showToast("Vente: +"+fmt(montant));
+  document.getElementById("autreLabel").value="";document.getElementById("autreMontant").value="";
+  updateSoldeCaisse();renderAutres();sauvegarder();showToast("Vente: +"+fmt(montant));
 };
-
 window.deleteAutreVente=function(idx){
-  totalCA-=autresVentes[idx].montant;
-  autresVentes.splice(idx,1);
+  totalCA-=autresVentes[idx].montant;autresVentes.splice(idx,1);
   document.getElementById("nbVentes").textContent=tickets.length+autresVentes.length;
-  document.getElementById("caJour").textContent=fmt(totalCA);
-  document.getElementById("caTotal").textContent=fmt(totalCA);
+  document.getElementById("caJour").textContent=fmt(totalCA);document.getElementById("caTotal").textContent=fmt(totalCA);
   updateSoldeCaisse();renderAutres();sauvegarder();
 };
-
 function renderAutres(){
-  var liste=document.getElementById("autresListe");
-  var count=document.getElementById("autresCount");
-  var totalEl=document.getElementById("autresTotalVal");
+  var liste=document.getElementById("autresListe");var count=document.getElementById("autresCount");var totalEl=document.getElementById("autresTotalVal");
   if(!liste)return;
   if(count)count.textContent=autresVentes.length;
-  var total=autresVentes.reduce(function(s,v){return s+v.montant;},0);
-  if(totalEl)totalEl.textContent=fmt(total);
-  if(!autresVentes.length){
-    liste.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:10px'>Aucune vente hors catalogue</div>";
-    return;
-  }
+  var total=autresVentes.reduce(function(s,v){return s+v.montant;},0);if(totalEl)totalEl.textContent=fmt(total);
+  if(!autresVentes.length){liste.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:10px'>Aucune vente</div>";return;}
   var h="";
   autresVentes.slice().reverse().forEach(function(v,i){
     var realIdx=autresVentes.length-1-i;
-    h+="<div class='cp-item'>";
-    h+="<div class='cp-item-info'>";
-    h+="<div class='cp-item-label'>"+v.label+"</div>";
-    h+="<div class='cp-item-time'>"+v.time+"</div>";
-    h+="</div>";
-    h+="<div class='cp-item-amount pos'>+"+fmt(v.montant)+"</div>";
-    h+="<button class='cp-del' onclick='deleteAutreVente("+realIdx+")'>✕</button>";
-    h+="</div>";
+    h+="<div class='cp-item'><div class='cp-item-info'><div class='cp-item-label'>"+v.label+"</div><div class='cp-item-time'>"+v.time+"</div></div>";
+    h+="<div class='cp-item-amount' style='color:var(--green)'>+"+fmt(v.montant)+"</div>";
+    h+="<button class='cp-del' onclick='deleteAutreVente("+realIdx+")'>✕</button></div>";
   });
   liste.innerHTML=h;
 }
+
+// ── DONS & GAINS OBJETS ──────────────────────────────────────────
+window.setGainPreset=function(label,valeur,btn){
+  document.getElementById("gainLabel").value=label;document.getElementById("gainValeur").value=valeur;
+  document.querySelectorAll("#gainPresets .billet-btn").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");
+};
+window.addDon=function(){
+  var label=document.getElementById("donLabel").value.trim();
+  var raw=(document.getElementById("donValeur").value||"").replace(",",".");var valeur=parseFloat(raw)||0;
+  if(!label){showToast("Entrez un article pour le don");return;}
+  var now=new Date();
+  donsTombola.push({label:label,valeur:valeur,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR")});
+  document.getElementById("donLabel").value="";document.getElementById("donValeur").value="";
+  renderDons();sauvegarder();showToast("Don note: "+label);
+};
+window.deleteDon=function(idx){donsTombola.splice(idx,1);renderDons();sauvegarder();};
+window.addGainObjet=function(){
+  var label=document.getElementById("gainLabel").value.trim();
+  var raw=(document.getElementById("gainValeur").value||"").replace(",",".");var valeur=parseFloat(raw)||0;
+  if(!label){showToast("Entrez un objet gagne");return;}
+  var now=new Date();
+  gainsObjets.push({label:label,valeur:valeur,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR")});
+  document.getElementById("gainLabel").value="";document.getElementById("gainValeur").value="";
+  document.querySelectorAll("#gainPresets .billet-btn").forEach(function(b){b.classList.remove("sel");});
+  renderDons();sauvegarder();showToast("Gain note: "+label);
+};
+window.deleteGainObjet=function(idx){gainsObjets.splice(idx,1);renderDons();sauvegarder();};
+function renderDons(){
+  var donsListe=document.getElementById("donsListe");
+  var donsTotal=donsTombola.reduce(function(s,d){return s+d.valeur;},0);
+  var donsTotalEl=document.getElementById("donsTotalVal");if(donsTotalEl)donsTotalEl.textContent=fmt(donsTotal);
+  if(donsListe){
+    if(!donsTombola.length){donsListe.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:8px'>Aucun don</div>";}
+    else{
+      var h="";donsTombola.slice().reverse().forEach(function(d,i){var ri=donsTombola.length-1-i;
+        h+="<div class='cp-item'><div class='cp-item-info'><div class='cp-item-label'>"+d.label+"</div><div class='cp-item-time'>"+d.time+"</div></div>";
+        h+="<div class='cp-item-amount' style='color:var(--amber)'>"+fmt(d.valeur)+"</div>";
+        h+="<button class='cp-del' onclick='deleteDon("+ri+")'>✕</button></div>";
+      });donsListe.innerHTML=h;
+    }
+  }
+  var gainsListe=document.getElementById("gainsObjetsListe");
+  var gainsTotal=gainsObjets.reduce(function(s,g){return s+g.valeur;},0);
+  var gainsTotalEl=document.getElementById("gainsTotalVal");if(gainsTotalEl)gainsTotalEl.textContent=fmt(gainsTotal);
+  if(gainsListe){
+    if(!gainsObjets.length){gainsListe.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:8px'>Aucun gain note</div>";}
+    else{
+      var h2="";gainsObjets.slice().reverse().forEach(function(g,i){var ri=gainsObjets.length-1-i;
+        h2+="<div class='cp-item'><div class='cp-item-info'><div class='cp-item-label'>🎡 "+g.label+"</div><div class='cp-item-time'>"+g.time+"</div></div>";
+        h2+="<div class='cp-item-amount' style='color:var(--purple)'>"+fmt(g.valeur)+"</div>";
+        h2+="<button class='cp-del' onclick='deleteGainObjet("+ri+")'>✕</button></div>";
+      });gainsListe.innerHTML=h2;
+    }
+  }
+}
+
+// ── MONNAIE ──────────────────────────────────────────────────────
+function getTotal(){var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var disc=parseFloat(document.getElementById("discountInput").value)||0;return sub-sub*disc/100;}
+window.setBillet=function(montant,btn){document.getElementById("billetCustom").value=montant;document.querySelectorAll(".billet-btn").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");setTimeout(calcMonnaie,0);};
+function calcMonnaie(){
+  var raw=(document.getElementById("billetCustom").value||"").trim().replace(",",".");var billet=parseFloat(raw);var total=getTotal();var res=document.getElementById("monnaieResult");
+  if(isNaN(billet)||billet<=0){res.textContent="";res.style.background="";return;}
+  if(billet<total-0.005){res.style.background="rgba(233,69,96,.1)";res.style.color="var(--accent)";res.textContent="⚠️ Insuffisant — manque "+fmt(total-billet);}
+  else if(Math.abs(billet-total)<0.005){res.style.background="rgba(46,204,143,.1)";res.style.color="var(--green)";res.textContent="✅ Compte exact !";}
+  else{var monnaie=Math.round((billet-total)*100)/100;res.style.background="rgba(46,204,143,.1)";res.style.color="var(--green)";res.textContent="💰 À rendre : "+fmt(monnaie);}
+}
+function attachBilletEvents(){var input=document.getElementById("billetCustom");if(!input)return;["input","keyup","keydown","paste","change"].forEach(function(evt){input.addEventListener(evt,function(){setTimeout(calcMonnaie,0);});});}
 
 var toastTimer;
 function showToast(msg,isWheel){
@@ -1704,6 +1775,7 @@ renderStockPanel();
 renderPromoCodes();
 renderCaisse();
 renderAutres();
+renderDons();
 renderCart();
 updateTotals();
 attachBilletEvents();
