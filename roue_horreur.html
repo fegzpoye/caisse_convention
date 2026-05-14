@@ -390,13 +390,16 @@ function drawWheel(angle){
     ctx.translate(CX+Math.cos(mid)*(R*.78),CY+Math.sin(mid)*(R*.78));
     ctx.rotate(mid+Math.PI/2);
     const isLose=p.type==='lose';
-    ctx.font=`bold ${isLose?11:13}px "Exo 2",sans-serif`;
-    ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillStyle=isLose?'rgba(255,255,255,.3)':'#ff9999';
-    ctx.shadowColor='rgba(0,0,0,1)';ctx.shadowBlur=6;
-    ctx.fillText(p.label,0,0);
-    ctx.restore();
-  });
+   ctx.font=`bold ${isLose?10:12}px "Exo 2",sans-serif`;
+ctx.textAlign='center';ctx.textBaseline='middle';
+ctx.fillStyle=isLose?'rgba(255,255,255,.3)':'#ff9999';
+ctx.shadowColor='rgba(0,0,0,1)';ctx.shadowBlur=6;
+// Tronquer si trop long
+var maxW=R*.45;
+var txt=p.label;
+while(ctx.measureText(txt).width>maxW&&txt.length>3){txt=txt.slice(0,-1);}
+if(txt!==p.label)txt+='..';
+ctx.fillText(txt,0,0);
 
   // Cercle extérieur rouge sang
   ctx.beginPath();ctx.arc(CX,CY,R,0,2*Math.PI);
