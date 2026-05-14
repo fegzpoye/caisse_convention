@@ -947,7 +947,7 @@ function renderProducts(){
     var isOut=stock<=0;
     var isLow=stock>0&&stock<=3;
     var desc=p.desc?"<br><span style='font-size:10px;color:var(--text3)'>"+p.desc+"</span>":"";
-    var cl=p.type==="sublim"?"Sub":p.type==="pack"?"Pack":"3D";
+    var cl=p.type==="sublim"?"Sub":p.type==="pack"?"Pack":p.type==="brod"?"Brod":p.type==="flex"?"Flex":"3D";
     var stockBadge="";
     if(stock<99){
       if(isOut) stockBadge="<span class='stock-badge stock-out'>0 restant</span>";
