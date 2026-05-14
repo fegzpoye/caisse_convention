@@ -366,7 +366,7 @@ onValue(ref(db,'.info/connected'),(snap)=>{
 drawWheel(currentAngle);
 
 
-// ── OFFRE FLASH PREMIUM — Bas + Côtés ──────────────────────────
+// ── OFFRE FLASH PREMIUM — Haut + Bas + Côtés ───────────────────
 let flashBannerTimer=null;
 
 (function injectFlashStyles(){
@@ -375,17 +375,19 @@ let flashBannerTimer=null;
   s.textContent=`
     @keyframes flashSlideUp{from{transform:translateY(120%);opacity:0}to{transform:translateY(0);opacity:1}}
     @keyframes flashSlideDown2{from{transform:translateY(0);opacity:1}to{transform:translateY(120%);opacity:0}}
+    @keyframes flashSlideInTop{from{transform:translateY(-120%);opacity:0}to{transform:translateY(0);opacity:1}}
+    @keyframes flashSlideOutTop{from{transform:translateY(0);opacity:1}to{transform:translateY(-120%);opacity:0}}
     @keyframes flashSlideInLeft{from{transform:translateX(-120%);opacity:0}to{transform:translateX(0);opacity:1}}
     @keyframes flashSlideOutLeft{from{transform:translateX(0);opacity:1}to{transform:translateX(-120%);opacity:0}}
     @keyframes flashSlideInRight{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
     @keyframes flashSlideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
-    @keyframes flashPulseGlow{0%,100%{opacity:.85}50%{opacity:1}}
     @keyframes flashTextGlow{0%,100%{text-shadow:0 0 20px rgba(255,215,0,.5)}50%{text-shadow:0 0 50px rgba(255,215,0,1),0 0 80px rgba(255,165,0,.8)}}
     @keyframes flashBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
     @keyframes flashScan{0%{left:-100%}100%{left:200%}}
-    @keyframes flashRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
     #flashBottom{animation:flashSlideUp .6s cubic-bezier(.34,1.56,.64,1) forwards;}
     #flashBottom.hiding{animation:flashSlideDown2 .4s ease-in forwards;}
+    #flashTop{animation:flashSlideInTop .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+    #flashTop.hiding{animation:flashSlideOutTop .4s ease-in forwards;}
     #flashLeft{animation:flashSlideInLeft .6s cubic-bezier(.34,1.56,.64,1) forwards;}
     #flashLeft.hiding{animation:flashSlideOutLeft .4s ease-in forwards;}
     #flashRight{animation:flashSlideInRight .6s cubic-bezier(.34,1.56,.64,1) forwards;}
@@ -393,7 +395,6 @@ let flashBannerTimer=null;
     .flash-pct-big{animation:flashTextGlow 1.5s ease-in-out infinite,flashBounce 2s ease-in-out infinite;}
     .flash-bolt-anim{animation:flashBounce .8s ease-in-out infinite alternate;}
     .flash-scan-line{animation:flashScan 2s linear infinite;}
-    .flash-timer-val{transition:color .3s;}
   `;
   document.head.appendChild(s);
 })();
@@ -414,65 +415,80 @@ function mkScanLine(){
 }
 
 function showAllFlashBanners(pct,endTime){
-  // Supprimer anciens
-  ['flashBottom','flashLeft','flashRight'].forEach(id=>{
+  ['flashBottom','flashTop','flashLeft','flashRight'].forEach(id=>{
     const old=document.getElementById(id);if(old)old.remove();
   });
   if(flashBannerTimer){clearInterval(flashBannerTimer);flashBannerTimer=null;}
 
   const BG='linear-gradient(135deg,#0d0005 0%,#2d0010 25%,#c42d4a 50%,#2d0010 75%,#0d0005 100%)';
-  const BORDER='3px solid #E94560';
+  const BORDER_B='3px solid #E94560';
+  const W=90; // largeur des panneaux côtés
+  const H_TOP=70; // hauteur haut
+  const H_BOT=100; // hauteur bas
 
   // ── BANDEAU BAS ────────────────────────────────────────────
   const bottom=document.createElement('div');
   bottom.id='flashBottom';
-  bottom.style.cssText=`position:fixed;bottom:0;left:0;right:0;height:100px;background:${BG};border-top:${BORDER};z-index:9999;display:flex;align-items:center;justify-content:space-between;padding:0 50px;gap:30px;overflow:hidden;box-shadow:0 -6px 50px rgba(233,69,96,.6)`;
+  bottom.style.cssText=`position:fixed;bottom:0;left:${W}px;right:${W}px;height:${H_BOT}px;background:${BG};border-top:${BORDER_B};z-index:9999;display:flex;align-items:center;justify-content:space-between;padding:0 40px;gap:20px;overflow:hidden;box-shadow:0 -6px 50px rgba(233,69,96,.6)`;
   bottom.appendChild(mkScanLine());
   bottom.innerHTML+=`
-    <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
-      <div class="flash-bolt-anim" style="font-size:3rem">⚡</div>
+    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div class="flash-bolt-anim" style="font-size:2.8rem">⚡</div>
       <div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:6px;color:rgba(255,255,255,.55)">OFFRE EXCLUSIVE</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.9rem;letter-spacing:3px;color:#fff;line-height:1.1">OFFRE FLASH !</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:.65rem;letter-spacing:6px;color:rgba(255,255,255,.55)">OFFRE EXCLUSIVE</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;color:#fff;line-height:1.1">OFFRE FLASH !</div>
       </div>
     </div>
     <div style="text-align:center;flex:1">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:7px;color:rgba(255,255,255,.6)">REMISE EXCEPTIONNELLE</div>
-      <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:4.5rem;line-height:1;letter-spacing:4px;color:#FFD700">-${pct}%</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:7px;color:rgba(255,255,255,.6)">REMISE EXCEPTIONNELLE</div>
+      <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;letter-spacing:4px;color:#FFD700">-${pct}%</div>
     </div>
-    <div style="display:flex;align-items:center;gap:14px;flex-shrink:0">
-      <div style="text-align:center;background:rgba(0,0,0,.45);border:2px solid rgba(255,215,0,.35);border-radius:12px;padding:8px 20px;min-width:120px">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:.6rem;letter-spacing:4px;color:rgba(255,255,255,.45);margin-bottom:2px">TEMPS RESTANT</div>
-        <div class="flash-timer-val" id="flashTimerBottom" style="font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:5px;color:#FFD700;line-height:1">--:--</div>
+    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div style="text-align:center;background:rgba(0,0,0,.45);border:2px solid rgba(255,215,0,.35);border-radius:12px;padding:6px 18px;min-width:110px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:.55rem;letter-spacing:4px;color:rgba(255,255,255,.45);margin-bottom:2px">TEMPS RESTANT</div>
+        <div id="flashTimerBottom" style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:5px;color:#FFD700;line-height:1;transition:color .3s">--:--</div>
       </div>
-      <div class="flash-bolt-anim" style="font-size:3rem;animation-delay:.3s">⚡</div>
+      <div class="flash-bolt-anim" style="font-size:2.8rem;animation-delay:.3s">⚡</div>
     </div>`;
   document.body.appendChild(bottom);
+
+  // ── BANDEAU HAUT ───────────────────────────────────────────
+  const top=document.createElement('div');
+  top.id='flashTop';
+  top.style.cssText=`position:fixed;top:0;left:${W}px;right:${W}px;height:${H_TOP}px;background:${BG};border-bottom:${BORDER_B};z-index:9999;display:flex;align-items:center;justify-content:center;gap:28px;overflow:hidden;box-shadow:0 6px 50px rgba(233,69,96,.6)`;
+  top.appendChild(mkScanLine());
+  top.innerHTML+=`
+    <div class="flash-bolt-anim" style="font-size:2.2rem">⚡</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:8px;color:#fff">OFFRE FLASH</div>
+    <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:4px;color:#FFD700">-${pct}%</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:6px;color:rgba(255,255,255,.7)">SUR TOUT LE STAND !</div>
+    <div class="flash-bolt-anim" style="font-size:2.2rem;animation-delay:.3s">⚡</div>`;
+  document.body.appendChild(top);
 
   // ── BANDEAU GAUCHE ─────────────────────────────────────────
   const left=document.createElement('div');
   left.id='flashLeft';
-  left.style.cssText=`position:fixed;top:0;left:0;bottom:100px;width:90px;background:${BG};border-right:${BORDER};z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;overflow:hidden;box-shadow:6px 0 50px rgba(233,69,96,.5)`;
+  left.style.cssText=`position:fixed;top:0;left:0;bottom:0;width:${W}px;background:${BG};border-right:${BORDER_B};z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden;box-shadow:6px 0 50px rgba(233,69,96,.5)`;
   left.appendChild(mkScanLine());
   left.innerHTML+=`
-    <div class="flash-bolt-anim" style="font-size:2.2rem">⚡</div>
-    <div style="writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:6px;color:#fff;white-space:nowrap">OFFRE FLASH</div>
-    <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#FFD700;letter-spacing:2px">-${pct}%</div>
-    <div style="writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:4px;color:rgba(255,255,255,.6)">SUR TOUT</div>
-    <div class="flash-bolt-anim" style="font-size:2.2rem;animation-delay:.4s">⚡</div>`;
+    <div class="flash-bolt-anim" style="font-size:2rem">⚡</div>
+    <div style="writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:6px;color:#fff;white-space:nowrap">OFFRE FLASH</div>
+    <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:#FFD700;letter-spacing:2px">-${pct}%</div>
+    <div style="writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:4px;color:rgba(255,255,255,.6)">SUR TOUT</div>
+    <div class="flash-bolt-anim" style="font-size:2rem;animation-delay:.4s">⚡</div>`;
   document.body.appendChild(left);
 
   // ── BANDEAU DROIT ──────────────────────────────────────────
   const right=document.createElement('div');
   right.id='flashRight';
-  right.style.cssText=`position:fixed;top:0;right:0;bottom:100px;width:90px;background:${BG};border-left:${BORDER};z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;overflow:hidden;box-shadow:-6px 0 50px rgba(233,69,96,.5)`;
+  right.style.cssText=`position:fixed;top:0;right:0;bottom:0;width:${W}px;background:${BG};border-left:${BORDER_B};z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden;box-shadow:-6px 0 50px rgba(233,69,96,.5)`;
   right.appendChild(mkScanLine());
   right.innerHTML+=`
-    <div class="flash-bolt-anim" style="font-size:2.2rem">⚡</div>
-    <div style="writing-mode:vertical-rl;text-orientation:mixed;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:6px;color:#fff;white-space:nowrap">OFFRE FLASH</div>
-    <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:2rem;color:#FFD700;letter-spacing:2px">-${pct}%</div>
-    <div style="writing-mode:vertical-rl;text-orientation:mixed;font-family:'Bebas Neue',sans-serif;font-size:.75rem;letter-spacing:4px;color:rgba(255,255,255,.6)">SUR TOUT</div>
-    <div class="flash-bolt-anim" style="font-size:2.2rem;animation-delay:.4s">⚡</div>`;
+    <div class="flash-bolt-anim" style="font-size:2rem">⚡</div>
+    <div style="writing-mode:vertical-rl;text-orientation:mixed;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:6px;color:#fff;white-space:nowrap">OFFRE FLASH</div>
+    <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:#FFD700;letter-spacing:2px">-${pct}%</div>
+    <div style="writing-mode:vertical-rl;text-orientation:mixed;font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:4px;color:rgba(255,255,255,.6)">SUR TOUT</div>
+    <div class="flash-bolt-anim" style="font-size:2rem;animation-delay:.4s">⚡</div>`;
   document.body.appendChild(right);
 
   // ── COMPTE À REBOURS ───────────────────────────────────────
@@ -494,12 +510,9 @@ function showAllFlashBanners(pct,endTime){
 
 function hideAllFlashBanners(){
   if(flashBannerTimer){clearInterval(flashBannerTimer);flashBannerTimer=null;}
-  ['flashBottom','flashLeft','flashRight'].forEach(id=>{
+  ['flashBottom','flashTop','flashLeft','flashRight'].forEach(id=>{
     const b=document.getElementById(id);
-    if(b){
-      b.classList.add('hiding');
-      setTimeout(()=>{if(b&&b.parentNode)b.remove();},450);
-    }
+    if(b){b.classList.add('hiding');setTimeout(()=>{if(b&&b.parentNode)b.remove();},450);}
   });
 }
 </script>
