@@ -1499,72 +1499,19 @@ window.stopOffreFlash=function(){
 function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
 
 // ── CODES PROMO ────────────────────────────────────────────────
-window.togglePromo=function(){document.getElementById("promoPanel").classList.toggle("open");renderPromoCodes();};
 
-window.addPromoCode=function(){
-  var code=document.getElementById("ppNewCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
-  var pct=parseInt(document.getElementById("ppNewPct").value)||0;
-  if(!code){showToast("Entrez un nom de code");return;}
-  if(pct<1||pct>99){showToast("Remise entre 1 et 99%");return;}
-  promoCodes[code]={pct:pct,uses:0};
-  document.getElementById("ppNewCode").value="";document.getElementById("ppNewPct").value="";
-  renderPromoCodes();sauvegarder();showToast("Code "+code+" cree (-"+pct+"%)");
-};
-window.deletePromoCode=function(code){
-  if(activePromo&&activePromo.code===code){activePromo=null;var pci=document.getElementById("promoCodeInput");if(pci)pci.value="";var ps=document.getElementById("promoStatus");if(ps){ps.textContent="";ps.className="promo-status";}updateTotals();}
-  delete promoCodes[code];renderPromoCodes();sauvegarder();
-};
-window.appliquerCode=function(){
-  var input=document.getElementById("promoCodeInput");var status=document.getElementById("promoStatus");
-  var code=input?input.value.trim().toUpperCase():"";
-  if(!code){activePromo=null;if(status){status.textContent="";status.className="promo-status";}updateTotals();return;}
-  if(promoCodes[code]){
-    activePromo={code:code,pct:promoCodes[code].pct};promoCodes[code].uses++;
-    if(status){status.textContent="OK -"+promoCodes[code].pct+"% applique";status.className="promo-status ok";}
-    renderPromoCodes();sauvegarder();updateTotals();showToast("Code "+code+" -"+promoCodes[code].pct+"% !");
-  }else{activePromo=null;if(status){status.textContent="Code inconnu";status.className="promo-status err";}updateTotals();}
-};
+
+
+
+
 
 // ── OFFRE FLASH ─────────────────────────────────────────────────
-window.toggleFlash=function(){var p=document.getElementById("flashPanel");p.classList.toggle("open");if(p.classList.contains("open")&&flashActive){document.getElementById("flashCountdownBox").style.display="block";document.getElementById("flashLaunchBtn").disabled=true;}};
-window.setFlashPct=function(val,btn){document.getElementById("flashPct").value=val;document.querySelectorAll(".flash-preset").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");updateFlashPreview();};
-window.setFlashTime=function(val,btn){document.getElementById("flashMin").value=val;document.querySelectorAll(".flash-time").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");updateFlashPreview();};
-function updateFlashPreview(){
-  var pct=parseInt(document.getElementById("flashPct").value)||0;var min=parseInt(document.getElementById("flashMin").value)||0;
-  var prev=document.getElementById("flashPreview");
-  if(pct>0&&min>0){prev.style.display="block";prev.innerHTML="<strong style='color:#E94560;font-size:15px'>-"+pct+"%</strong> pendant <strong style='color:var(--amber)'>"+min+" min</strong>";}
-  else{prev.style.display="none";}
-}
-window.lancerOffreFlash=function(){
-  var pct=parseInt(document.getElementById("flashPct").value)||0;var min=parseInt(document.getElementById("flashMin").value)||0;
-  if(pct<1||pct>99){showToast("Remise entre 1 et 99%");return;}if(min<1||min>60){showToast("Duree entre 1 et 60 min");return;}
-  var endTime=Date.now()+(min*60*1000);
-  set(ref(db,"flash/offer"),{pct:pct,endTime:endTime,active:true,startTime:Date.now()});
-  flashActive=true;document.getElementById("flashLaunchBtn").disabled=true;
-  document.getElementById("flashCountdownBox").style.display="block";
-  document.getElementById("flashActiveLabel").textContent="⚡ -"+pct+"% SUR TOUT LE STAND ⚡";
-  document.getElementById("btnFlash").classList.add("on");
-  if(flashTimer)clearInterval(flashTimer);
-  flashTimer=setInterval(function(){
-    var remaining=endTime-Date.now();if(remaining<=0){window.stopOffreFlash();return;}
-    var m=Math.floor(remaining/60000),s=Math.floor((remaining%60000)/1000);
-    var timeStr=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
-    var cv=document.getElementById("flashCountdownVal");
-    if(cv){cv.textContent=timeStr;if(remaining<30000){cv.style.color="#FF3333";cv.style.fontSize="52px";}else if(remaining<60000){cv.style.color="#FF8C00";cv.style.fontSize="48px";}else{cv.style.color="#E94560";cv.style.fontSize="48px";}}
-    var btn=document.getElementById("btnFlash");
-    if(btn){btn.textContent="⚡ "+timeStr;if(remaining<30000){btn.style.background="linear-gradient(135deg,#FF3333,#cc0000)";}else if(remaining<60000){btn.style.background="linear-gradient(135deg,#FF8C00,#cc7000)";}else{btn.style.background="linear-gradient(135deg,#E94560,#c42d4a)";}}
-  },1000);
-  showToast("Offre flash -"+pct+"% lancee pour "+min+" min !");
-};
-window.stopOffreFlash=function(){
-  if(flashTimer){clearInterval(flashTimer);flashTimer=null;}flashActive=false;
-  try{set(ref(db,"flash/offer"),{active:false});}catch(e){}
-  var lb=document.getElementById("flashLaunchBtn");if(lb)lb.disabled=false;
-  var cb=document.getElementById("flashCountdownBox");if(cb)cb.style.display="none";
-  var cv=document.getElementById("flashCountdownVal");if(cv)cv.textContent="--:--";
-  var bf=document.getElementById("btnFlash");if(bf){bf.classList.remove("on");bf.textContent="⚡ Flash";bf.style.background="linear-gradient(135deg,#E94560,#c42d4a)";}
-  showToast("Offre flash terminee");
-};
+
+
+
+
+
+
 function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
 
 // ── CAISSE ──────────────────────────────────────────────────────
@@ -1703,15 +1650,9 @@ function renderDons(){
 }
 
 // ── MONNAIE ──────────────────────────────────────────────────────
-function getTotal(){var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var disc=parseFloat(document.getElementById("discountInput").value)||0;return sub-sub*disc/100;}
-window.setBillet=function(montant,btn){document.getElementById("billetCustom").value=montant;document.querySelectorAll(".billet-btn").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");setTimeout(calcMonnaie,0);};
-function calcMonnaie(){
-  var raw=(document.getElementById("billetCustom").value||"").trim().replace(",",".");var billet=parseFloat(raw);var total=getTotal();var res=document.getElementById("monnaieResult");
-  if(isNaN(billet)||billet<=0){res.textContent="";res.style.background="";return;}
-  if(billet<total-0.005){res.style.background="rgba(233,69,96,.1)";res.style.color="var(--accent)";res.textContent="⚠️ Insuffisant — manque "+fmt(total-billet);}
-  else if(Math.abs(billet-total)<0.005){res.style.background="rgba(46,204,143,.1)";res.style.color="var(--green)";res.textContent="✅ Compte exact !";}
-  else{var monnaie=Math.round((billet-total)*100)/100;res.style.background="rgba(46,204,143,.1)";res.style.color="var(--green)";res.textContent="💰 À rendre : "+fmt(monnaie);}
-}
+
+
+
 function attachBilletEvents(){var input=document.getElementById("billetCustom");if(!input)return;["input","keyup","keydown","paste","change"].forEach(function(evt){input.addEventListener(evt,function(){setTimeout(calcMonnaie,0);});});}
 
 var toastTimer;
@@ -1722,13 +1663,7 @@ function showToast(msg,isWheel){
 }
 
 // ── ATTACHER EVENTS BILLET ────────────────────────────────────
-function attachBilletEvents(){
-  var input=document.getElementById("billetCustom");
-  if(!input)return;
-  ["input","keyup","keydown","paste","change"].forEach(function(evt){
-    input.addEventListener(evt,function(){setTimeout(calcMonnaie,0);});
-  });
-}
+
 
 // ── INIT ──────────────────────────────────────────────────────
 // Vider localStorage corrompu (clés string au lieu d'int)
