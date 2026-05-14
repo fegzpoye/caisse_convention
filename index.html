@@ -887,7 +887,7 @@ function sauvegarder(){
       tickets:tickets,totalCA:totalCA,salesData:salesData,
       stockData:stockData,wheelGains:wheelGains,clients:clients,
       promoCodes:promoCodes,fondCaisse:fondCaisse,sortiesCaisse:sortiesCaisse,
-      autresVentes:autresVentes,donsTombola:donsTombola,gainsObjets:gainsObjets,promoCodes:promoCodes,
+      autresVentes:autresVentes,donsTombola:donsTombola,gainsObjets:gainsObjets,
       date:new Date().toLocaleDateString("fr-FR")
     }));
     var ind=document.getElementById("saveIndicator");
@@ -1281,7 +1281,7 @@ window.closeReset=function(){document.getElementById("modalReset").classList.rem
 window.doReset=function(){
   tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];activePromo=null;
   fondCaisse=0;sortiesCaisse=[];autresVentes=[];donsTombola=[];gainsObjets=[];
-  if(typeof );
+  if(typeof window.stopOffreFlash==="function")window.stopOffreFlash();
   document.getElementById("nbVentes").textContent="0";
   document.getElementById("caJour").textContent="0,00\u00a0€";
   document.getElementById("caTotal").textContent="0,00\u00a0€";
