@@ -239,6 +239,38 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
+/* CAISSE & AUTRES */
+.caisse-panel{position:absolute;top:0;right:0;bottom:0;width:320px;background:var(--surface);border-left:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:155}
+.caisse-panel.open{transform:translateX(0)}
+.autres-panel{position:absolute;top:0;left:0;bottom:0;width:340px;background:var(--surface);border-right:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .25s ease;z-index:155}
+.autres-panel.open{transform:translateX(0)}
+.cp-header{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.cp-header h3{font-size:13px;font-weight:600}
+.cp-body{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.cp-section-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.cp-solde-box{background:linear-gradient(135deg,rgba(46,204,143,.1),rgba(46,204,143,.05));border:1px solid rgba(46,204,143,.3);border-radius:var(--r-sm);padding:14px;text-align:center}
+.cp-solde-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.cp-solde-val{font-family:'DM Mono',monospace;font-size:32px;font-weight:700;color:var(--green);line-height:1}
+.cp-solde-detail{font-size:10px;color:var(--text3);margin-top:4px}
+.cp-fond-row{display:flex;gap:6px;align-items:center}
+.cp-input{flex:1;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:14px;font-weight:600;outline:none;text-align:center}
+.cp-input:focus{border-color:var(--green)}
+.cp-input::placeholder{color:var(--text3);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:400;text-align:left}
+.cp-btn{padding:8px 14px;border-radius:var(--r-sm);border:none;background:var(--green);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
+.cp-btn:active{transform:scale(.97)}
+.cp-btn-danger{background:rgba(233,69,96,.15);border:1px solid rgba(233,69,96,.3);color:#e94560}
+.cp-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;display:flex;align-items:center;gap:8px}
+.cp-item-info{flex:1}
+.cp-item-label{font-size:12px;font-weight:500;color:var(--text)}
+.cp-item-time{font-size:10px;color:var(--text3);margin-top:1px}
+.cp-item-amount{font-family:'DM Mono',monospace;font-size:13px;font-weight:600}
+.cp-item-amount.neg{color:#e94560}
+.cp-item-amount.pos{color:var(--green)}
+.cp-del{width:22px;height:22px;border-radius:50%;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cp-add-row{display:flex;flex-direction:column;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px}
+.btn-caisse{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all .12s}
+.btn-caisse:active{transform:scale(.96)}
+.stat-pill-solde{background:var(--surface2);border:1px solid var(--green);border-radius:99px;padding:5px 12px;font-size:12px;font-family:'DM Mono',monospace;white-space:nowrap;color:var(--green)}
 
 /* CODES PROMO */
 .promo-panel{position:absolute;top:0;right:0;bottom:0;width:300px;background:var(--surface);border-left:1px solid var(--border2);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:160}
@@ -312,9 +344,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   <div class="topbar-right">
     <div class="stat-pill"><span>Ventes</span><strong id="nbVentes">0</strong></div>
     <div class="stat-pill"><span>CA</span><strong id="caJour">0,00 €</strong></div>
+    <div class="stat-pill-solde"><span style="color:var(--text2);margin-right:4px">Solde</span><strong id="soldeCaisse">0,00 €</strong></div>
     <div class="fb-indicator"><div class="fb-dot-small" id="fbDotSmall"></div><span id="fbLabelSmall">...</span></div>
     <button class="btn-sm" onclick="toggleTickets()">Tickets</button>
     <button class="btn-sm" onclick="toggleStock()">📦 Stock</button>
+    <button class="btn-caisse" onclick="toggleCaisse()">💰 Caisse</button>
+    <button class="btn-caisse" onclick="toggleAutres()">📦 Autres</button>
     <button class="btn-xl" onclick="toggleExcel()">📊 Excel Live</button>
     <button class="btn-wheel" id="topWheelBtn" onclick="quickSpin()">🎡 Roue</button>
     <button class="btn-sm" onclick="togglePromo()">🏷️ Promos</button>
@@ -390,6 +425,74 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       <button class="pay-confirm" id="payBtn" onclick="confirmerPaiement()" disabled>
         Encaisser <span class="amount-badge" id="payBtnAmt">0,00 €</span>
       </button>
+    </div>
+  </div>
+</div>
+
+<!-- Panel Caisse -->
+<div class="caisse-panel" id="caissePanel">
+  <div class="cp-header">
+    <h3>💰 Caisse</h3>
+    <button class="btn-sm" onclick="toggleCaisse()">✕</button>
+  </div>
+  <div class="cp-body">
+    <div>
+      <div class="cp-section-title">Solde en temps réel</div>
+      <div class="cp-solde-box">
+        <div class="cp-solde-lbl">Solde caisse</div>
+        <div class="cp-solde-val" id="cpSoldeVal">0,00 €</div>
+        <div class="cp-solde-detail" id="cpSoldeDetail">Fond: 0€ + CA espèces: 0€ - Sorties: 0€</div>
+      </div>
+    </div>
+    <div>
+      <div class="cp-section-title">Fond de caisse de départ</div>
+      <div class="cp-fond-row">
+        <input class="cp-input" id="cpFond" type="text" inputmode="decimal" placeholder="Ex: 150">
+        <span style="font-size:13px;color:var(--text3)">€</span>
+        <button class="cp-btn" onclick="setFondCaisse()">OK</button>
+      </div>
+    </div>
+    <div>
+      <div class="cp-section-title">Sortie de caisse</div>
+      <div class="cp-add-row">
+        <input class="cp-input" id="cpSortieLabel" type="text" placeholder="Motif (ex: Repas, Parking...)" style="text-align:left;font-size:13px;font-weight:400;font-family:'DM Sans',sans-serif">
+        <div style="display:flex;gap:6px">
+          <input class="cp-input" id="cpSortieMontant" type="text" inputmode="decimal" placeholder="Montant €">
+          <button class="cp-btn cp-btn-danger" onclick="addSortie()">− Sortie</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cp-section-title">Historique</div>
+      <div id="cpHistorique"><div style="text-align:center;color:var(--text3);font-size:12px;padding:10px">Aucune opération</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Panel Autres ventes -->
+<div class="autres-panel" id="autresPanel">
+  <div class="cp-header">
+    <h3>📦 Autres ventes</h3>
+    <button class="btn-sm" onclick="toggleAutres()">✕</button>
+  </div>
+  <div class="cp-body">
+    <div>
+      <div class="cp-section-title">Ajouter une vente hors catalogue</div>
+      <div class="cp-add-row">
+        <input class="cp-input" id="autreLabel" type="text" placeholder="Description (ex: Dragon custom...)" style="text-align:left;font-size:13px;font-weight:400;font-family:'DM Sans',sans-serif">
+        <div style="display:flex;gap:6px">
+          <input class="cp-input" id="autreMontant" type="text" inputmode="decimal" placeholder="Prix €">
+          <button class="cp-btn" onclick="addAutreVente()">+ Vente</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="cp-section-title">Ventes hors catalogue (<span id="autresCount">0</span>)</div>
+      <div id="autresListe"><div style="text-align:center;color:var(--text3);font-size:12px;padding:10px">Aucune vente hors catalogue</div></div>
+    </div>
+    <div class="cp-solde-box" style="margin-top:4px">
+      <div class="cp-solde-lbl">Total autres ventes</div>
+      <div class="cp-solde-val" id="autresTotalVal" style="font-size:24px">0,00 €</div>
     </div>
   </div>
 </div>
@@ -718,6 +821,9 @@ var promoCodes={};
 var activePromo=null;
 var flashTimer=null;
 var flashActive=false;
+var fondCaisse=0;
+var sortiesCaisse=[];
+var autresVentes=[];
 
 // Stock de départ — ne s'applique QUE si aucun localStorage n'existe
 var STOCK_DEPART = {
@@ -790,6 +896,7 @@ function sauvegarder(){
     localStorage.setItem(SAVE_KEY,JSON.stringify({
       tickets:tickets,totalCA:totalCA,salesData:salesData,
       stockData:stockData,wheelGains:wheelGains,clients:clients,promoCodes:promoCodes,
+      fondCaisse:fondCaisse,sortiesCaisse:sortiesCaisse,autresVentes:autresVentes,
       date:new Date().toLocaleDateString("fr-FR")
     }));
     var ind=document.getElementById("saveIndicator");
@@ -815,6 +922,9 @@ function restaurer(){
     if(data.salesData){for(var sid in data.salesData){salesData[parseInt(sid)]=data.salesData[sid];}}
     if(data.stockData){for(var sid2 in data.stockData){stockData[parseInt(sid2)]=data.stockData[sid2];}}
     if(data.promoCodes){promoCodes=data.promoCodes;}
+    if(data.fondCaisse!==undefined){fondCaisse=data.fondCaisse;}
+    if(data.sortiesCaisse){sortiesCaisse=data.sortiesCaisse;}
+    if(data.autresVentes){autresVentes=data.autresVentes;}
     wheelGains=data.wheelGains||[];
     clients=data.clients||[];
     return tickets.length>0;
@@ -925,6 +1035,7 @@ function updateTotals(){
     document.getElementById("discountAmt").textContent="-"+fmt(discAmt)+lbl;
   }else{dRow.style.display="none";}
   document.getElementById("payBtn").disabled=(cart.length===0||!payMode);
+  updateSoldeCaisse();
 }
 
 window.selectMode=function(mode){
@@ -976,6 +1087,7 @@ window.confirmerPaiement=function(){
   window.resetWheelBtn();
   document.getElementById("modalOverlay").classList.add("open");
   renderTickets();renderExcelPanel();renderStockPanel();
+  updateSoldeCaisse();
   sauvegarder();
   showToast("✅ Encaissé !");
 };
@@ -1122,6 +1234,53 @@ window.downloadExcel=function(){
 
   XLSX.utils.book_append_sheet(wb, ws_stock, "Stock restant");
 
+  // ── Feuille Caisse ─────────────────────────────────────────
+  var caEspeces2=0;
+  tickets.forEach(function(t){if(t.mode==="Espèces")caEspeces2+=t.total;});
+  var autresTotal2=autresVentes.reduce(function(s,v){return s+v.montant;},0);
+  var totalSorties2=sortiesCaisse.reduce(function(s,v){return s+v.montant;},0);
+  var soldeFinal=fondCaisse+caEspeces2+autresTotal2-totalSorties2;
+  var aoa_caisse=[
+    ["CAISSE — "+today,"","",""],
+    ["Les projets de Shaya","","",""],
+    [],
+    ["FOND DE CAISSE DE DEPART","",parseFloat(fondCaisse.toFixed(2)),""],
+    ["CA ESPECES DU JOUR","",parseFloat(caEspeces2.toFixed(2)),""],
+    ["AUTRES VENTES","",parseFloat(autresTotal2.toFixed(2)),""],
+    ["TOTAL SORTIES","",parseFloat((-totalSorties2).toFixed(2)),""],
+    [],
+    ["SOLDE FINAL EN CAISSE","",parseFloat(soldeFinal.toFixed(2)),""],
+    [],
+    ["DETAIL DES SORTIES","","",""],
+    ["Date","Heure","Motif","Montant"]
+  ];
+  if(sortiesCaisse.length){
+    sortiesCaisse.forEach(function(s){
+      aoa_caisse.push([s.date,s.time,s.label,parseFloat((-s.montant).toFixed(2))]);
+    });
+  }else{aoa_caisse.push(["Aucune sortie","","",""]);}
+  var ws_caisse=XLSX.utils.aoa_to_sheet(aoa_caisse);
+  ws_caisse["!cols"]=[{wch:12},{wch:8},{wch:30},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,ws_caisse,"Caisse");
+
+  // ── Feuille Autres ventes ───────────────────────────────────
+  var aoa_autres=[
+    ["AUTRES VENTES — "+today,"",""],
+    ["Les projets de Shaya — Ventes hors catalogue","",""],
+    [],
+    ["Heure","Description","Montant TTC"]
+  ];
+  if(autresVentes.length){
+    autresVentes.forEach(function(v){
+      aoa_autres.push([v.time,v.label,parseFloat(v.montant.toFixed(2))]);
+    });
+    aoa_autres.push([]);
+    aoa_autres.push(["","TOTAL",parseFloat(autresVentes.reduce(function(s,v){return s+v.montant;},0).toFixed(2))]);
+  }else{aoa_autres.push(["Aucune vente hors catalogue","",""]);}
+  var ws_autres=XLSX.utils.aoa_to_sheet(aoa_autres);
+  ws_autres["!cols"]=[{wch:8},{wch:32},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,ws_autres,"Autres ventes");
+
   XLSX.writeFile(wb,"ventes_"+dateFile+".xlsx");
   showToast("📊 Excel téléchargé !");
 };
@@ -1145,7 +1304,9 @@ window.toggleExcel=function(){document.getElementById("excelPanel").classList.to
 window.askReset=function(){document.getElementById("modalReset").classList.add("open");};
 window.closeReset=function(){document.getElementById("modalReset").classList.remove("open");};
 window.doReset=function(){
-  tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];activePromo=null;if(typeof stopOffreFlash==="function")stopOffreFlash();
+  tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];activePromo=null;
+  fondCaisse=0;sortiesCaisse=[];autresVentes=[];
+  if(typeof stopOffreFlash==="function")stopOffreFlash();
   PRODUCTS.forEach(function(p){
     salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};
     // Remettre le stock de départ défini dans STOCK_DEPART
@@ -1158,6 +1319,7 @@ window.doReset=function(){
   ["btnCB","btnCash","btnSumup","btnVir"].forEach(function(id){var b=document.getElementById(id);if(b)b.classList.remove("selected");});
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   renderCart();updateTotals();renderTickets();renderExcelPanel();renderStockPanel();renderProducts();
+  renderCaisse();renderAutres();
   closeReset();
   showToast("✅ Nouveau jour démarré !");
 };
@@ -1335,6 +1497,165 @@ window.stopOffreFlash=function(){
 };
 function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
 
+// ── CAISSE ──────────────────────────────────────────────────────
+window.toggleCaisse=function(){
+  document.getElementById("caissePanel").classList.toggle("open");
+  renderCaisse();
+};
+window.toggleAutres=function(){
+  document.getElementById("autresPanel").classList.toggle("open");
+  renderAutres();
+};
+
+function updateSoldeCaisse(){
+  // CA espèces du jour
+  var caEspeces=0;
+  tickets.forEach(function(t){
+    if(t.mode==="Espèces")caEspeces+=t.total;
+  });
+  // Total autres ventes espèces (toutes comptées)
+  var autresTotal=autresVentes.reduce(function(s,v){return s+v.montant;},0);
+  // Total sorties
+  var totalSorties=sortiesCaisse.reduce(function(s,v){return s+v.montant;},0);
+  // Solde = fond + CA espèces + autres - sorties
+  var solde=fondCaisse+caEspeces+autresTotal-totalSorties;
+  // Mettre à jour topbar
+  var st=document.getElementById("soldeCaisse");
+  if(st){st.textContent=fmt(solde);}
+  // Mettre à jour panel
+  var sv=document.getElementById("cpSoldeVal");
+  if(sv){
+    sv.textContent=fmt(solde);
+    sv.style.color=solde>=0?"var(--green)":"#e94560";
+  }
+  var sd=document.getElementById("cpSoldeDetail");
+  if(sd){sd.textContent="Fond: "+fmt(fondCaisse)+" + Espèces: "+fmt(caEspeces)+" + Autres: "+fmt(autresTotal)+" - Sorties: "+fmt(totalSorties);}
+}
+
+window.setFondCaisse=function(){
+  var raw=(document.getElementById("cpFond").value||"").replace(",",".");
+  var val=parseFloat(raw)||0;
+  fondCaisse=val;
+  document.getElementById("cpFond").value=val;
+  updateSoldeCaisse();
+  renderCaisse();
+  sauvegarder();
+  showToast("Fond de caisse: "+fmt(val));
+};
+
+window.addSortie=function(){
+  var label=document.getElementById("cpSortieLabel").value.trim();
+  var raw=(document.getElementById("cpSortieMontant").value||"").replace(",",".");
+  var montant=parseFloat(raw)||0;
+  if(!label){showToast("Entrez un motif");return;}
+  if(montant<=0){showToast("Entrez un montant");return;}
+  var now=new Date();
+  sortiesCaisse.push({
+    label:label,montant:montant,
+    time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
+    date:now.toLocaleDateString("fr-FR")
+  });
+  document.getElementById("cpSortieLabel").value="";
+  document.getElementById("cpSortieMontant").value="";
+  updateSoldeCaisse();
+  renderCaisse();
+  sauvegarder();
+  showToast("Sortie: -"+fmt(montant));
+};
+
+window.deleteSortie=function(idx){
+  sortiesCaisse.splice(idx,1);
+  updateSoldeCaisse();renderCaisse();sauvegarder();
+};
+
+function renderCaisse(){
+  // Fond
+  var cpFond=document.getElementById("cpFond");
+  if(cpFond&&!cpFond.value)cpFond.value=fondCaisse||"";
+  updateSoldeCaisse();
+  // Historique
+  var histo=document.getElementById("cpHistorique");
+  if(!histo)return;
+  if(!sortiesCaisse.length){
+    histo.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:10px'>Aucune sortie de caisse</div>";
+    return;
+  }
+  var h="";
+  sortiesCaisse.slice().reverse().forEach(function(s,i){
+    var realIdx=sortiesCaisse.length-1-i;
+    h+="<div class='cp-item'>";
+    h+="<div class='cp-item-info'>";
+    h+="<div class='cp-item-label'>"+s.label+"</div>";
+    h+="<div class='cp-item-time'>"+s.time+" · "+s.date+"</div>";
+    h+="</div>";
+    h+="<div class='cp-item-amount neg'>-"+fmt(s.montant)+"</div>";
+    h+="<button class='cp-del' onclick='deleteSortie("+realIdx+")'>✕</button>";
+    h+="</div>";
+  });
+  histo.innerHTML=h;
+}
+
+// ── AUTRES VENTES ────────────────────────────────────────────────
+window.addAutreVente=function(){
+  var label=document.getElementById("autreLabel").value.trim();
+  var raw=(document.getElementById("autreMontant").value||"").replace(",",".");
+  var montant=parseFloat(raw)||0;
+  if(!label){showToast("Entrez une description");return;}
+  if(montant<=0){showToast("Entrez un montant");return;}
+  var now=new Date();
+  autresVentes.push({
+    label:label,montant:montant,
+    time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
+    date:now.toLocaleDateString("fr-FR")
+  });
+  totalCA+=montant;
+  document.getElementById("nbVentes").textContent=tickets.length+autresVentes.length;
+  document.getElementById("caJour").textContent=fmt(totalCA);
+  document.getElementById("caTotal").textContent=fmt(totalCA);
+  document.getElementById("autreLabel").value="";
+  document.getElementById("autreMontant").value="";
+  updateSoldeCaisse();
+  renderAutres();
+  sauvegarder();
+  showToast("Vente: +"+fmt(montant));
+};
+
+window.deleteAutreVente=function(idx){
+  totalCA-=autresVentes[idx].montant;
+  autresVentes.splice(idx,1);
+  document.getElementById("nbVentes").textContent=tickets.length+autresVentes.length;
+  document.getElementById("caJour").textContent=fmt(totalCA);
+  document.getElementById("caTotal").textContent=fmt(totalCA);
+  updateSoldeCaisse();renderAutres();sauvegarder();
+};
+
+function renderAutres(){
+  var liste=document.getElementById("autresListe");
+  var count=document.getElementById("autresCount");
+  var totalEl=document.getElementById("autresTotalVal");
+  if(!liste)return;
+  if(count)count.textContent=autresVentes.length;
+  var total=autresVentes.reduce(function(s,v){return s+v.montant;},0);
+  if(totalEl)totalEl.textContent=fmt(total);
+  if(!autresVentes.length){
+    liste.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:10px'>Aucune vente hors catalogue</div>";
+    return;
+  }
+  var h="";
+  autresVentes.slice().reverse().forEach(function(v,i){
+    var realIdx=autresVentes.length-1-i;
+    h+="<div class='cp-item'>";
+    h+="<div class='cp-item-info'>";
+    h+="<div class='cp-item-label'>"+v.label+"</div>";
+    h+="<div class='cp-item-time'>"+v.time+"</div>";
+    h+="</div>";
+    h+="<div class='cp-item-amount pos'>+"+fmt(v.montant)+"</div>";
+    h+="<button class='cp-del' onclick='deleteAutreVente("+realIdx+")'>✕</button>";
+    h+="</div>";
+  });
+  liste.innerHTML=h;
+}
+
 var toastTimer;
 function showToast(msg,isWheel){
   var el=document.getElementById("toast");
@@ -1381,7 +1702,8 @@ if(restored){
 renderProducts();
 renderStockPanel();
 renderPromoCodes();
-renderPromoCodes();
+renderCaisse();
+renderAutres();
 renderCart();
 updateTotals();
 attachBilletEvents();
