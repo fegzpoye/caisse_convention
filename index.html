@@ -1500,20 +1500,7 @@ function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
 
 // ── CODES PROMO ────────────────────────────────────────────────
 window.togglePromo=function(){document.getElementById("promoPanel").classList.toggle("open");renderPromoCodes();};
-function renderPromoCodes(){
-  var list=document.getElementById("ppCodesList");if(!list)return;
-  var codes=Object.keys(promoCodes);
-  if(!codes.length){list.innerHTML="<div style=\"text-align:center;color:var(--text3);font-size:12px;padding:10px\">Aucun code - ajoutez-en un ci-dessus</div>";return;}
-  var h="<div style=\"font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px\">Codes actifs</div>";
-  codes.forEach(function(code){
-    var p=promoCodes[code];var isAct=activePromo&&activePromo.code===code;
-    var cls=isAct?"pp-code-item active":"pp-code-item";
-    h+="<div class=\""+cls+"\"><div style=\"flex:1\"><div class=\"pp-code-badge\">"+code+"</div><div class=\"pp-code-uses\">"+p.uses+" utilisation(s)</div></div>";
-    h+="<div class=\"pp-code-pct\">-"+p.pct+"%</div>";
-    h+="<button class=\"pp-code-del\" onclick=\"deletePromoCode('"+code+"')\">X</button></div>";
-  });
-  list.innerHTML=h;
-}
+
 window.addPromoCode=function(){
   var code=document.getElementById("ppNewCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
   var pct=parseInt(document.getElementById("ppNewPct").value)||0;
