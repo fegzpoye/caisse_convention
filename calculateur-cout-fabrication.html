@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur Fabrication Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f11;--bg2:#17171b;--bg3:#1e1e24;--bg4:#25252d;--border:#2e2e3a;--border2:#3d3d50;--text:#f0f0f5;--text2:#9090a8;--text3:#5a5a72;--green:#6ee7b7;--purple:#a78bfa;--amber:#f59e0b;--pink:#f472b6;--blue:#38bdf8;--red:#f87171;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;}
+header{padding:1.2rem 2rem;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:100;}
+.hi{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.logo{width:36px;height:36px;background:linear-gradient(135deg,#6ee7b7,#a78bfa);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ht h1{font-size:.95rem;font-weight:600;}
+.ht p{font-size:.7rem;color:var(--text3);}
+.hbtn{margin-left:auto;padding:7px 13px;border-radius:7px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-family:'Sora',sans-serif;font-size:.75rem;cursor:pointer;transition:all .15s;}
+.hbtn:hover{background:var(--bg4);color:var(--text);}
+
+.tabwrap{max-width:1200px;margin:1.2rem auto 0;padding:0 2rem;}
+.tabs{display:flex;gap:5px;flex-wrap:wrap;}
+.tab{padding:6px 13px;border-radius:7px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);font-size:.76rem;font-family:'Sora',sans-serif;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.tab .dot{width:6px;height:6px;border-radius:50%;opacity:.7;}
+.tab:hover{color:var(--text);border-color:var(--border2);}
+.tab.active{font-weight:600;border-color:transparent;color:#0f0f11;}
+.tab[data-t="fdm"].active{background:var(--green);}
+.tab[data-t="resine"].active{background:var(--purple);}
+.tab[data-t="sublimation"].active{background:var(--amber);}
+.tab[data-t="broderie"].active{background:var(--pink);}
+.tab[data-t="flex"].active{background:var(--blue);}
+.tab[data-t="badge"].active{background:#fb923c;}
+
+.main{max-width:1200px;margin:0 auto;padding:1.5rem 2rem;display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start;}
+.sec{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.85rem;}
+.sh{padding:.8rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.sn{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--text3);background:var(--bg3);padding:2px 6px;border-radius:4px;border:1px solid var(--border);}
+.st{font-size:.8rem;font-weight:600;}
+.sb{padding:1rem;}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;}
+.f{display:flex;flex-direction:column;gap:4px;}
+.f label{font-size:.7rem;color:var(--text2);font-weight:500;}
+.f input,.f select{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);font-family:'Sora',sans-serif;font-size:.8rem;width:100%;-webkit-appearance:none;transition:border-color .15s;}
+.f input:focus,.f select:focus{outline:none;border-color:var(--border2);}
+.f select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%235a5a72' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px;}
+.f .hint{font-size:.63rem;color:var(--text3);}
+.full{grid-column:1/-1;}
+.cb{font-family:'DM Mono',monospace;font-size:.76rem;background:var(--bg4);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);margin-top:4px;}
+
+/* Sélecteur matière */
+.matrow{display:flex;gap:7px;align-items:flex-end;margin-bottom:.8rem;}
+.matrow .f{flex:1;}
+.btnlib{padding:7px 11px;border-radius:7px;border:1px solid var(--border2);background:var(--bg4);color:var(--text2);font-size:.72rem;cursor:pointer;white-space:nowrap;font-family:'Sora',sans-serif;transition:all .15s;flex-shrink:0;}
+.btnlib:hover{background:var(--bg3);color:var(--text);}
+
+/* Conditionnement */
+.condblock{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:.8rem;margin-top:.5rem;}
+.condblock .ctitle{font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:.6rem;}
+.condblock .fg3{gap:.6rem;}
+.cond-result{background:var(--bg4);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-family:'DM Mono',monospace;font-size:.72rem;color:var(--green);margin-top:.5rem;}
+
+/* Machine card */
+.machine-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.85rem;margin-bottom:.85rem;display:flex;gap:.9rem;align-items:center;}
+.machine-img{width:64px;height:64px;object-fit:contain;border-radius:7px;background:var(--bg4);flex-shrink:0;border:1px solid var(--border);}
+.machine-info .mi-name{font-size:.8rem;font-weight:600;}
+.machine-info .mi-spec{font-size:.68rem;color:var(--text2);margin-top:2px;}
+.machine-info .mi-watt{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--green);margin-top:4px;}
+
+/* Elec France */
+.elec-options{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:.7rem;}
+.elec-opt{padding:5px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg3);font-size:.7rem;cursor:pointer;font-family:'Sora',sans-serif;transition:all .15s;color:var(--text2);}
+.elec-opt.active{border-color:var(--green);color:var(--green);background:rgba(110,231,183,.08);}
+
+/* PANEL */
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:12px;position:sticky;top:85px;overflow:hidden;}
+.ph{padding:.8rem 1rem;border-bottom:1px solid var(--border);}
+.ph h2{font-size:.72rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;}
+.pb{padding:1rem;}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:.76rem;}
+.sr:last-child{border-bottom:none;}
+.sr .sl{color:var(--text2);}
+.sr .sv{font-family:'DM Mono',monospace;font-size:.73rem;}
+.bbar{height:5px;border-radius:99px;background:var(--bg4);display:flex;overflow:hidden;margin:.85rem 0 .65rem;gap:1px;}
+.bs{height:100%;transition:width .3s;}
+.bits{display:flex;flex-direction:column;gap:4px;}
+.bi{display:flex;align-items:center;gap:6px;font-size:.7rem;}
+.biD{width:7px;height:7px;border-radius:2px;flex-shrink:0;}
+.biL{color:var(--text2);flex:1;}
+.biP{font-family:'DM Mono',monospace;color:var(--text3);min-width:30px;text-align:right;}
+.ptot{margin-top:.9rem;padding-top:.9rem;border-top:2px solid var(--border2);}
+.pm{font-size:2rem;font-weight:700;letter-spacing:-.03em;line-height:1;}
+.pu{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text3);margin-top:2px;}
+.mblock{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.8rem;margin-top:.8rem;}
+.mblock label{font-size:.65rem;color:var(--text2);display:block;margin-bottom:4px;}
+.rw{display:flex;align-items:center;gap:8px;}
+.rw input[type=range]{flex:1;accent-color:var(--green);}
+.rv{font-family:'DM Mono',monospace;font-size:.8rem;min-width:34px;text-align:right;}
+.pline{display:flex;justify-content:space-between;align-items:baseline;margin-top:.85rem;padding-top:.85rem;border-top:1px solid var(--border);font-size:.76rem;}
+.pline .pl{color:var(--text2);}
+.pline .pv{font-family:'DM Mono',monospace;color:var(--text2);}
+.pttc{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+.pttc .ptl{font-size:.76rem;font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+.pttc .ptv{font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:600;}
+.punit{text-align:right;font-family:'DM Mono',monospace;font-size:.65rem;color:var(--text3);margin-top:2px;}
+.btnprint{display:block;width:100%;margin-top:.8rem;padding:8px;border-radius:7px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-family:'Sora',sans-serif;font-size:.73rem;cursor:pointer;transition:all .15s;}
+.btnprint:hover{background:var(--bg4);color:var(--text);}
+
+/* MODAL */
+.moverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:1000;align-items:center;justify-content:center;padding:1rem;}
+.moverlay.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:100%;max-width:680px;max-height:90vh;display:flex;flex-direction:column;}
+.mhead{padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.mhead h3{font-size:.9rem;font-weight:600;}
+.mclose{background:none;border:none;color:var(--text2);font-size:1.2rem;cursor:pointer;padding:3px 7px;border-radius:5px;}
+.mclose:hover{background:var(--bg3);}
+.mtabs{display:flex;gap:4px;padding:.8rem 1.2rem .4rem;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.mtab{padding:4px 11px;border-radius:5px;border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:.7rem;cursor:pointer;font-family:'Sora',sans-serif;transition:all .15s;}
+.mtab.active{background:var(--border2);color:var(--text);}
+.mbody{flex:1;overflow-y:auto;padding:1.1rem 1.2rem;}
+.mlist{display:flex;flex-direction:column;gap:.45rem;margin-bottom:1rem;}
+.mitem{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.65rem .9rem;display:flex;align-items:center;gap:9px;cursor:pointer;transition:all .15s;}
+.mitem:hover{border-color:var(--border2);}
+.mitem.sel{border-color:var(--green);background:rgba(110,231,183,.06);}
+.mitem .mn{flex:1;font-size:.78rem;font-weight:500;}
+.mitem .mbr{font-size:.65rem;color:var(--text3);}
+.mitem .mp{font-family:'DM Mono',monospace;font-size:.78rem;color:var(--text2);}
+.mitem .msel{font-size:.63rem;color:var(--green);}
+.mitem .mdel{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem;padding:2px 5px;border-radius:3px;}
+.mitem .mdel:hover{background:rgba(248,113,113,.15);color:var(--red);}
+.msect{font-size:.66rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin:.8rem 0 .4rem;font-weight:600;}
+.addform{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:.9rem;}
+.addform .aft{font-size:.75rem;font-weight:600;margin-bottom:.7rem;color:var(--text2);}
+.addgrid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.7rem;}
+.addgrid .f input{font-size:.76rem;padding:6px 9px;}
+.btnadd{padding:7px 16px;border-radius:6px;border:none;background:linear-gradient(135deg,#6ee7b7,#3db88a);color:#0f2a1e;font-family:'Sora',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;}
+
+.tsec{display:none;}.tsec.active{display:block;}
+
+/* Fils broderie */
+.filrow{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.65rem .9rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:.45rem;}
+.filrow .fn{flex:1;min-width:120px;}
+.filrow .fn .fname{font-size:.78rem;font-weight:500;}
+.filrow .fn .fbrand{font-size:.65rem;color:var(--text3);}
+.filrow .finputs{display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
+.filrow .finputs .f{min-width:75px;}
+.filrow .finputs .f input{width:65px;padding:5px 7px;font-size:.73rem;}
+.filrow .fdel{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.85rem;padding:2px 5px;border-radius:3px;}
+.filrow .fdel:hover{background:rgba(248,113,113,.15);color:var(--red);}
+
+@media(max-width:900px){.main{grid-template-columns:1fr;}.panel{position:static;}.fg,.fg3{grid-template-columns:1fr;}.addgrid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="hi">
+  <div class="logo">⬡</div>
+  <div class="ht"><h1>Calculateur de Coût de Fabrication</h1><p>FDM · Résine · Sublimation · Broderie · Flex · Badge — prix France 2026</p></div>
+  <button class="hbtn" onclick="openLib('fdm')">📦 Bibliothèque matériaux</button>
+</div>
+</header>
+
+<div class="tabwrap">
+<div class="tabs">
+  <button class="tab active" data-t="fdm"><span class="dot" style="background:var(--green)"></span>FDM</button>
+  <button class="tab" data-t="resine"><span class="dot" style="background:var(--purple)"></span>Résine</button>
+  <button class="tab" data-t="sublimation"><span class="dot" style="background:var(--amber)"></span>Sublimation</button>
+  <button class="tab" data-t="broderie"><span class="dot" style="background:var(--pink)"></span>Broderie</button>
+  <button class="tab" data-t="flex"><span class="dot" style="background:var(--blue)"></span>Flex / Vinyle</button>
+  <button class="tab" data-t="badge"><span class="dot" style="background:#fb923c"></span>Badge</button>
+</div>
+</div>
+
+<div class="main">
+<div class="lc">
+
+<!-- ===== FDM ===== -->
+<div class="tsec active" id="sec-fdm">
+  <div class="sec"><div class="sh"><span class="sn">01</span><span class="st">Projet & Machine</span></div><div class="sb">
+    <div class="fg" style="margin-bottom:.8rem">
+      <div class="f"><label>Nom du projet</label><input type="text" id="fdm-nom" placeholder="ex: Figurine dragon" oninput="calcFDM()"></div>
+      <div class="f"><label>Nombre de pièces</label><input type="number" id="fdm-pieces" value="1" min="1" oninput="calcFDM()"></div>
+    </div>
+    <div class="f" style="margin-bottom:.8rem"><label>Machine d'impression</label>
+      <select id="fdm-machine-sel" onchange="setFDMMachine()">
+        <option value="a1combo">Bambu Lab A1 Combo AMS — 95W moy.</option>
+        <option value="p1s">Bambu Lab P1S + AMS — 100W moy.</option>
+        <option value="custom">Autre machine (personnaliser)</option>
+      </select>
+    </div>
+    <div class="machine-card" id="fdm-mcard">
+      <img class="machine-img" id="fdm-mimg" src="https://eu.store.bambulab.com/cdn/shop/files/A1-Combo-Main.webp" alt="Bambu A1 Combo" onerror="this.style.display='none'">
+      <div class="machine-info">
+        <div class="mi-name" id="fdm-mname">Bambu Lab A1 Combo + AMS</div>
+        <div class="mi-spec" id="fdm-mspec">Volume : 256×256×256 mm — CoreXY — 4 couleurs AMS Lite</div>
+        <div class="mi-watt" id="fdm-mwatt">⚡ 95W moyenne impression PLA (pic 350W au démarrage)</div>
+      </div>
+    </div>
+    <div class="fg3">
+      <div class="f"><label>Puissance moy. (W)</label><input type="number" id="fdm-watt" value="95" oninput="calcFDM()"></div>
+      <div class="f"><label>Prix machine (€)</label><input type="number" id="fdm-machine-prix" value="699" oninput="calcFDM()"></div>
+      <div class="f"><label>Heures de vie</label><input type="number" id="fdm-vie" value="5000" oninput="calcFDM()"></div>
+      <div class="f"><label>Maintenance / heure (€)</label><input type="number" id="fdm-maint" value="0.07" step="0.01" oninput="calcFDM()"><span class="hint">Buse, courroies, PTFE...</span></div>
+      <div class="f"><label>Durée impression (h)</label><input type="number" id="fdm-heure" value="4" step="0.25" oninput="calcFDM()"></div>
+      <div class="f"><label>Risque d'échec (%)</label><input type="number" id="fdm-rate" value="3" oninput="calcFDM()"></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">02</span><span class="st">Filament</span></div><div class="sb">
+    <div class="matrow">
+      <div class="f" style="flex:1"><label>Filament sélectionné</label><input type="text" id="fdm-mat-nom" value="PLA Standard" readonly style="cursor:default;color:var(--text2);"></div>
+      <button class="btnlib" onclick="openLib('fdm')">📦 Choisir</button>
+    </div>
+    <div class="condblock">
+      <div class="ctitle">Prix par conditionnement d'achat</div>
+      <div class="fg3">
+        <div class="f"><label>Prix achat (€)</label><input type="number" id="fdm-cond-prix" value="18.00" step="0.50" oninput="calcFDMCond()"></div>
+        <div class="f"><label>Poids du rouleau (g)</label><input type="number" id="fdm-cond-poids" value="1000" step="50" oninput="calcFDMCond()"></div>
+        <div class="f"><label>= Prix au kg</label><input type="number" id="fdm-prix-kg" value="18.00" step="0.01" oninput="calcFDM()" style="color:var(--green);font-family:'DM Mono',monospace;"></div>
+      </div>
+      <div class="cond-result" id="fdm-cond-res">→ 0,018 €/g</div>
+    </div>
+    <div class="fg3" style="margin-top:.8rem">
+      <div class="f"><label>Poids utilisé (g)</label><input type="number" id="fdm-poids" value="50" oninput="calcFDM()"><span class="hint">Depuis votre slicer</span></div>
+      <div class="f"><label>Perte / purge (%)</label><input type="number" id="fdm-perte" value="5" oninput="calcFDM()"></div>
+      <div class="f"><label>Coût matière total</label><div class="cb" id="fdm-cout-mat">0,00 €</div></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">03</span><span class="st">Électricité France</span></div><div class="sb">
+    <div class="elec-options">
+      <div class="elec-opt active" onclick="setElec('fdm',0.1940,this)">Base 0,194 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('fdm',0.2065,this)">HP 0,2065 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('fdm',0.1579,this)">HC 0,1579 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('fdm',0,this)">Personnalisé</div>
+    </div>
+    <div class="fg3">
+      <div class="f"><label>Prix kWh (€)</label><input type="number" id="fdm-kwh" value="0.1940" step="0.001" oninput="calcFDM()"></div>
+      <div class="f"><label>Coût électricité</label><div class="cb" id="fdm-cout-elec">0,00 €</div></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">04</span><span class="st">Travail & Divers</span></div><div class="sb">
+    <div class="fg">
+      <div class="f"><label>Préparation / slicing (min)</label><input type="number" id="fdm-prep" value="20" oninput="calcFDM()"></div>
+      <div class="f"><label>Post-traitement (min)</label><input type="number" id="fdm-post" value="15" oninput="calcFDM()"></div>
+      <div class="f"><label>Taux horaire (€/h)</label><input type="number" id="fdm-taux" value="15" oninput="calcFDM()"></div>
+      <div class="f"><label>Emballage & frais (€)</label><input type="number" id="fdm-embal" value="0.50" step="0.10" oninput="calcFDM()"></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===== RÉSINE ===== -->
+<div class="tsec" id="sec-resine">
+  <div class="sec"><div class="sh"><span class="sn">01</span><span class="st">Projet & Machine</span></div><div class="sb">
+    <div class="fg" style="margin-bottom:.8rem">
+      <div class="f"><label>Nom du projet</label><input type="text" id="res-nom" placeholder="ex: Miniatures 28mm" oninput="calcResine()"></div>
+      <div class="f"><label>Nombre de pièces</label><input type="number" id="res-pieces" value="1" min="1" oninput="calcResine()"></div>
+    </div>
+    <div class="machine-card">
+      <img class="machine-img" src="https://eu.elegoo.com/cdn/shop/files/SATURN3ULTRA_1.jpg" alt="Elegoo Saturn 3 Ultra" onerror="this.style.display='none'">
+      <div class="machine-info">
+        <div class="mi-name">Elegoo Saturn 3 Ultra 12K</div>
+        <div class="mi-spec">Volume 218×122×260 mm — Écran 12K — Vitesse jusqu'à 150 mm/h</div>
+        <div class="mi-watt">⚡ 100W mesurés en impression — 180W alimentation max</div>
+      </div>
+    </div>
+    <div class="fg3">
+      <div class="f"><label>Puissance moy. (W)</label><input type="number" id="res-watt" value="100" oninput="calcResine()"></div>
+      <div class="f"><label>Durée impression (h)</label><input type="number" id="res-heure" value="3" step="0.25" oninput="calcResine()"></div>
+      <div class="f"><label>Prix machine (€)</label><input type="number" id="res-machine-prix" value="550" oninput="calcResine()"></div>
+      <div class="f"><label>Heures de vie écran</label><input type="number" id="res-vie" value="2000" oninput="calcResine()"><span class="hint">Écran LCD : ~2000h</span></div>
+      <div class="f"><label>Maintenance / heure (€)</label><input type="number" id="res-maint" value="0.18" step="0.01" oninput="calcResine()"><span class="hint">FEP/ACF, écran LCD...</span></div>
+      <div class="f"><label>Risque d'échec (%)</label><input type="number" id="res-rate" value="8" oninput="calcResine()"></div>
+    </div>
+    <div class="sec" style="margin-top:.8rem;border-color:var(--border)"><div class="sh"><span class="sn">+</span><span class="st">Wash & Cure — Consommation IPA</span></div><div class="sb">
+      <div class="fg3">
+        <div class="f"><label>Conso. IPA / lavage (ml)</label><input type="number" id="res-ipa-ml" value="50" oninput="calcResine()"><span class="hint">~30–80ml par print</span></div>
+        <div class="f"><label>Prix IPA (€/L)</label><input type="number" id="res-ipa-prix" value="3.50" step="0.10" oninput="calcResine()"><span class="hint">IPA 99% en bidon</span></div>
+        <div class="f"><label>Puissance Wash&Cure (W)</label><input type="number" id="res-wc-watt" value="40" oninput="calcResine()"><span class="hint">Elegoo Mercury ~40W</span></div>
+      </div>
+    </div></div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">02</span><span class="st">Résine</span></div><div class="sb">
+    <div class="matrow">
+      <div class="f" style="flex:1"><label>Résine sélectionnée</label><input type="text" id="res-mat-nom" value="Résine standard ABS-like" readonly style="cursor:default;color:var(--text2);"></div>
+      <button class="btnlib" onclick="openLib('resine')">📦 Choisir</button>
+    </div>
+    <div class="condblock">
+      <div class="ctitle">Prix par conditionnement d'achat</div>
+      <div class="fg3">
+        <div class="f"><label>Prix achat (€)</label><input type="number" id="res-cond-prix" value="22.00" step="0.50" oninput="calcResCond()"></div>
+        <div class="f"><label>Volume du bidon (L)</label><input type="number" id="res-cond-vol" value="1" step="0.5" oninput="calcResCond()"></div>
+        <div class="f"><label>= Prix au litre</label><input type="number" id="res-prix-l" value="22.00" step="0.01" oninput="calcResine()" style="color:var(--purple);font-family:'DM Mono',monospace;"></div>
+      </div>
+      <div class="cond-result" id="res-cond-res">→ 0,022 €/ml</div>
+    </div>
+    <div class="fg3" style="margin-top:.8rem">
+      <div class="f"><label>Volume utilisé (ml)</label><input type="number" id="res-vol" value="30" oninput="calcResine()"><span class="hint">Depuis votre slicer</span></div>
+      <div class="f"><label>Perte / supports (%)</label><input type="number" id="res-perte" value="10" oninput="calcResine()"></div>
+      <div class="f"><label>Coût résine total</label><div class="cb" id="res-cout-mat" style="color:var(--purple)">0,00 €</div></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">03</span><span class="st">Électricité France</span></div><div class="sb">
+    <div class="elec-options">
+      <div class="elec-opt active" onclick="setElec('res',0.1940,this)">Base 0,194 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('res',0.2065,this)">HP 0,2065 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('res',0.1579,this)">HC 0,1579 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('res',0,this)">Personnalisé</div>
+    </div>
+    <div class="f"><label>Prix kWh (€)</label><input type="number" id="res-kwh" value="0.1940" step="0.001" oninput="calcResine()"></div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">04</span><span class="st">Travail & Divers</span></div><div class="sb">
+    <div class="fg">
+      <div class="f"><label>Préparation (min)</label><input type="number" id="res-prep" value="20" oninput="calcResine()"></div>
+      <div class="f"><label>Post-traitement (min)</label><input type="number" id="res-post" value="30" oninput="calcResine()"><span class="hint">Lavage IPA + UV</span></div>
+      <div class="f"><label>Taux horaire (€/h)</label><input type="number" id="res-taux" value="15" oninput="calcResine()"></div>
+      <div class="f"><label>Emballage & frais (€)</label><input type="number" id="res-embal" value="0.50" step="0.10" oninput="calcResine()"></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===== SUBLIMATION ===== -->
+<div class="tsec" id="sec-sublimation">
+  <div class="sec"><div class="sh"><span class="sn">01</span><span class="st">Projet & Machine</span></div><div class="sb">
+    <div class="fg" style="margin-bottom:.8rem">
+      <div class="f"><label>Nom du projet</label><input type="text" id="sub-nom" placeholder="ex: Mug personnalisé" oninput="calcSub()"></div>
+      <div class="f"><label>Nombre de pièces</label><input type="number" id="sub-pieces" value="1" min="1" oninput="calcSub()"></div>
+    </div>
+    <div class="machine-card">
+      <img class="machine-img" src="https://epson.com/medias/sys_master/root/8836718321694/ET-8500.jpg" alt="Epson ET-8500" onerror="this.style.display='none'">
+      <div class="machine-info">
+        <div class="mi-name">Epson EcoTank ET-8500</div>
+        <div class="mi-spec">Sublimation A4 6 couleurs — Piezo sans chaleur — 5760×1440 dpi</div>
+        <div class="mi-watt">⚡ ~20W impression — 7,4W mode veille — Très économique</div>
+      </div>
+    </div>
+    <div class="fg" style="margin-bottom:.8rem">
+      <div class="f"><label>Type de produit à sublimer</label>
+        <select id="sub-produit" onchange="updateSubProduit()">
+          <option value="2.50">Mug 11oz (2,50 €)</option><option value="4.00">Mug 15oz (4,00 €)</option>
+          <option value="3.00">T-shirt polyester (3,00 €)</option><option value="5.00">Sweat polyester (5,00 €)</option>
+          <option value="1.50">Coussin (1,50 €)</option><option value="6.00">Puzzle (6,00 €)</option>
+          <option value="2.00">Porte-clé (2,00 €)</option><option value="8.00">Tapis de souris (8,00 €)</option>
+          <option value="3.50">Plaque alu (3,50 €)</option><option value="0">Autre</option>
+        </select>
+      </div>
+      <div class="f"><label>Prix produit brut (€/u)</label><input type="number" id="sub-produit-prix" value="2.50" step="0.10" oninput="calcSub()"></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">02</span><span class="st">Encre & Papier sublimation</span></div><div class="sb">
+    <div class="condblock">
+      <div class="ctitle">Encre sublimation — Prix par conditionnement</div>
+      <div class="fg3">
+        <div class="f"><label>Prix du flacon (€)</label><input type="number" id="sub-cond-encre-prix" value="12.00" step="0.50" oninput="calcSubEncre()"></div>
+        <div class="f"><label>Volume flacon (ml)</label><input type="number" id="sub-cond-encre-vol" value="100" step="10" oninput="calcSubEncre()"></div>
+        <div class="f"><label>= €/ml</label><input type="number" id="sub-encre-ml" value="0.12" step="0.001" readonly style="color:var(--amber);font-family:'DM Mono',monospace;"></div>
+      </div>
+    </div>
+    <div class="fg3" style="margin-top:.8rem">
+      <div class="f"><label>Encre consommée / impression (ml)</label><input type="number" id="sub-encre-conso" value="2.5" step="0.1" oninput="calcSub()"><span class="hint">~1–5ml selon taille A4</span></div>
+      <div class="f"><label>Papier transfert (€/feuille)</label><input type="number" id="sub-papier" value="0.12" step="0.01" oninput="calcSub()"></div>
+      <div class="f"><label>Feuilles / pièce</label><input type="number" id="sub-feuilles" value="1" min="1" oninput="calcSub()"></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">03</span><span class="st">Presse à chaud Vevor 36×40</span></div><div class="sb">
+    <div class="machine-card">
+      <div style="width:64px;height:64px;background:var(--bg4);border-radius:7px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;">🔥</div>
+      <div class="machine-info">
+        <div class="mi-name">Presse à chaud Vevor 36×40 cm (720W)</div>
+        <div class="mi-spec">Surface 360×400mm — Température réglable — Minuterie numérique</div>
+        <div class="mi-watt">⚡ 720W en chauffe — ~200–400W stabilisé</div>
+      </div>
+    </div>
+    <div class="fg3">
+      <div class="f"><label>Puissance moy. (W)</label><input type="number" id="sub-watt" value="350" oninput="calcSub()"><span class="hint">Moyenne cycle complet</span></div>
+      <div class="f"><label>Durée pressage (min)</label><input type="number" id="sub-mins" value="3" step="0.5" oninput="calcSub()"></div>
+      <div class="f"><label>Prix presse (€)</label><input type="number" id="sub-machine" value="180" oninput="calcSub()"></div>
+      <div class="f"><label>Heures de vie</label><input type="number" id="sub-vie" value="5000" oninput="calcSub()"></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">04</span><span class="st">Électricité & Travail</span></div><div class="sb">
+    <div class="elec-options" style="margin-bottom:.7rem">
+      <div class="elec-opt active" onclick="setElec('sub',0.1940,this)">Base 0,194 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('sub',0.2065,this)">HP</div>
+      <div class="elec-opt" onclick="setElec('sub',0.1579,this)">HC</div>
+      <div class="elec-opt" onclick="setElec('sub',0,this)">Perso</div>
+    </div>
+    <div class="fg">
+      <div class="f"><label>Prix kWh (€)</label><input type="number" id="sub-kwh" value="0.1940" step="0.001" oninput="calcSub()"></div>
+      <div class="f"><label>Préparation (min)</label><input type="number" id="sub-prep" value="10" oninput="calcSub()"></div>
+      <div class="f"><label>Application (min)</label><input type="number" id="sub-post" value="5" oninput="calcSub()"></div>
+      <div class="f"><label>Taux horaire (€/h)</label><input type="number" id="sub-taux" value="15" oninput="calcSub()"></div>
+      <div class="f"><label>Risque d'échec (%)</label><input type="number" id="sub-rate" value="3" oninput="calcSub()"></div>
+      <div class="f"><label>Emballage & frais (€)</label><input type="number" id="sub-embal" value="0.80" step="0.10" oninput="calcSub()"></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===== BRODERIE ===== -->
+<div class="tsec" id="sec-broderie">
+  <div class="sec"><div class="sh"><span class="sn">01</span><span class="st">Projet & Support</span></div><div class="sb">
+    <div class="fg">
+      <div class="f"><label>Nom du projet</label><input type="text" id="brod-nom" placeholder="ex: Logo casquette" oninput="calcBrod()"></div>
+      <div class="f"><label>Nombre de pièces</label><input type="number" id="brod-pieces" value="1" min="1" oninput="calcBrod()"></div>
+      <div class="f"><label>Type de support</label>
+        <select id="brod-support" onchange="document.getElementById('brod-support-prix').value=this.value;calcBrod()">
+          <option value="0">Support client (0 €)</option><option value="3.00">Casquette (3,00 €)</option>
+          <option value="5.00">T-shirt (5,00 €)</option><option value="8.00">Polo (8,00 €)</option>
+          <option value="15.00">Veste / Blouson (15,00 €)</option><option value="2.00">Patch seul (2,00 €)</option>
+          <option value="0.50">Serviette (0,50 €)</option><option value="0">Autre</option>
+        </select>
+      </div>
+      <div class="f"><label>Prix support (€/u)</label><input type="number" id="brod-support-prix" value="0" step="0.50" oninput="calcBrod()"></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">02</span><span class="st">Fils de broderie</span></div><div class="sb">
+    <div id="brod-fils-list"><div style="font-size:.74rem;color:var(--text3);padding:.4rem;text-align:center">Aucun fil — cliquez sur Ajouter / Gérer</div></div>
+    <button class="btnlib" style="width:100%;height:auto;padding:8px;text-align:center;margin-top:0" onclick="openLib('broderie')">+ Ajouter / Gérer les fils</button>
+    <div class="fg" style="margin-top:.8rem">
+      <div class="f"><label>Entoilage / stabilisateur (€/u)</label><input type="number" id="brod-entoi" value="0.20" step="0.05" oninput="calcBrod()"></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">03</span><span class="st">Motif & Machine</span></div><div class="sb">
+    <div class="fg">
+      <div class="f"><label>Nombre de points total</label><input type="number" id="brod-points" value="8000" step="500" oninput="calcBrod()"><span class="hint">Depuis votre logiciel</span></div>
+      <div class="f"><label>Vitesse machine (pts/min)</label><input type="number" id="brod-vitesse" value="600" oninput="calcBrod()"><span class="hint">400–1000 selon motif</span></div>
+      <div class="f"><label>Puissance machine (W)</label><input type="number" id="brod-watt" value="250" oninput="calcBrod()"></div>
+      <div class="f"><label>Prix machine (€)</label><input type="number" id="brod-machine-prix" value="800" oninput="calcBrod()"></div>
+      <div class="f"><label>Heures de vie</label><input type="number" id="brod-vie" value="8000" oninput="calcBrod()"></div>
+      <div class="f"><label>Maintenance / heure (€)</label><input type="number" id="brod-maint" value="0.08" step="0.01" oninput="calcBrod()"><span class="hint">Aiguilles, boîtiers...</span></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">04</span><span class="st">Électricité & Travail</span></div><div class="sb">
+    <div class="elec-options" style="margin-bottom:.7rem">
+      <div class="elec-opt active" onclick="setElec('brod',0.1940,this)">Base 0,194 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('brod',0.2065,this)">HP</div>
+      <div class="elec-opt" onclick="setElec('brod',0.1579,this)">HC</div>
+      <div class="elec-opt" onclick="setElec('brod',0,this)">Perso</div>
+    </div>
+    <div class="fg">
+      <div class="f"><label>Prix kWh (€)</label><input type="number" id="brod-kwh" value="0.1940" step="0.001" oninput="calcBrod()"></div>
+      <div class="f"><label>Numérisation / test (€)</label><input type="number" id="brod-num" value="5.00" step="0.50" oninput="calcBrod()"><span class="hint">Amorti sur nb pièces</span></div>
+      <div class="f"><label>Mise en place (min)</label><input type="number" id="brod-prep" value="5" oninput="calcBrod()"></div>
+      <div class="f"><label>Finition (min)</label><input type="number" id="brod-post" value="5" oninput="calcBrod()"></div>
+      <div class="f"><label>Taux horaire (€/h)</label><input type="number" id="brod-taux" value="15" oninput="calcBrod()"></div>
+      <div class="f"><label>Risque d'échec (%)</label><input type="number" id="brod-rate" value="2" oninput="calcBrod()"></div>
+      <div class="f"><label>Emballage & frais (€)</label><input type="number" id="brod-embal" value="0.30" step="0.10" oninput="calcBrod()"></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===== FLEX ===== -->
+<div class="tsec" id="sec-flex">
+  <div class="sec"><div class="sh"><span class="sn">01</span><span class="st">Projet & Support</span></div><div class="sb">
+    <div class="fg">
+      <div class="f"><label>Nom du projet</label><input type="text" id="flex-nom" placeholder="ex: Logo t-shirt" oninput="calcFlex()"></div>
+      <div class="f"><label>Nombre de pièces</label><input type="number" id="flex-pieces" value="1" min="1" oninput="calcFlex()"></div>
+      <div class="f"><label>Type de support</label>
+        <select id="flex-support" onchange="document.getElementById('flex-support-prix').value=this.value;calcFlex()">
+          <option value="0">Support client (0 €)</option><option value="4.00">T-shirt coton (4,00 €)</option>
+          <option value="8.00">Polo (8,00 €)</option><option value="12.00">Sweat (12,00 €)</option><option value="0">Autre</option>
+        </select>
+      </div>
+      <div class="f"><label>Prix support (€/u)</label><input type="number" id="flex-support-prix" value="0" step="0.50" oninput="calcFlex()"></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">02</span><span class="st">Flex / Vinyle</span></div><div class="sb">
+    <div class="matrow">
+      <div class="f" style="flex:1"><label>Matière sélectionnée</label><input type="text" id="flex-mat-nom" value="Flex uni standard (Cricut)" readonly style="cursor:default;color:var(--text2);"></div>
+      <button class="btnlib" onclick="openLib('flex')">📦 Choisir</button>
+    </div>
+    <div class="condblock">
+      <div class="ctitle">Prix par conditionnement — Rouleau</div>
+      <div class="fg3">
+        <div class="f"><label>Prix achat (€)</label><input type="number" id="flex-cond-prix" value="9.00" step="0.50" oninput="calcFlexCond()"></div>
+        <div class="f"><label>Largeur rouleau (cm)</label><input type="number" id="flex-cond-larg" value="30" step="5" oninput="calcFlexCond()"></div>
+        <div class="f"><label>Longueur rouleau (cm)</label><input type="number" id="flex-cond-long" value="200" step="10" oninput="calcFlexCond()"></div>
+        <div class="f full"><label>= Prix au m²</label><input type="number" id="flex-prix-m2" value="15.00" step="0.01" oninput="calcFlex()" style="color:var(--blue);font-family:'DM Mono',monospace;"></div>
+      </div>
+      <div class="cond-result" id="flex-cond-res">→ 15,00 €/m²</div>
+    </div>
+    <div class="fg3" style="margin-top:.8rem">
+      <div class="f"><label>Largeur motif (cm)</label><input type="number" id="flex-largeur" value="20" oninput="calcFlex()"></div>
+      <div class="f"><label>Hauteur motif (cm)</label><input type="number" id="flex-hauteur" value="15" oninput="calcFlex()"></div>
+      <div class="f"><label>Nombre de couches</label><input type="number" id="flex-couleurs" value="1" min="1" oninput="calcFlex()"><span class="hint">Multicouche uni</span></div>
+      <div class="f"><label>Chute / perte (%)</label><input type="number" id="flex-perte" value="20" oninput="calcFlex()"></div>
+      <div class="f"><label>Coût flex/vinyle</label><div class="cb" id="flex-cout-mat" style="color:var(--blue)">0,00 €</div></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">03</span><span class="st">Machines</span></div><div class="sb">
+    <div class="machine-card">
+      <div style="width:64px;height:64px;background:var(--bg4);border-radius:7px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;">✂️</div>
+      <div class="machine-info">
+        <div class="mi-name">Traceur / Plotter de découpe Vevor</div>
+        <div class="mi-spec">Découpe flex, vinyle, papier — Compatible Cricut et rouleaux standards</div>
+        <div class="mi-watt">⚡ ~30–80W selon vitesse et matière</div>
+      </div>
+    </div>
+    <div class="fg">
+      <div class="f"><label>Prix traceur (€)</label><input type="number" id="flex-plotter" value="180" oninput="calcFlex()"></div>
+      <div class="f"><label>Heures de vie traceur</label><input type="number" id="flex-vie-plot" value="5000" oninput="calcFlex()"></div>
+      <div class="f"><label>Prix presse (€)</label><input type="number" id="flex-presse" value="180" oninput="calcFlex()"></div>
+      <div class="f"><label>Heures de vie presse</label><input type="number" id="flex-vie-presse" value="4000" oninput="calcFlex()"></div>
+      <div class="f"><label>Puissance presse (W)</label><input type="number" id="flex-watt" value="350" oninput="calcFlex()"><span class="hint">Vevor 36×40 : 720W pic</span></div>
+      <div class="f"><label>Durée pressage (min)</label><input type="number" id="flex-mins" value="2" step="0.5" oninput="calcFlex()"></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">04</span><span class="st">Électricité & Travail</span></div><div class="sb">
+    <div class="elec-options" style="margin-bottom:.7rem">
+      <div class="elec-opt active" onclick="setElec('flex',0.1940,this)">Base 0,194 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('flex',0.2065,this)">HP</div>
+      <div class="elec-opt" onclick="setElec('flex',0.1579,this)">HC</div>
+      <div class="elec-opt" onclick="setElec('flex',0,this)">Perso</div>
+    </div>
+    <div class="fg">
+      <div class="f"><label>Prix kWh (€)</label><input type="number" id="flex-kwh" value="0.1940" step="0.001" oninput="calcFlex()"></div>
+      <div class="f"><label>Préparation / découpe (min)</label><input type="number" id="flex-prep" value="8" oninput="calcFlex()"></div>
+      <div class="f"><label>Désherbage / application (min)</label><input type="number" id="flex-post" value="10" oninput="calcFlex()"></div>
+      <div class="f"><label>Taux horaire (€/h)</label><input type="number" id="flex-taux" value="15" oninput="calcFlex()"></div>
+      <div class="f"><label>Risque d'échec (%)</label><input type="number" id="flex-rate" value="4" oninput="calcFlex()"></div>
+      <div class="f"><label>Emballage & frais (€)</label><input type="number" id="flex-embal" value="0.50" step="0.10" oninput="calcFlex()"></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===== BADGE ===== -->
+<div class="tsec" id="sec-badge">
+  <div class="sec"><div class="sh"><span class="sn">01</span><span class="st">Projet & Machine</span></div><div class="sb">
+    <div class="fg" style="margin-bottom:.8rem">
+      <div class="f"><label>Nom du projet</label><input type="text" id="bdg-nom" placeholder="ex: Badges événement" oninput="calcBadge()"></div>
+      <div class="f"><label>Nombre de badges</label><input type="number" id="bdg-pieces" value="10" min="1" oninput="calcBadge()"></div>
+    </div>
+    <div class="machine-card">
+      <div style="width:64px;height:64px;background:var(--bg4);border-radius:7px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;">🔴</div>
+      <div class="machine-info">
+        <div class="mi-name">Badgeuse Vevor + Imprimante Epson ET-4800</div>
+        <div class="mi-spec">Badges ronds fournis avec la machine — Impression couleur haute qualité</div>
+        <div class="mi-watt">⚡ Epson ET-4800 : ~10W impression — Badgeuse : manuelle (0W)</div>
+      </div>
+    </div>
+    <div class="f" style="margin-bottom:.8rem"><label>Format de badge</label>
+      <select id="bdg-format" onchange="setBadgeFormat()">
+        <option value="25,0.12">25mm rond — fourni machine</option>
+        <option value="32,0.18">32mm rond — fourni machine</option>
+        <option value="38,0.25">38mm rond — fourni machine</option>
+        <option value="58,0.45">58mm rond (grand format)</option>
+        <option value="custom,0">Format personnalisé</option>
+      </select>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">02</span><span class="st">Coût badge & impression</span></div><div class="sb">
+    <div class="fg3">
+      <div class="f"><label>Coût badge vierge (€/u)</label><input type="number" id="bdg-badge-prix" value="0.12" step="0.01" oninput="calcBadge()"><span class="hint">Fourni avec la machine</span></div>
+      <div class="f"><label>Diamètre (mm)</label><input type="number" id="bdg-diam" value="25" oninput="calcBadge()"></div>
+      <div class="f"><label>Badges / feuille A4</label><input type="number" id="bdg-parfeuille" value="30" oninput="calcBadge()" readonly style="color:var(--amber);font-family:'DM Mono',monospace;"></div>
+    </div>
+    <div class="condblock" style="margin-top:.7rem">
+      <div class="ctitle">Encre imprimante Epson ET-4800</div>
+      <div class="fg3">
+        <div class="f"><label>Prix flacon encre (€)</label><input type="number" id="bdg-encre-prix" value="8.00" step="0.50" oninput="calcBdgEncre()"></div>
+        <div class="f"><label>Volume flacon (ml)</label><input type="number" id="bdg-encre-vol" value="70" step="10" oninput="calcBdgEncre()"></div>
+        <div class="f"><label>Conso. encre (ml/page)</label><input type="number" id="bdg-encre-ml" value="0.5" step="0.1" oninput="calcBadge()"><span class="hint">Impression couleur A4</span></div>
+      </div>
+    </div>
+    <div class="fg3" style="margin-top:.8rem">
+      <div class="f"><label>Papier A4 (€/feuille)</label><input type="number" id="bdg-papier" value="0.05" step="0.01" oninput="calcBadge()"></div>
+      <div class="f"><label>Film plastique (€/badge)</label><input type="number" id="bdg-film" value="0.03" step="0.01" oninput="calcBadge()"><span class="hint">Protection badge</span></div>
+      <div class="f"><label>Coût matière total</label><div class="cb" id="bdg-cout-mat" style="color:#fb923c">0,00 €</div></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">03</span><span class="st">Électricité & Machines</span></div><div class="sb">
+    <div class="elec-options" style="margin-bottom:.7rem">
+      <div class="elec-opt active" onclick="setElec('bdg',0.1940,this)">Base 0,194 €/kWh</div>
+      <div class="elec-opt" onclick="setElec('bdg',0.2065,this)">HP</div>
+      <div class="elec-opt" onclick="setElec('bdg',0.1579,this)">HC</div>
+      <div class="elec-opt" onclick="setElec('bdg',0,this)">Perso</div>
+    </div>
+    <div class="fg">
+      <div class="f"><label>Prix kWh (€)</label><input type="number" id="bdg-kwh" value="0.1940" step="0.001" oninput="calcBadge()"></div>
+      <div class="f"><label>Prix imprimante ET-4800 (€)</label><input type="number" id="bdg-imp-prix" value="250" oninput="calcBadge()"></div>
+      <div class="f"><label>Heures de vie imprimante</label><input type="number" id="bdg-imp-vie" value="5000" oninput="calcBadge()"></div>
+      <div class="f"><label>Prix badgeuse (€)</label><input type="number" id="bdg-badg-prix" value="120" oninput="calcBadge()"></div>
+      <div class="f"><label>Heures de vie badgeuse</label><input type="number" id="bdg-badg-vie" value="3000" oninput="calcBadge()"></div>
+    </div>
+  </div></div>
+
+  <div class="sec"><div class="sh"><span class="sn">04</span><span class="st">Travail & Divers</span></div><div class="sb">
+    <div class="fg">
+      <div class="f"><label>Préparation / design (min)</label><input type="number" id="bdg-prep" value="15" oninput="calcBadge()"></div>
+      <div class="f"><label>Découpe + assemblage (min/badge)</label><input type="number" id="bdg-post" value="1.5" step="0.5" oninput="calcBadge()"></div>
+      <div class="f"><label>Taux horaire (€/h)</label><input type="number" id="bdg-taux" value="15" oninput="calcBadge()"></div>
+      <div class="f"><label>Risque d'échec (%)</label><input type="number" id="bdg-rate" value="3" oninput="calcBadge()"></div>
+      <div class="f"><label>Emballage & frais (€)</label><input type="number" id="bdg-embal" value="0.10" step="0.05" oninput="calcBadge()"></div>
+    </div>
+  </div></div>
+</div>
+
+</div><!-- end lc -->
+
+<!-- PANEL RÉSUMÉ -->
+<div class="panel">
+  <div class="ph"><h2>Résumé du calcul</h2></div>
+  <div class="pb">
+    <div class="sr"><span class="sl">Matière / consommables</span><span class="sv" id="sm">0,00 €</span></div>
+    <div class="sr"><span class="sl">Électricité</span><span class="sv" id="se">0,00 €</span></div>
+    <div class="sr"><span class="sl">Amortissement machine</span><span class="sv" id="sa">0,00 €</span></div>
+    <div class="sr"><span class="sl">Maintenance</span><span class="sv" id="sma">0,00 €</span></div>
+    <div class="sr"><span class="sl">Main-d'œuvre</span><span class="sv" id="smo">0,00 €</span></div>
+    <div class="sr"><span class="sl">Emballage & frais</span><span class="sv" id="sem">0,00 €</span></div>
+    <div class="sr"><span class="sl">Surcoût échec</span><span class="sv" id="sra">0,00 €</span></div>
+    <div class="bbar">
+      <div class="bs" id="bm" style="background:#6ee7b7;width:0%"></div>
+      <div class="bs" id="be" style="background:#a78bfa;width:0%"></div>
+      <div class="bs" id="ba" style="background:#f59e0b;width:0%"></div>
+      <div class="bs" id="bmo" style="background:#38bdf8;width:0%"></div>
+      <div class="bs" id="bd" style="background:#818cf8;width:0%"></div>
+    </div>
+    <div class="bits">
+      <div class="bi"><div class="biD" style="background:#6ee7b7"></div><span class="biL">Matière</span><span class="biP" id="pm">0%</span></div>
+      <div class="bi"><div class="biD" style="background:#a78bfa"></div><span class="biL">Électricité</span><span class="biP" id="pe">0%</span></div>
+      <div class="bi"><div class="biD" style="background:#f59e0b"></div><span class="biL">Machine</span><span class="biP" id="pa">0%</span></div>
+      <div class="bi"><div class="biD" style="background:#38bdf8"></div><span class="biL">Main-d'œuvre</span><span class="biP" id="pmo">0%</span></div>
+      <div class="bi"><div class="biD" style="background:#818cf8"></div><span class="biL">Divers & échecs</span><span class="biP" id="pd">0%</span></div>
+    </div>
+    <div class="ptot">
+      <div style="font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Coût de revient</div>
+      <div class="pm" id="srev">0,00 €</div>
+      <div class="pu" id="srevU"></div>
+    </div>
+    <div class="mblock"><label>Marge désirée</label><div class="rw"><input type="range" id="mr" min="0" max="200" value="30" step="5" oninput="updateMarge()"><span class="rv" id="mv">30%</span></div></div>
+    <div class="mblock" style="margin-top:.5rem"><label>TVA (%)</label><div class="rw"><input type="range" id="tr" min="0" max="20" value="20" step="1" oninput="updateMarge()"><span class="rv" id="tv">20%</span></div></div>
+    <div class="pline"><span class="pl">Prix HT</span><span class="pv" id="sht">0,00 €</span></div>
+    <div class="pline"><span class="pl">TVA</span><span class="pv" id="stv">0,00 €</span></div>
+    <div class="pttc"><span class="ptl">Prix TTC</span><span class="ptv" id="sttc">0,00 €</span></div>
+    <div class="punit" id="sttcU"></div>
+    <button class="btnprint" onclick="window.print()">🖨 Imprimer le résumé</button>
+  </div>
+</div>
+</div><!-- end main -->
+
+<!-- MODAL BIBLIOTHÈQUE -->
+<div class="moverlay" id="moverlay" onclick="if(event.target===this)closeLib()">
+<div class="modal">
+  <div class="mhead"><h3 id="mhdr">Bibliothèque matériaux</h3><button class="mclose" onclick="closeLib()">✕</button></div>
+  <div class="mtabs" id="mtabs"></div>
+  <div class="mbody" id="mbody"></div>
+</div>
+</div>
+
+<script>
+// ============================================================
+// DONNÉES
+// ============================================================
+const ELEC_FR = { base:0.1940, hp:0.2065, hc:0.1579 };
+
+const DEF_LIB = {
+  fdm:[
+    {id:'f1',n:'PLA Standard',b:'Bambu Lab',p:18,w:1000,u:'€/kg',c:false},
+    {id:'f2',n:'PLA+ Silk',b:'Bambu Lab',p:22,w:1000,u:'€/kg',c:false},
+    {id:'f3',n:'PLA Mat',b:'Polymaker PolyTerra',p:22,w:1000,u:'€/kg',c:false},
+    {id:'f4',n:'PETG',b:'Bambu Lab',p:23,w:1000,u:'€/kg',c:false},
+    {id:'f5',n:'PETG Carbon Fiber',b:'Bambu Lab',p:45,w:500,u:'€/kg',c:false},
+    {id:'f6',n:'ABS',b:'Générique',p:18,w:1000,u:'€/kg',c:false},
+    {id:'f7',n:'ASA',b:'Fillamentum',p:35,w:750,u:'€/kg',c:false},
+    {id:'f8',n:'TPU 95A',b:'eSUN',p:28,w:1000,u:'€/kg',c:false},
+    {id:'f9',n:'PA-CF Nylon',b:'Bambu Lab',p:55,w:500,u:'€/kg',c:false},
+    {id:'f10',n:'PC Polycarbonate',b:'Prusament',p:40,w:1000,u:'€/kg',c:false},
+    {id:'f11',n:'PLA Marble',b:'PolyTerra',p:24,w:1000,u:'€/kg',c:false},
+    {id:'f12',n:'PLA Wood',b:'eSUN',p:26,w:1000,u:'€/kg',c:false},
+  ],
+  resine:[
+    {id:'r1',n:'Résine Standard ABS-like',b:'Elegoo',p:22,w:1,u:'€/L',c:false},
+    {id:'r2',n:'Résine ABS-like Premium',b:'Siraya Tech',p:35,w:1,u:'€/L',c:false},
+    {id:'r3',n:'Résine 8K Ultra',b:'Anycubic',p:38,w:1,u:'€/L',c:false},
+    {id:'r4',n:'Résine 12K High Precision',b:'Phrozen',p:52,w:1,u:'€/L',c:false},
+    {id:'r5',n:'Résine Water Washable',b:'Elegoo',p:28,w:1,u:'€/L',c:false},
+    {id:'r6',n:'Résine Flexible',b:'Elegoo',p:68,w:1,u:'€/L',c:false},
+    {id:'r7',n:'Résine Translucide',b:'Anycubic',p:36,w:1,u:'€/L',c:false},
+    {id:'r8',n:'Résine Plant-Based',b:'Elegoo',p:26,w:1,u:'€/L',c:false},
+    {id:'r9',n:'Résine Castable / Bijou',b:'Formlabs',p:95,w:1,u:'€/L',c:false},
+  ],
+  broderie:[
+    {id:'b1',n:'Fil polyester standard',b:'Madeira Aerofil',p:3.50,w:5000,u:'€/bobine',c:false},
+    {id:'b2',n:'Fil polyester brillant',b:'Madeira Classic',p:4.20,w:5000,u:'€/bobine',c:false},
+    {id:'b3',n:'Fil polyester premium',b:'Gunold Sulky',p:5.80,w:5000,u:'€/bobine',c:false},
+    {id:'b4',n:'Fil coton',b:'Madeira Cotton',p:4.50,w:5000,u:'€/bobine',c:false},
+    {id:'b5',n:'Fil coton bio',b:'Mettler',p:6.00,w:5000,u:'€/bobine',c:false},
+    {id:'b6',n:'Fil métallisé',b:'Madeira Metallic',p:7.50,w:1000,u:'€/bobine',c:false},
+    {id:'b7',n:'Fil holographique',b:'Gunold Metallic',p:9.00,w:1000,u:'€/bobine',c:false},
+    {id:'b8',n:'Fil fluo / phospho',b:'Madeira',p:6.50,w:5000,u:'€/bobine',c:false},
+    {id:'b9',n:'Fil laine',b:'Générique',p:5.00,w:5000,u:'€/bobine',c:false},
+    {id:'b10',n:'Fil viscose / rayon',b:'Madeira Rayon',p:4.80,w:5000,u:'€/bobine',c:false},
+  ],
+  flex:[
+    {id:'fl1',n:'Flex uni standard',b:'Cricut EasyPress',p:9.00,w:30*200,u:'€/rouleau 30×200cm',c:false,larg:30,long:200},
+    {id:'fl2',n:'Flex uni stretch',b:'Cricut Stretch',p:11.00,w:30*150,u:'€/rouleau 30×150cm',c:false,larg:30,long:150},
+    {id:'fl3',n:'Flex métallisé',b:'Siser Metallic',p:14.00,w:30*100,u:'€/rouleau 30×100cm',c:false,larg:30,long:100},
+    {id:'fl4',n:'Flex holographique',b:'Siser Holographic',p:18.00,w:30*100,u:'€/rouleau 30×100cm',c:false,larg:30,long:100},
+    {id:'fl5',n:'Flex floqué / velours',b:'Siser Flock',p:12.00,w:30*100,u:'€/rouleau 30×100cm',c:false,larg:30,long:100},
+    {id:'fl6',n:'Flex sublimation (imprimable)',b:'Subliverse',p:16.00,w:30*100,u:'€/rouleau 30×100cm',c:false,larg:30,long:100},
+    {id:'fl7',n:'Flex Standard (papier-transfert.fr)',b:'Papier-Transfert',p:155,w:60*2500,u:'€/rouleau 60m×25m',c:false,larg:60,long:2500},
+    {id:'fl8',n:'Flex Premium (papier-transfert.fr)',b:'Papier-Transfert',p:197,w:60*2500,u:'€/rouleau 60m×25m',c:false,larg:60,long:2500},
+    {id:'fl9',n:'Flex Pailleté (papier-transfert.fr)',b:'Papier-Transfert',p:299,w:60*2500,u:'€/rouleau 60m×25m',c:false,larg:60,long:2500},
+    {id:'fl10',n:'Flex Holographique (papier-transfert.fr)',b:'Papier-Transfert',p:214,w:50*2500,u:'€/rouleau 50cm×25m',c:false,larg:50,long:2500},
+    {id:'fl11',n:'Vinyle adhésif mat',b:'Oracal 651',p:9.00,w:30*300,u:'€/rouleau 30×300cm',c:false,larg:30,long:300},
+    {id:'fl12',n:'Vinyle repositionnable',b:'Cricut Smart',p:12.00,w:30*200,u:'€/rouleau 30×200cm',c:false,larg:30,long:200},
+  ]
+};
+
+function loadLib(){try{const s=localStorage.getItem('fab_lib2');if(s)return JSON.parse(s);}catch(e){}return JSON.parse(JSON.stringify(DEF_LIB));}
+function saveLib(){try{localStorage.setItem('fab_lib2',JSON.stringify(library));}catch(e){}}
+let library=loadLib();
+let selMat={fdm:library.fdm[0],resine:library.resine[0],flex:library.flex[0]};
+let brodFils=[];
+let curTech='fdm';
+let state={mat:0,elec:0,amo:0,maint:0,mo:0,embal:0,rate:0,pieces:1};
+
+// ============================================================
+// TABS
+// ============================================================
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    curTech=t.dataset.t;
+    document.querySelectorAll('.tsec').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sec-'+curTech).classList.add('active');
+    triggerCalc();
+  });
+});
+
+// ============================================================
+// MACHINES FDM
+// ============================================================
+const MACHINES_FDM={
+  a1combo:{name:'Bambu Lab A1 Combo + AMS Lite',spec:'Volume 256×256×256mm — CoreXY — 4 couleurs AMS Lite',watt:95,prix:699,img:'https://eu.store.bambulab.com/cdn/shop/files/A1-Combo-Main.webp'},
+  p1s:{name:'Bambu Lab P1S + AMS',spec:'Volume 256×256×256mm — Clos multi-matériaux — 4 couleurs AMS',watt:100,prix:999,img:'https://eu.store.bambulab.com/cdn/shop/files/P1S-Combo.webp'},
+  custom:{name:'Machine personnalisée',spec:'Configurez vos paramètres ci-dessous',watt:150,prix:300,img:''}
+};
+function setFDMMachine(){
+  const m=MACHINES_FDM[document.getElementById('fdm-machine-sel').value];
+  document.getElementById('fdm-mname').textContent=m.name;
+  document.getElementById('fdm-mspec').textContent=m.spec;
+  document.getElementById('fdm-mwatt').textContent='⚡ '+m.watt+'W moyenne impression PLA';
+  document.getElementById('fdm-mimg').src=m.img;
+  document.getElementById('fdm-watt').value=m.watt;
+  document.getElementById('fdm-machine-prix').value=m.prix;
+  calcFDM();
+}
+
+// ============================================================
+// ÉLECTRICITÉ FRANCE
+// ============================================================
+function setElec(tech,val,el){
+  const parent=el.parentElement;
+  parent.querySelectorAll('.elec-opt').forEach(x=>x.classList.remove('active'));
+  el.classList.add('active');
+  if(val>0){document.getElementById(tech+'-kwh').value=val;}
+  triggerCalc();
+}
+
+// ============================================================
+// CONDITIONNEMENTS
+// ============================================================
+function calcFDMCond(){
+  const prix=parseFloat(document.getElementById('fdm-cond-prix').value)||0;
+  const poids=parseFloat(document.getElementById('fdm-cond-poids').value)||1000;
+  const kgPrice=prix/(poids/1000);
+  document.getElementById('fdm-prix-kg').value=kgPrice.toFixed(2);
+  document.getElementById('fdm-cond-res').textContent='→ '+(kgPrice/1000).toFixed(4)+' €/g';
+  calcFDM();
+}
+function calcResCond(){
+  const prix=parseFloat(document.getElementById('res-cond-prix').value)||0;
+  const vol=parseFloat(document.getElementById('res-cond-vol').value)||1;
+  const lPrice=prix/vol;
+  document.getElementById('res-prix-l').value=lPrice.toFixed(2);
+  document.getElementById('res-cond-res').textContent='→ '+(lPrice/1000).toFixed(4)+' €/ml';
+  calcResine();
+}
+function calcFlexCond(){
+  const prix=parseFloat(document.getElementById('flex-cond-prix').value)||0;
+  const larg=parseFloat(document.getElementById('flex-cond-larg').value)||30;
+  const long=parseFloat(document.getElementById('flex-cond-long').value)||200;
+  const m2=(larg/100)*(long/100);
+  const m2Price=m2>0?prix/m2:0;
+  document.getElementById('flex-prix-m2').value=m2Price.toFixed(2);
+  document.getElementById('flex-cond-res').textContent='→ '+m2Price.toFixed(2)+' €/m²';
+  calcFlex();
+}
+function calcSubEncre(){
+  const prix=parseFloat(document.getElementById('sub-cond-encre-prix').value)||0;
+  const vol=parseFloat(document.getElementById('sub-cond-encre-vol').value)||100;
+  document.getElementById('sub-encre-ml').value=(prix/vol).toFixed(4);
+  calcSub();
+}
+function calcBdgEncre(){calcBadge();}
+
+// ============================================================
+// BADGE FORMAT
+// ============================================================
+function setBadgeFormat(){
+  const v=document.getElementById('bdg-format').value.split(',');
+  const diam=parseFloat(v[0]);
+  const prix=parseFloat(v[1]);
+  document.getElementById('bdg-diam').value=diam;
+  document.getElementById('bdg-badge-prix').value=prix;
+  const A4w=210,A4h=297;
+  const perRow=Math.floor(A4w/diam),perCol=Math.floor(A4h/diam);
+  document.getElementById('bdg-parfeuille').value=perRow*perCol;
+  calcBadge();
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function f(n){return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
+function v(id){const e=document.getElementById(id);return e?(parseFloat(e.value)||0):0;}
+function t(id,val){const e=document.getElementById(id);if(e)e.textContent=val;}
+
+// ============================================================
+// RÉSUMÉ
+// ============================================================
+function updateSummary(s){
+  state=s;
+  const tot=s.mat+s.elec+s.amo+s.maint+s.mo+s.embal+s.rate;
+  const pct=x=>tot>0?Math.round(x/tot*100):0;
+  t('sm',f(s.mat));t('se',f(s.elec));t('sa',f(s.amo));t('sma',f(s.maint));t('smo',f(s.mo));t('sem',f(s.embal));t('sra',f(s.rate));
+  t('srev',f(tot));
+  const ru=document.getElementById('srevU');
+  if(ru)ru.textContent=s.pieces>1?f(tot/s.pieces)+' / pièce':'';
+  const pm2=pct(s.mat),pe2=pct(s.elec),pa2=pct(s.amo+s.maint),pmo2=pct(s.mo),pd2=Math.max(0,100-pm2-pe2-pa2-pmo2);
+  document.getElementById('bm').style.width=pm2+'%';
+  document.getElementById('be').style.width=pe2+'%';
+  document.getElementById('ba').style.width=pa2+'%';
+  document.getElementById('bmo').style.width=pmo2+'%';
+  document.getElementById('bd').style.width=pd2+'%';
+  t('pm',pm2+'%');t('pe',pe2+'%');t('pa',pa2+'%');t('pmo',pmo2+'%');t('pd',pd2+'%');
+  updateMarge();
+}
+function updateMarge(){
+  const tot=state.mat+state.elec+state.amo+state.maint+state.mo+state.embal+state.rate;
+  const mg=v('mr')/100,tva=v('tr')/100;
+  t('mv',v('mr')+'%');t('tv',v('tr')+'%');
+  const ht=tot*(1+mg),tvaV=ht*tva,ttc=ht+tvaV;
+  t('sht',f(ht));t('stv',f(tvaV));t('sttc',f(ttc));
+  const u=document.getElementById('sttcU');
+  if(u)u.textContent=state.pieces>1?f(ttc/state.pieces)+' / pièce':'';
+}
+function triggerCalc(){
+  if(curTech==='fdm')calcFDM();
+  else if(curTech==='resine')calcResine();
+  else if(curTech==='sublimation')calcSub();
+  else if(curTech==='broderie')calcBrod();
+  else if(curTech==='flex')calcFlex();
+  else if(curTech==='badge')calcBadge();
+}
+
+// ============================================================
+// CALCULS
+// ============================================================
+function calcFDM(){
+  const pieces=Math.max(1,v('fdm-pieces'));
+  const kgPrice=v('fdm-prix-kg'),poids=v('fdm-poids'),perte=v('fdm-perte')/100;
+  const mat=(poids/1000)*kgPrice*(1+perte)*pieces;
+  const cmEl=document.getElementById('fdm-cout-mat');if(cmEl)cmEl.textContent=f(mat);
+  const elec=(v('fdm-watt')/1000)*v('fdm-heure')*v('fdm-kwh')*pieces;
+  const ceEl=document.getElementById('fdm-cout-elec');if(ceEl)ceEl.textContent=f(elec);
+  const amo=v('fdm-vie')>0?(v('fdm-machine-prix')/v('fdm-vie'))*v('fdm-heure')*pieces:0;
+  const maint=v('fdm-maint')*v('fdm-heure')*pieces;
+  const mo=(v('fdm-prep')/60+v('fdm-post')/60)*v('fdm-taux')*pieces;
+  const embal=v('fdm-embal')*pieces;
+  const rate=(mat+elec+amo+maint+mo+embal)*v('fdm-rate')/100;
+  updateSummary({mat,elec,amo,maint,mo,embal,rate,pieces});
+}
+function calcResine(){
+  const pieces=Math.max(1,v('res-pieces'));
+  const lPrice=v('res-prix-l'),vol=v('res-vol'),perte=v('res-perte')/100;
+  const matResine=(vol/1000)*lPrice*(1+perte)*pieces;
+  const ipa=(v('res-ipa-ml')/1000)*v('res-ipa-prix')*pieces;
+  const mat=matResine+ipa;
+  const cmEl=document.getElementById('res-cout-mat');if(cmEl)cmEl.textContent=f(matResine);
+  const heure=v('res-heure'),wcH=0.5;
+  const elec=((v('res-watt')/1000)*heure+(v('res-wc-watt')/1000)*wcH)*v('res-kwh')*pieces;
+  const amo=v('res-vie')>0?(v('res-machine-prix')/v('res-vie'))*heure*pieces:0;
+  const maint=v('res-maint')*heure*pieces;
+  const mo=(v('res-prep')/60+v('res-post')/60)*v('res-taux')*pieces;
+  const embal=v('res-embal')*pieces;
+  const rate=(mat+elec+amo+maint+mo+embal)*v('res-rate')/100;
+  updateSummary({mat,elec,amo,maint,mo,embal,rate,pieces});
+}
+function calcSub(){
+  const pieces=Math.max(1,v('sub-pieces'));
+  const encreMl=parseFloat(document.getElementById('sub-encre-ml').value)||0;
+  const encreConso=v('sub-encre-conso');
+  const coutEncre=encreConso*encreMl;
+  const mat=(v('sub-produit-prix')+coutEncre+v('sub-papier')*v('sub-feuilles'))*pieces;
+  const heure=v('sub-mins')/60,impH=0.1;
+  const elec=((v('sub-watt')/1000)*heure+(20/1000)*impH)*v('sub-kwh')*pieces;
+  const amo=v('sub-vie')>0?(v('sub-machine')/v('sub-vie'))*heure*pieces:0;
+  const mo=(v('sub-prep')/60+v('sub-post')/60)*v('sub-taux')*pieces;
+  const embal=v('sub-embal')*pieces;
+  const rate=(mat+elec+amo+mo+embal)*v('sub-rate')/100;
+  updateSummary({mat,elec,amo,maint:0,mo,embal,rate,pieces});
+}
+function calcBrod(){
+  const pieces=Math.max(1,v('brod-pieces'));
+  const support=v('brod-support-prix'),entoi=v('brod-entoi');
+  const points=v('brod-points'),vitesse=v('brod-vitesse');
+  const heure=vitesse>0?(points/vitesse)/60:0;
+  let coutFils=0;
+  brodFils.forEach(fil=>{
+    const ptsFil=points*(fil.pct/100);
+    const mFil=ptsFil/1000;
+    const bobineM=fil.bobM||5000;
+    coutFils+=(mFil/bobineM)*fil.p*fil.nb;
+  });
+  const mat=(support+coutFils+entoi)*pieces;
+  const elec=(v('brod-watt')/1000)*heure*v('brod-kwh')*pieces;
+  const amo=v('brod-vie')>0?(v('brod-machine-prix')/v('brod-vie'))*heure*pieces:0;
+  const maint=v('brod-maint')*heure*pieces;
+  const numAmort=v('brod-num')/Math.max(1,pieces);
+  const mo=(v('brod-prep')/60+v('brod-post')/60+heure)*v('brod-taux')*pieces+numAmort;
+  const embal=v('brod-embal')*pieces;
+  const rate=(mat+elec+amo+maint+mo+embal)*v('brod-rate')/100;
+  updateSummary({mat,elec,amo,maint,mo,embal,rate,pieces});
+}
+function calcFlex(){
+  const pieces=Math.max(1,v('flex-pieces'));
+  const support=v('flex-support-prix');
+  const surf=(v('flex-largeur')/100)*(v('flex-hauteur')/100);
+  const matFlex=surf*v('flex-prix-m2')*(1+v('flex-perte')/100)*Math.max(1,v('flex-couleurs'));
+  const mat=(support+matFlex)*pieces;
+  const cmEl=document.getElementById('flex-cout-mat');if(cmEl)cmEl.textContent=f(matFlex*pieces);
+  const hP=v('flex-mins')/60,hD=surf*v('flex-couleurs')/60;
+  const elec=(v('flex-watt')/1000)*hP*v('flex-kwh')*pieces;
+  const amoPlot=v('flex-vie-plot')>0?(v('flex-plotter')/v('flex-vie-plot'))*hD*pieces:0;
+  const amoPresse=v('flex-vie-presse')>0?(v('flex-presse')/v('flex-vie-presse'))*hP*pieces:0;
+  const mo=(v('flex-prep')/60+v('flex-post')/60)*v('flex-taux')*pieces;
+  const embal=v('flex-embal')*pieces;
+  const rate=(mat+elec+amoPlot+amoPresse+mo+embal)*v('flex-rate')/100;
+  updateSummary({mat,elec,amo:amoPlot+amoPresse,maint:0,mo,embal,rate,pieces});
+}
+function calcBadge(){
+  const pieces=Math.max(1,v('bdg-pieces'));
+  const badge=v('bdg-badge-prix'),film=v('bdg-film');
+  const parfeuille=Math.max(1,v('bdg-parfeuille'));
+  const papier=v('bdg-papier')/parfeuille;
+  const encrePrixMl=v('bdg-encre-prix')/Math.max(1,v('bdg-encre-vol'));
+  const encre=(v('bdg-encre-ml')/parfeuille)*encrePrixMl;
+  const mat=(badge+film+papier+encre)*pieces;
+  const cmEl=document.getElementById('bdg-cout-mat');if(cmEl)cmEl.textContent=f(mat);
+  const hImp=(pieces/parfeuille)*0.05;
+  const elec=(10/1000)*hImp*v('bdg-kwh')*pieces;
+  const hTotal=(v('bdg-prep')/60)+(v('bdg-post')/60)*(pieces);
+  const amoImp=v('bdg-imp-vie')>0?(v('bdg-imp-prix')/v('bdg-imp-vie'))*hImp:0;
+  const amoBdg=v('bdg-badg-vie')>0?(v('bdg-badg-prix')/v('bdg-badg-vie'))*(pieces/600):0;
+  const mo=hTotal*v('bdg-taux');
+  const embal=v('bdg-embal')*pieces;
+  const rate=(mat+elec+amoImp+amoBdg+mo+embal)*v('bdg-rate')/100;
+  updateSummary({mat,elec,amo:amoImp+amoBdg,maint:0,mo,embal,rate,pieces});
+}
+function updateSubProduit(){
+  document.getElementById('sub-produit-prix').value=document.getElementById('sub-produit').value;
+  calcSub();
+}
+
+// ============================================================
+// BIBLIOTHÈQUE
+// ============================================================
+let curLibTech='fdm';
+const LTABS=[{k:'fdm',l:'Filaments FDM'},{k:'resine',l:'Résines'},{k:'broderie',l:'Fils broderie'},{k:'flex',l:'Flex & Vinyle'}];
+
+function openLib(tech){
+  curLibTech=tech||'fdm';
+  document.getElementById('moverlay').classList.add('open');
+  renderMTabs();renderMBody();
+}
+function closeLib(){document.getElementById('moverlay').classList.remove('open');}
+
+function renderMTabs(){
+  document.getElementById('mtabs').innerHTML=LTABS.map(t=>
+    `<button class="mtab${t.k===curLibTech?' active':''}" onclick="switchLibTab('${t.k}')">${t.l}</button>`
+  ).join('');
+}
+function switchLibTab(k){curLibTech=k;renderMTabs();renderMBody();}
+
+function renderMBody(){
+  const tech=curLibTech,items=library[tech]||[];
+  const isBrod=tech==='broderie';
+  const stds=items.filter(m=>!m.c),customs=items.filter(m=>m.c);
+  let html='';
+  if(stds.length){html+=`<div class="msect">Matériaux prédéfinis</div><div class="mlist">`;stds.forEach(m=>{html+=mItemHTML(m,isBrod,false);});html+=`</div>`;}
+  if(customs.length){html+=`<div class="msect">Mes matériaux</div><div class="mlist">`;customs.forEach(m=>{html+=mItemHTML(m,isBrod,true);});html+=`</div>`;}
+  
+  const unitLbl=tech==='fdm'?'Prix achat (€)':tech==='resine'?'Prix achat (€)':tech==='broderie'?'Prix bobine (€)':'Prix achat (€)';
+  const poidsLbl=tech==='fdm'?'Poids rouleau (g)':tech==='resine'?'Volume bidon (L)':tech==='broderie'?'Longueur bobine (m)':'Surface m² (approx.)';
+  html+=`<div class="addform"><div class="aft">+ Ajouter un matériau personnalisé</div>
+    <div class="addgrid">
+      <div class="f"><label>Nom</label><input type="text" id="new-n" placeholder="ex: PLA Galaxy"></div>
+      <div class="f"><label>Marque / Référence</label><input type="text" id="new-b" placeholder="ex: Bambu Lab"></div>
+      <div class="f"><label>${unitLbl}</label><input type="number" id="new-p" placeholder="0.00" step="0.01"></div>
+      <div class="f"><label>${poidsLbl}</label><input type="number" id="new-w" placeholder="${tech==='fdm'?'1000':tech==='resine'?'1':tech==='broderie'?'5000':'1'}"></div>
+    </div>
+    <button class="btnadd" onclick="addMat()">Ajouter à ma bibliothèque</button>
+  </div>`;
+  document.getElementById('mbody').innerHTML=html;
+  document.getElementById('mhdr').textContent='Bibliothèque — '+LTABS.find(x=>x.k===curLibTech).l;
+}
+
+function mItemHTML(m,isBrod,isDel){
+  const isSel=isBrod?brodFils.some(f=>f.id===m.id):(curLibTech!=='broderie'&&selMat[curLibTech]&&selMat[curLibTech].id===m.id);
+  const selClass=isSel?' sel':'';
+  const action=isBrod?`toggleFil('${m.id}')`:`selectMat('${m.id}')`;
+  const delBtn=isDel?`<button class="mdel" onclick="event.stopPropagation();deleteMat('${m.id}')">✕</button>`:'';
+  const icon=isBrod?(isSel?'☑':'☐'):(isSel?'✓':'·');
+  return `<div class="mitem${selClass}" onclick="${action}">
+    <div style="flex:1"><div class="mn">${m.n}</div><div class="mbr">${m.b}</div></div>
+    <div style="text-align:right"><div class="mp">${m.p.toFixed(2)} ${m.u||'€'}</div><div class="msel" style="color:${isSel?'var(--green)':'var(--text3)'}">${icon}</div></div>
+    ${delBtn}
+  </div>`;
+}
+
+function selectMat(id){
+  const m=library[curLibTech].find(x=>x.id===id);
+  if(!m)return;
+  selMat[curLibTech]=m;
+  if(curLibTech==='fdm'){
+    document.getElementById('fdm-mat-nom').value=m.n+(m.b?' — '+m.b:'');
+    document.getElementById('fdm-cond-prix').value=m.p;
+    document.getElementById('fdm-cond-poids').value=m.w;
+    calcFDMCond();
+  } else if(curLibTech==='resine'){
+    document.getElementById('res-mat-nom').value=m.n+(m.b?' — '+m.b:'');
+    document.getElementById('res-cond-prix').value=m.p;
+    document.getElementById('res-cond-vol').value=m.w;
+    calcResCond();
+  } else if(curLibTech==='flex'){
+    document.getElementById('flex-mat-nom').value=m.n+(m.b?' — '+m.b:'');
+    if(m.larg&&m.long){
+      document.getElementById('flex-cond-prix').value=m.p;
+      document.getElementById('flex-cond-larg').value=m.larg;
+      document.getElementById('flex-cond-long').value=m.long;
+      calcFlexCond();
+    }
+  }
+  renderMBody();
+}
+
+function toggleFil(id){
+  const m=library.broderie.find(x=>x.id===id);if(!m)return;
+  const idx=brodFils.findIndex(f=>f.id===id);
+  if(idx>=0){brodFils.splice(idx,1);}
+  else{brodFils.push({id:m.id,n:m.n,b:m.b,p:m.p,bobM:m.w,pct:100,nb:1});}
+  renderBrodFils();calcBrod();renderMBody();
+}
+
+function deleteMat(id){
+  library[curLibTech]=library[curLibTech].filter(x=>x.id!==id);
+  if(selMat[curLibTech]&&selMat[curLibTech].id===id)selMat[curLibTech]=library[curLibTech][0]||null;
+  brodFils=brodFils.filter(f=>f.id!==id);
+  saveLib();renderMBody();renderBrodFils();calcBrod();
+}
+
+function addMat(){
+  const n=(document.getElementById('new-n').value||'').trim();
+  const b=(document.getElementById('new-b').value||'').trim();
+  const p=parseFloat(document.getElementById('new-p').value)||0;
+  const w=parseFloat(document.getElementById('new-w').value)||1000;
+  if(!n)return;
+  const tech=curLibTech;
+  const units={fdm:'€/kg',resine:'€/L',broderie:'€/bobine',flex:'€/rouleau'};
+  const id=tech+'_'+Date.now();
+  library[tech].push({id,n,b,p,w,u:units[tech],c:true,larg:30,long:w>10?w:200});
+  saveLib();renderMBody();
+}
+
+// ============================================================
+// FILS BRODERIE
+// ============================================================
+function renderBrodFils(){
+  const cont=document.getElementById('brod-fils-list');if(!cont)return;
+  if(!brodFils.length){cont.innerHTML='<div style="font-size:.74rem;color:var(--text3);padding:.4rem;text-align:center">Aucun fil — cliquez sur Ajouter / Gérer</div>';return;}
+  cont.innerHTML=brodFils.map((fil,i)=>`
+    <div class="filrow">
+      <div class="fn"><div class="fname">${fil.n}</div><div class="fbrand">${fil.b} — ${fil.p.toFixed(2)} €/bobine</div></div>
+      <div class="finputs">
+        <div class="f"><label>Pts (%)</label><input type="number" value="${fil.pct}" min="1" max="100" oninput="brodFils[${i}].pct=parseFloat(this.value)||1;calcBrod()"></div>
+        <div class="f"><label>Nb couleurs</label><input type="number" value="${fil.nb}" min="1" max="20" oninput="brodFils[${i}].nb=parseInt(this.value)||1;calcBrod()"></div>
+      </div>
+      <button class="fdel" onclick="brodFils.splice(${i},1);renderBrodFils();calcBrod()">✕</button>
+    </div>`).join('');
+}
+
+// ============================================================
+// INIT
+// ============================================================
+calcFDMCond();
+calcFlexCond();
+renderBrodFils();
+setBadgeFormat();
+calcFDM();
+</script>
+</body>
+</html>
