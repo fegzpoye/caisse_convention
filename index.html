@@ -767,6 +767,9 @@ var PRODUCTS=[
   {id:8, label:"Grande plaque alu",     price:20,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
   {id:9, label:"Magnette frigo",        price:3.90, cat:"Sublimation",   emoji:"🧲", type:"sublim"},
   {id:10,label:"Stylo",                 price:5.50, cat:"Sublimation",   emoji:"✏️", type:"sublim"},
+  {id:49, label:"Badge 58mm",     price:6.50,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
+  {id:50, label:"Badge 32mm",     price:4.50,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
+  {id:51, label:"Badge 25mm",     price:2.50,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
   {id:11,label:"Dragon 3 couleurs",     price:10,   cat:"Impression 3D", emoji:"🐉", type:"print3d"},
   {id:14,label:"Dragon XXL aile",       price:20,   cat:"Impression 3D", emoji:"🐲", type:"print3d"},
   {id:12,label:"Dragon Cristal",        price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
@@ -818,16 +821,19 @@ var flashActive=false;
 // Stock de départ — ne s'applique QUE si aucun localStorage n'existe
 var STOCK_DEPART = {
   // 🎨 SUBLIMATION
-  1:99,  // Mug personnalisé
-  2:99,  // T-shirt sublimé
-  3:99,  // Pull sublimé
-  4:99,  // Casquette
-  5:99,  // Tote bag
-  6:99,  // Puzzle photo
-  7:99,  // Petite plaque alu
-  8:99,  // Grande plaque alu
-  9:99,  // Magnette frigo
-  10:99, // Stylo
+  1:4,  // Mug personnalisé
+  2:4,  // T-shirt sublimé
+  3:0,  // Pull sublimé
+  4:0,  // Casquette
+  5:0,  // Tote bag
+  6:0,  // Puzzle photo
+  7:6,  // Petite plaque alu
+  8:0,  // Grande plaque alu
+  49:2, // Badge 58mm
+  50:2, // Badge 32mm
+  51:0, // Badge 25mm
+  9:0,  // Magnette frigo
+  10:0, // Stylo
   // 🐉 Dragons
   11:99, // Dragon 3 couleurs
   14:99, // Dragon XXL aile
@@ -867,9 +873,9 @@ var STOCK_DEPART = {
   42:99, // Aliens support tel
   43:99, // Albator
   // 🎁 Packs
-  23:99, // Pack Souvenir
-  24:99, // Pack Duo
-  25:99, // Pack Deco 3D
+  23:0, // Pack Souvenir
+  24:0, // Pack Duo
+  25:0, // Pack Deco 3D
 };
 
 PRODUCTS.forEach(function(p){
