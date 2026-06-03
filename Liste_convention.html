@@ -255,6 +255,7 @@ select option{background:var(--sf)}textarea{resize:vertical;min-height:60px}
             <div class="tp2" id="tp-elec-oui" onclick="tPill('elec-oui')">&#9889; Avec &#233;lectricit&#233;</div>
             <div class="tp2" id="tp-elec-non" onclick="tPill('elec-non')">&#128683; Sans &#233;lectricit&#233;</div>
             <div class="tp2" id="tp-elec-inc" onclick="tPill('elec-inc')">&#128161; &#201;lec. incluse</div>
+            <div class="tp2" id="tp-elec-fact" onclick="tPill('elec-fact')">&#128179; &#201;lec. factur&#233;e</div>
             <div class="tp2" id="tp-ext" onclick="tPill('ext')">&#127780; Ext&#233;rieur</div>
             <div class="tp2" id="tp-int" onclick="tPill('int')">&#127968; Int&#233;rieur</div>
             <div class="tp2" id="tp-couvert" onclick="tPill('couvert')">&#9978; Couvert</div>
@@ -262,6 +263,10 @@ select option{background:var(--sf)}textarea{resize:vertical;min-height:60px}
             <div class="tp2" id="tp-table-apport" onclick="tPill('table-apport')">&#128204; Apporter tables</div>
             <div class="tp2" id="tp-wifi" onclick="tPill('wifi')">&#128246; Wi-Fi</div>
             <div class="tp2" id="tp-parking" onclick="tPill('parking')">&#127359; Parking</div>
+          </div>
+          <div class="g" id="elec-price-wrap" style="display:none">
+            <label>Prix électricité facturée (€)</label>
+            <input type="number" id="f-elec-price" placeholder="0" step="0.01">
           </div>
           <div class="sec">Notes</div>
           <div class="g gf"><textarea id="f-notes" placeholder="Conditions, r&#232;glement, infos logistique..."></textarea></div>
@@ -376,13 +381,12 @@ const CL=[
   {k:'transport',l:'Transport organis\u00e9'},
   {k:'heberg',l:'H\u00e9bergement r\u00e9serv\u00e9'},
   {k:'stock',l:'Stock pr\u00e9par\u00e9'},
-  {k:'caisse',l:'Caisse pr\u00eate'},
+  {k:'caisse',l:'Caisse/monnaie pr\u00eate'},
   {k:'tables',l:'Tables/mat\u00e9riel expo'},
   {k:'affichage',l:'D\u00e9co/affichage pr\u00eat'},
   {k:'badges',l:'Badges re\u00e7us'},
   {k:'assurance',l:'Assurance v\u00e9rifi\u00e9e'},
   {k:'remorque',l:'Remorque pr\u00eate'},
-  {k:'monnaie',l:'Monnaie/caisse pr\u00e9par\u00e9e'},
   {k:'etiquettes',l:'\u00c9tiquettes prix \u00e0 jour'},
 ];
 
@@ -393,6 +397,7 @@ const PC={
   'elec-oui':{l:'\u26a1 Avec \u00e9lec.',c:'el'},
   'elec-non':{l:'\u{1f6ab} Sans \u00e9lec.',c:'in'},
   'elec-inc':{l:'\u{1f4a1} \u00c9lec. incluse',c:'el'},
+  'elec-fact':{l:'\u{1f4b3} \u00c9lec. factur\u00e9e',c:'el'},
   ext:{l:'\u{1f324} Ext\u00e9rieur',c:'ex'},
   int:{l:'\u{1f3e0} Int\u00e9rieur',c:'in'},
   couvert:{l:'\u26fa Couvert',c:'ex'},
@@ -439,11 +444,15 @@ function buildHoraireGrids(n){
   const days=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
   const ds=document.getElementById('f-ds').value;
   let labels=[];
-  if(n===1){labels=['Jour unique'];}
-  else{
-    for(let i=0;i<n&&i<7;i++){
-      if(ds){const d=new Date(ds);d.setDate(d.getDate()+i);labels.push(days[d.getDay()]+(n>3?' J'+(i+1):''));}
-      else{labels.push('Jour '+(i+1));}
+  for(let i=0;i<Math.max(1,n)&&i<7;i++){
+    if(ds){
+      const d=new Date(ds+'T12:00:00');
+      d.setDate(d.getDate()+i);
+      const dayName=days[d.getDay()];
+      const dateStr=(d.getDate()+'').padStart(2,'0')+'/'+(d.getMonth()+1+'').padStart(2,'0');
+      labels.push(dayName+' '+dateStr);
+    }else{
+      labels.push(n===1?'Jour unique':'Jour '+(i+1));
     }
   }
   ['expo','public'].forEach(type=>{
@@ -550,7 +559,7 @@ function renderList(){
     const njchip=nj>1?'<span class="mc pu">\u{1f4c5} '+nj+' jours</span>':'';
     return '<div class="ec s-'+ev.status+'" onclick="selCard(\''+ev.id+'\',event)">'
       +'<div class="ch"><div class="ct">'+ev.name+'</div><div class="ca"><button class="cb" onclick="editEv(\''+ev.id+'\',event)">\u270f\ufe0f</button><button class="cb dl" onclick="delEv(\''+ev.id+'\',event)">\u{1f5d1}</button></div></div>'
-      +'<div class="cm">'+(ev.datestart?'<span class="mc hi">\u{1f4c5} '+fmt(ev.datestart)+(ev.dateend&&ev.dateend!==ev.datestart?' \u2192 '+fmt(ev.dateend):'')+'</span>':'')+njchip+(ev.address?'<span class="mc">\u{1f4cd} '+ev.address.split(',').slice(-2).join(',').trim()+'</span>':'')+(ev.price?'<span class="mc">\u{1f4b6} '+ev.price+'\u20ac</span>':'')+(ev.space?'<span class="mc">'+ev.space+'</span>':'')+pchips+rb+'</div>'
+      +'<div class="cm">'+(ev.datestart?'<span class="mc hi">\u{1f4c5} '+fmt(ev.datestart)+(ev.dateend&&ev.dateend!==ev.datestart?' \u2192 '+fmt(ev.dateend):'')+'</span>':'')+njchip+(ev.address?'<span class="mc">\u{1f4cd} '+ev.address.split(',').slice(-2).join(',').trim()+'</span>':'')+(ev.price?'<span class="mc">\u{1f4b6} '+ev.price+'\u20ac</span>':'')+(ev.elecPrice&&ev.pills&&ev.pills['elec-fact']?'<span class="mc el">\u26a1 \u00c9lec. '+ev.elecPrice+'\u20ac</span>':'')+(ev.space?'<span class="mc">'+ev.space+'</span>':'')+pchips+rb+'</div>'
       +(ct.length?'<div class="cp">'+cpills+(ct.length>3?'<span class="pp">+'+( ct.length-3)+'</span>':'')+'</div>':'')
       +'<div class="cf"><span class="sb2 ss-'+ev.status+'">'+(SL[ev.status]||ev.status)+'</span><div class="pw"><div class="pb"><div class="pf" style="width:'+pct+'%"></div></div><span style="font-size:.62rem;color:var(--dim)">'+done+'/'+allCL.length+'</span></div></div></div>';
   }).join('');
@@ -579,7 +588,9 @@ function switchTab(n,btn){document.querySelectorAll('.tp').forEach(p=>p.classLis
 function tPill(k){
   // exclusions
   if(k==='elec-oui'&&pills['elec-non'])pills['elec-non']=false;
-  if(k==='elec-non'&&pills['elec-oui'])pills['elec-oui']=false;
+  if(k==='elec-non'){pills['elec-oui']=false;pills['elec-inc']=false;pills['elec-fact']=false;}
+  if(k==='elec-inc'&&pills['elec-fact'])pills['elec-fact']=false;
+  if(k==='elec-fact'&&pills['elec-inc'])pills['elec-inc']=false;
   if(k==='table-inc'&&pills['table-apport'])pills['table-apport']=false;
   if(k==='table-apport'&&pills['table-inc'])pills['table-inc']=false;
   if(k==='ext'&&pills['int'])pills['int']=false;
@@ -592,6 +603,8 @@ function rPills(){
     const el=document.getElementById('tp-'+k);if(!el)return;
     el.className='tp2'+(pills[k]?' '+PC[k].c:'');
   });
+  const epw=document.getElementById('elec-price-wrap');
+  if(epw)epw.style.display=pills['elec-fact']?'flex':'none';
 }
 
 function addCR(c={}){
@@ -666,7 +679,7 @@ function openModal(id=null){
   document.getElementById('hebList').innerHTML='';
   switchTab('infos',document.querySelector('.tab'));
   const fv=(fi,v)=>{const el=document.getElementById(fi);if(!el)return;if(el.tagName==='SELECT')el.value=v||el.options[0].value;else el.value=v||'';};
-  const ri=['f-name','f-type','f-status','f-ds','f-de','f-addr','f-price','f-space','f-notes','f-esd','f-erd','f-esub','f-enotes','f-tr','f-trc','f-trn','f-remail','f-rdate','f-rnote','f-horaires-notes'];
+  const ri=['f-name','f-type','f-status','f-ds','f-de','f-addr','f-price','f-space','f-notes','f-esd','f-erd','f-esub','f-enotes','f-tr','f-trc','f-trn','f-remail','f-rdate','f-rnote','f-horaires-notes','f-elec-price'];
   if(id){
     const ev=evs.find(x=>x.id===id);
     document.getElementById('mTitle').textContent='Modifier l\u2019\u00e9v\u00e9nement';
@@ -677,6 +690,7 @@ function openModal(id=null){
     fv('f-tr',ev.transport);fv('f-trc',ev.transportCost);fv('f-trn',ev.transportNotes);
     fv('f-remail',ev.rappelEmail);fv('f-rdate',ev.rappelDate);fv('f-rnote',ev.rappelNote);
     fv('f-horaires-notes',ev.horairesNotes);
+    fv('f-elec-price',ev.elecPrice);
     if(ev.lat){geo={lat:ev.lat,lng:ev.lng};showGeoOk();}
     pills={...(ev.pills||{})};rapD=[...(ev.rappelDays||[])];checksNA={...(ev.checksNA||{})};
     (ev.contacts||[]).forEach(c=>addCR(c));(ev.hebergements||[]).forEach(h=>addHR(h));
@@ -711,7 +725,7 @@ function saveEvent(){
     id:eid||Date.now().toString(36)+Math.random().toString(36).slice(2),
     name,type:gv('f-type'),status:gv('f-status'),datestart:gv('f-ds'),dateend:gv('f-de'),nbJours:nj,
     address:gv('f-addr'),price:gv('f-price'),space:gv('f-space'),notes:gv('f-notes'),
-    pills:{...pills},contacts:getCR(),
+    pills:{...pills},elecPrice:document.getElementById('f-elec-price')?.value||'',contacts:getCR(),
     emailSentDate:gv('f-esd'),emailReplyDate:gv('f-erd'),emailSubject:gv('f-esub'),emailNotes:gv('f-enotes'),
     hebergements:getHR(),transport:gv('f-tr'),transportCost:gv('f-trc'),transportNotes:gv('f-trn'),
     rappelEmail:gv('f-remail'),rappelDays:[...rapD],rappelDate:gv('f-rdate'),rappelNote:gv('f-rnote'),
