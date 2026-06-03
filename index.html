@@ -525,7 +525,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div><div class="cp-section-title">Vente hors catalogue</div>
       <div class="cp-add-form">
         <input class="cp-input" id="autreLabel" type="text" placeholder="Description..." style="text-align:left;font-family:'DM Sans',sans-serif;font-weight:400;font-size:12px">
-        <div class="cp-input-row"><input class="cp-input" id="autreMontant" type="text" inputmode="decimal" placeholder="Prix €"><button class="cp-btn" onclick="addAutreVente()">+ Vente</button></div>
+        <div class="cp-input-row"><input class="cp-input" id="autreMontant" type="text" inputmode="decimal" placeholder="Prix €"><button class="cp-btn" onclick="addAutrePanier()">🛒 Panier</button></div>
+        <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px">L'article s'ajoute au panier — combinez avec d'autres produits</div>
       </div>
     </div>
     <div><div class="cp-section-title">Liste (<span id="autresCount">0</span>)</div><div id="autresListe"></div></div>
@@ -1028,11 +1029,13 @@ window.addToCart=function(id){
 };
 
 window.changeQty=function(id,delta){
-  var idx=cart.findIndex(function(i){return i.id===id;});
+  // Convertir en int si c'est un id numérique
+  var realId=isNaN(id)?id:parseInt(id);
+  var idx=cart.findIndex(function(i){return i.id===realId||i.id===id;});
   if(idx===-1)return;
-  // Vérifier stock si on augmente
-  if(delta>0){
-    var stock=stockData[id]!==undefined?stockData[id]:99;
+  // Vérifier stock si on augmente (seulement pour les vrais produits)
+  if(delta>0&&!cart[idx].isAutre){
+    var stock=stockData[realId]!==undefined?stockData[realId]:99;
     if(stock<99&&cart[idx].qty>=stock){showToast("⚠️ Stock insuffisant");return;}
   }
   cart[idx].qty+=delta;
@@ -1047,9 +1050,11 @@ function renderCart(){
   if(!cart.length){container.innerHTML="<div class='empty-cart'><div style='font-size:30px;opacity:.35'>🛒</div><span>Panier vide</span><span style='font-size:11px;color:var(--text3)'>Touchez un article</span></div>";return;}
   var html="";
   cart.forEach(function(item){
+    var autreBadge=item.isAutre?"<span style='font-size:9px;background:rgba(74,158,255,.2);color:var(--blue);border-radius:4px;padding:1px 5px;margin-left:4px'>Autre</span>":"";
+    var itemIdStr=String(item.id).replace(/'/g,"");
     html+="<div class='cart-item'><div style='font-size:18px'>"+item.emoji+"</div>";
-    html+="<div class='cart-item-info'><div class='cart-item-name'>"+item.name+"</div><div class='cart-item-sub'>"+fmt(item.price)+" / unité</div></div>";
-    html+="<div class='qty-ctrl'><button class='qty-btn' onclick='changeQty("+item.id+",-1)'>−</button><span class='qty-num'>"+item.qty+"</span><button class='qty-btn' onclick='changeQty("+item.id+",1)'>+</button></div>";
+    html+="<div class='cart-item-info'><div class='cart-item-name'>"+item.name+autreBadge+"</div><div class='cart-item-sub'>"+fmt(item.price)+" / unité</div></div>";
+    html+="<div class='qty-ctrl'><button class='qty-btn' onclick='changeQty("+JSON.stringify(item.id)+",-1)'>−</button><span class='qty-num'>"+item.qty+"</span><button class='qty-btn' onclick='changeQty("+JSON.stringify(item.id)+",1)'>+</button></div>";
     html+="<div class='cart-item-price'>"+fmt(item.price*item.qty)+"</div></div>";
   });
   container.innerHTML=html;
@@ -1103,11 +1108,16 @@ window.confirmerPaiement=function(){
   var ticket={num:tickets.length+1,items:cart.map(function(i){return{id:i.id,name:i.name,cat:i.cat,price:i.price,qty:i.qty,emoji:i.emoji};}),total:total,mode:payMode==="Especes"?"Espèces":payMode,promoCode:activePromo?activePromo.code:null,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR"),disc:disc};
   tickets.unshift(ticket);totalCA+=total;
   cart.forEach(function(item){
-    salesData[item.id].qty+=item.qty;
-    salesData[item.id].ca+=item.price*item.qty;
-    // Décompter stock
-    if(stockData[item.id]!==undefined&&stockData[item.id]<99){
-      stockData[item.id]=Math.max(0,stockData[item.id]-item.qty);
+    if(item.isAutre){
+      // Article hors catalogue — tracer dans autresVentes
+      autresVentes.push({label:item.name,montant:item.price*item.qty,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR")});
+    } else {
+      salesData[item.id].qty+=item.qty;
+      salesData[item.id].ca+=item.price*item.qty;
+      // Décompter stock
+      if(stockData[item.id]!==undefined&&stockData[item.id]<99){
+        stockData[item.id]=Math.max(0,stockData[item.id]-item.qty);
+      }
     }
   });
   document.getElementById("nbVentes").textContent=tickets.length;
@@ -1437,6 +1447,25 @@ function renderCaisse(){
   });histo.innerHTML=h;
 }
 // ── AUTRES VENTES ─────────────────────────────────────────────
+window.addAutrePanier=function(){
+  var label=document.getElementById("autreLabel").value.trim();
+  var raw=(document.getElementById("autreMontant").value||"").replace(",",".");
+  var prix=parseFloat(raw)||0;
+  if(!label){showToast("Entrez une description");return;}
+  if(prix<=0){showToast("Entrez un prix");return;}
+  // Créer un produit temporaire et l'ajouter au panier
+  var tempId="autre_"+Date.now();
+  var ex=cart.find(function(i){return i.id===tempId;});
+  if(ex){ex.qty++;}
+  else{cart.push({id:tempId,name:label,price:prix,emoji:"📦",cat:"Autre",qty:1,isAutre:true});}
+  document.getElementById("autreLabel").value="";
+  document.getElementById("autreMontant").value="";
+  // Fermer panel Autres et montrer le panier
+  document.getElementById("autresPanel").classList.remove("open");
+  renderCart();updateTotals();
+  showToast("📦 "+label+" ajouté au panier !");
+};
+
 window.addAutreVente=function(){
   var label=document.getElementById("autreLabel").value.trim();
   var raw=(document.getElementById("autreMontant").value||"").replace(",",".");var montant=parseFloat(raw)||0;
@@ -1464,6 +1493,8 @@ window.addAutreVente=function(){
   // Mettre à jour les modes de paiement dans salesData (cat Autre)
   renderTickets();renderExcelPanel();
   updateSoldeCaisse();renderAutres();sauvegarder();
+  // Ouvrir le panel Tickets pour montrer la vente
+  document.getElementById("ticketPanel").classList.add("open");
   showToast("📦 "+label+" — "+fmt(montant)+" ajouté !");
 };
 window.deleteAutreVente=function(idx){
