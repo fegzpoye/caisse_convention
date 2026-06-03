@@ -236,6 +236,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .client-btns .skip{background:var(--surface2);border:1px solid var(--border);color:var(--text2)}
 .client-btns .save{background:var(--green);border:none;color:#fff}
 .client-btns button:active{transform:scale(.97)}
+.ticket-autre{border-left:2px solid var(--blue) !important}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
@@ -863,12 +864,12 @@ var STOCK_DEPART = {
   46:41, // Animaux Flex
   36:1, // Poisson pecheur
   // 🦕 Dinosaures
-  32:0, // Lampe dinosaure XXL
+  32:1, // Lampe dinosaure XXL
   33:0, // Veilleuse dino petit
   37:1, // Mosasaurus squelette
   38:1, // Spinosaurus squelette
   39:1, // Ankylosaure squelette
-  35:0, // Oeuf raptor (fils)
+  35:1, // Oeuf raptor (fils)
   // 🌀 Fidgets
   19:9, // Etoile fidgets grand
   20:9, // Etoile fidgets moyen
@@ -886,20 +887,20 @@ var STOCK_DEPART = {
   18:221, // Porte-cles
   // 🚀 Geek
   40:2, // Cadre Star Wars
-  41:0, // Aliens support stylo
-  42:1, // Aliens support tel
+  41:2, // Aliens support stylo
+  42:2, // Aliens support tel
   43:0, // Albator
   // 🎁 Packs
   23:0, // Pack Souvenir
   24:0, // Pack Duo
   25:0, // Pack Deco 3D
   52:1, // Lampe alien
-  53:0, // Bloc livre alien
-  54:0, // Buste alien
+  53:1, // Bloc livre alien
+  54:1, // Buste alien
   55:1, // Main mercredi
   56:2, // Marque page grand
   57:5, // Mini clown ça
-  58:0, // Dobby
+  58:1, // Dobby
   59:1, // Bloc livre ça
   60:1, // Hueforge ça
   61:1, // Hueforge xxl
@@ -919,7 +920,7 @@ PRODUCTS.forEach(function(p){
 });
 
 // ── LOCALSTORAGE ───────────────────────────────────────────────
-var SAVE_KEY="shaya_caisse_v2";
+var SAVE_KEY="shaya_caisse_v3";  // Incrémenté pour forcer reset propre
 
 function sauvegarder(){
   try{
@@ -949,7 +950,8 @@ function restaurer(){
       return false;
     }
     tickets=data.tickets||[];
-    totalCA=data.totalCA||0;
+    // Recalculer totalCA depuis les tickets pour éviter tout cumul incorrect
+    totalCA=tickets.reduce(function(s,t){return s+t.total;},0);
     if(data.salesData){for(var sid in data.salesData){salesData[parseInt(sid)]=data.salesData[sid];}}
     if(data.stockData){for(var sid2 in data.stockData){stockData[parseInt(sid2)]=data.stockData[sid2];}}
     if(data.promoCodes){promoCodes=data.promoCodes;}
@@ -1309,7 +1311,12 @@ function renderTickets(){
     var mc=(t.mode==="CB"||t.mode==="SumUp")?"cb":t.mode==="Virement"?"vir":"cash";
     var items=t.items.map(function(i){return i.qty+"× "+i.name;}).join(", ");
     var gainBadge=t.wheelGain?"<br><span style='font-size:10px;color:var(--amber)'>🎡 "+t.wheelEmoji+" "+t.wheelGain+"</span>":"";
-    html+="<div class='ticket-item'><div class='ticket-item-top'><span class='ticket-num'>#"+("00"+t.num).slice(-3)+" · "+t.time+"</span><span class='ticket-total'>"+fmt(t.total)+"</span></div><div class='ticket-meta'>"+items+gainBadge+"</div><span class='ticket-mode "+mc+"'>"+t.mode+"</span></div>";
+    // Badge spécial pour les ventes hors catalogue
+    var autreBadge=t.isAutre?"<span class='ticket-mode' style='background:rgba(74,158,255,.15);color:var(--blue)'>📦 Autre</span>":"<span class='ticket-mode "+mc+"'>"+t.mode+"</span>";
+    html+="<div class='ticket-item"+(t.isAutre?" ticket-autre":"")+"'>";
+    html+="<div class='ticket-item-top'><span class='ticket-num'>#"+("00"+t.num).slice(-3)+" · "+t.time+"</span><span class='ticket-total'>"+fmt(t.total)+"</span></div>";
+    html+="<div class='ticket-meta'>"+items+gainBadge+"</div>";
+    html+=autreBadge+"</div>";
   });
   body.innerHTML=html;
 }
@@ -1440,18 +1447,42 @@ window.addAutreVente=function(){
   var raw=(document.getElementById("autreMontant").value||"").replace(",",".");var montant=parseFloat(raw)||0;
   if(!label){showToast("Entrez une description");return;}if(montant<=0){showToast("Entrez un montant");return;}
   var now=new Date();
-  autresVentes.push({label:label,montant:montant,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR")});
+  // Créer un vrai ticket visible dans les commandes
+  var ticket={
+    num:tickets.length+1,
+    items:[{id:0,name:label,cat:"Autre",price:montant,qty:1,emoji:"📦"}],
+    total:montant,
+    mode:payMode||"Espèces",
+    promoCode:null,
+    time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
+    date:now.toLocaleDateString("fr-FR"),
+    disc:0,
+    isAutre:true
+  };
+  tickets.unshift(ticket);
+  autresVentes.push({label:label,montant:montant,time:ticket.time,date:ticket.date});
   totalCA+=montant;
-  document.getElementById("nbVentes").textContent=tickets.length+autresVentes.length;
+  document.getElementById("nbVentes").textContent=tickets.length;
   document.getElementById("caJour").textContent=fmt(totalCA);
   document.getElementById("caTotal").textContent=fmt(totalCA);
   document.getElementById("autreLabel").value="";document.getElementById("autreMontant").value="";
-  updateSoldeCaisse();renderAutres();sauvegarder();showToast("+"+fmt(montant)+" ajouté");
+  // Mettre à jour les modes de paiement dans salesData (cat Autre)
+  renderTickets();renderExcelPanel();
+  updateSoldeCaisse();renderAutres();sauvegarder();
+  showToast("📦 "+label+" — "+fmt(montant)+" ajouté !");
 };
 window.deleteAutreVente=function(idx){
-  totalCA-=autresVentes[idx].montant;autresVentes.splice(idx,1);
-  document.getElementById("nbVentes").textContent=tickets.length+autresVentes.length;
+  var v=autresVentes[idx];
+  totalCA-=v.montant;
+  autresVentes.splice(idx,1);
+  // Supprimer aussi le ticket correspondant
+  var tIdx=tickets.findIndex(function(t){return t.isAutre&&t.items[0]&&t.items[0].name===v.label&&t.total===v.montant;});
+  if(tIdx!==-1)tickets.splice(tIdx,1);
+  // Renuméroter les tickets
+  tickets.forEach(function(t,i){t.num=tickets.length-i;});
+  document.getElementById("nbVentes").textContent=tickets.length;
   document.getElementById("caJour").textContent=fmt(totalCA);document.getElementById("caTotal").textContent=fmt(totalCA);
+  renderTickets();renderExcelPanel();
   updateSoldeCaisse();renderAutres();sauvegarder();
 };
 function renderAutres(){
