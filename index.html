@@ -1329,11 +1329,6 @@ window.doReset=function(){
   tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];activePromo=null;
   fondCaisse=0;sortiesCaisse=[];autresVentes=[];donsTombola=[];gainsObjets=[];
   if(typeof window.stopOffreFlash==="function")window.stopOffreFlash();
-  document.getElementById("nbVentes").textContent="0";
-  document.getElementById("caJour").textContent="0,00\u00a0€";
-  document.getElementById("caTotal").textContent="0,00\u00a0€";
-  document.getElementById("discountInput").value="";
-  ["btnCB","btnCash","btnSumup","btnVir"].forEach(function(id){var b=document.getElementById(id);if(b)b.classList.remove("selected");});
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   renderCart();updateTotals();renderTickets();renderExcelPanel();renderStockPanel();renderProducts();
   if(typeof renderCaisse==="function"){renderCaisse();renderAutres();renderDons();}
