@@ -446,7 +446,8 @@ function buildHoraireGrids(n){
   let labels=[];
   for(let i=0;i<Math.max(1,n)&&i<7;i++){
     if(ds){
-      const d=new Date(ds+'T12:00:00');
+      const parts=ds.split('-');
+      const d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
       d.setDate(d.getDate()+i);
       const dayName=days[d.getDay()];
       const dateStr=(d.getDate()+'').padStart(2,'0')+'/'+(d.getMonth()+1+'').padStart(2,'0');
@@ -583,7 +584,7 @@ function renderStats(){
 
 function setFilter(f,btn){filt=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderList();}
 function selCard(id,e){const ev=evs.find(x=>x.id===id);if(!ev||!ev.lat)return;Map2.sv(ev.lat,ev.lng,12);}
-function switchTab(n,btn){document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));document.getElementById('tp-'+n).classList.add('on');btn.classList.add('on');}
+function switchTab(n,btn){document.querySelectorAll('.tp').forEach(p=>p.classList.remove('on'));document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));document.getElementById('tp-'+n).classList.add('on');btn.classList.add('on');if(n==='horaires'){const ds=document.getElementById('f-ds').value;const de=document.getElementById('f-de').value;const nj=ds?(de&&de>ds?Math.round((new Date(de.split('-')[0],de.split('-')[1]-1,de.split('-')[2])-new Date(ds.split('-')[0],ds.split('-')[1]-1,ds.split('-')[2]))/86400000)+1:1):1;buildHoraireGrids(nj);}}
 
 function tPill(k){
   // exclusions
@@ -695,10 +696,8 @@ function openModal(id=null){
     pills={...(ev.pills||{})};rapD=[...(ev.rappelDays||[])];checksNA={...(ev.checksNA||{})};
     (ev.contacts||[]).forEach(c=>addCR(c));(ev.hebergements||[]).forEach(h=>addHR(h));
     CL.forEach(c=>{if(ev.checks?.[c.k])document.getElementById('ck-'+c.k)?.classList.add('on');});
-    // re-apply NA
     CL.forEach(c=>{if(checksNA[c.k]){const el=document.getElementById('ck-'+c.k);if(el){el.classList.add('na');el.classList.remove('on');el.querySelector('.ck-na-btn').textContent='Activer';}}});
     rapD.forEach(d=>document.getElementById('rc-'+d)?.classList.add('on'));
-    // restore horaires after building grids
     updateJours();
     setTimeout(()=>{
       if(ev.horairesExpo){Object.entries(ev.horairesExpo).forEach(([day,val])=>{Object.entries(val).forEach(([field,v])=>{const inp=document.querySelector('[data-type=expo][data-day='+day+'][data-field='+field+']');if(inp)inp.value=v;});});}
@@ -708,7 +707,8 @@ function openModal(id=null){
     document.getElementById('mTitle').textContent='Nouvel \u00e9v\u00e9nement';
     ri.forEach(fi=>{const el=document.getElementById(fi);if(!el)return;if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';});
     [7,14,30].forEach(d=>document.getElementById('rc-'+d)?.classList.remove('on'));
-    updateJours();
+    buildHoraireGrids(1);
+    document.getElementById('jours-info').style.display='none';
   }
   rPills();updatePreview();document.getElementById('mo').classList.add('open');
 }
