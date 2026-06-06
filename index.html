@@ -84,6 +84,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .sp-qty-num.ok{color:var(--green)}
 .sp-footer{padding:10px 14px;border-top:1px solid var(--border);flex-shrink:0}
 .sp-reset-btn{width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer}
+.sp-toggle{width:36px;height:20px;border-radius:99px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.sp-toggle.on{background:var(--green)}
+.sp-toggle.off{background:var(--surface3)}
+.sp-toggle::after{content:'';position:absolute;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s}
+.sp-toggle.on::after{left:19px}
+.sp-toggle.off::after{left:3px}
+.product-card.disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
+.product-card.disabled::after{content:"DÉSACTIVÉ";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text3);background:rgba(0,0,0,.3);border-radius:var(--r)}
 /* ── SAVE INDICATOR ────────────────────────────────────────── */
 .save-indicator{position:absolute;bottom:60px;right:16px;background:var(--surface2);border:1px solid var(--green);border-radius:99px;padding:5px 12px;font-size:11px;color:var(--green);opacity:0;transition:opacity .3s;pointer-events:none;z-index:400}
 .save-indicator.show{opacity:1}
@@ -369,7 +377,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 
   <div class="panier">
     <div class="panier-header">
-      <span class="panier-title">Panier</span>
+      <span class="panier-title">Commande</span>
       <div class="panier-count" id="cartCount">0</div>
     </div>
     <div class="panier-items" id="panierItems"></div>
@@ -432,7 +440,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <button class="btn-sm" onclick="toggleStock()">✕</button>
   </div>
   <div class="sp-body" id="spBody"></div>
-  <div class="sp-footer">
+  <div class="sp-footer" style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;gap:6px">
+      <button class="sp-reset-btn" style="flex:1" onclick="enableAllProducts()">✅ Tout activer</button>
+      <button class="sp-reset-btn" style="flex:1" onclick="disableAllProducts()">🚫 Tout désactiver</button>
+    </div>
     <button class="sp-reset-btn" onclick="resetAllStock()">↺ Remettre tous les stocks à zéro</button>
   </div>
 </div>
@@ -525,8 +537,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div><div class="cp-section-title">Vente hors catalogue</div>
       <div class="cp-add-form">
         <input class="cp-input" id="autreLabel" type="text" placeholder="Description..." style="text-align:left;font-family:'DM Sans',sans-serif;font-weight:400;font-size:12px">
-        <div class="cp-input-row"><input class="cp-input" id="autreMontant" type="text" inputmode="decimal" placeholder="Prix €"><button class="cp-btn" onclick="addAutrePanier()">🛒 Panier</button></div>
-        <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px">L'article s'ajoute au panier — combinez avec d'autres produits</div>
+        <div class="cp-input-row"><input class="cp-input" id="autreMontant" type="text" inputmode="decimal" placeholder="Prix €"><button class="cp-btn" onclick="addAutreVente()">+ Vente</button></div>
       </div>
     </div>
     <div><div class="cp-section-title">Liste (<span id="autresCount">0</span>)</div><div id="autresListe"></div></div>
@@ -759,78 +770,91 @@ window.skipClient=function(){
 
 // ── PRODUITS ───────────────────────────────────────────────────
 var PRODUCTS=[
-  {id:1, label:"Mug personnalisé",      price:9.99, cat:"Sublimation",   emoji:"☕", type:"sublim"},
-  {id:2, label:"T-shirt sublimé",       price:22,   cat:"Sublimation",   emoji:"🎽", type:"sublim"},
-  {id:3, label:"Pull sublimé",          price:35.90,cat:"Sublimation",   emoji:"👕", type:"sublim"},
-  {id:4, label:"Casquette",             price:19,   cat:"Sublimation",   emoji:"🧢", type:"sublim"},
-  {id:5, label:"Tote bag",              price:14,   cat:"Sublimation",   emoji:"👜", type:"sublim"},
-  {id:6, label:"Puzzle photo",          price:25,   cat:"Sublimation",   emoji:"🧩", type:"sublim"},
-  {id:7, label:"Petite plaque alu",     price:12,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
-  {id:8, label:"Grande plaque alu",     price:20,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
-  {id:9, label:"Magnette frigo",        price:3.90, cat:"Sublimation",   emoji:"🧲", type:"sublim"},
-  {id:10,label:"Stylo",                 price:5.50, cat:"Sublimation",   emoji:"✏️", type:"sublim"},
-  {id:49, label:"Badge 58mm",     price:6.50,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
-  {id:50, label:"Badge 32mm",     price:4.50,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
-  {id:51, label:"Badge 25mm",     price:2.50,   cat:"Sublimation",   emoji:"🎴", type:"sublim"},
-  {id:11,label:"Dragon 3 couleurs",     price:10,   cat:"Impression 3D", emoji:"🐉", type:"print3d"},
-  {id:14,label:"Dragon XXL aile",       price:20,   cat:"Impression 3D", emoji:"🐲", type:"print3d"},
-  {id:12,label:"Dragon Cristal",        price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:52,label:"Lampe alien",        price:35,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:53,label:"Bloc livre alien",        price:25,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:54,label:"Buste alien",        price:60,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:55,label:"Main mercredi",        price:20,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:56,label:"Marque page grand",        price:10,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:57,label:"Mini clown ça",        price:8,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:58,label:"Dobby",        price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:59,label:"Block livre ça",        price:35,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:60,label:"Hueforge ça",        price:20,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:61,label:"Hueforge xxl",        price:30,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:62,label:"Petit hueforge",        price:12,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:63,label:"Déco mur alien",        price:25,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:64,label:"Face hugger alien",        price:40,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:65,label:"Marque page HP",        price:10,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:66,label:"Lampe dragon",        price:40,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:67,label:"Vaisseau",        price:20,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:68,label:"Mini hueforge",        price:5,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:44,label:"Oeuf lampe dragon",     price:10,   cat:"Impression 3D", emoji:"🥚", type:"print3d"},
-  {id:45,label:"Oeuf bébé dragon",      price:10,   cat:"Impression 3D", emoji:"🐣", type:"print3d"},
-  {id:34,label:"Baguette Dragon",       price:8,    cat:"Impression 3D", emoji:"🪄", type:"print3d"},
-  {id:13,label:"Serpent XXL",           price:18,   cat:"Impression 3D", emoji:"🐍", type:"print3d"},
-  {id:46,label:"Animaux Flex",          price:5,    cat:"Impression 3D", emoji:"🐾", type:"print3d"},
-  {id:36,label:"Poisson pêcheur",       price:12,   cat:"Impression 3D", emoji:"🐟", type:"print3d"},
-  {id:32,label:"Lampe dinosaure XXL",   price:30,   cat:"Impression 3D", emoji:"🦕", type:"print3d"},
-  {id:33,label:"Veilleuse dino petit",  price:15,   cat:"Impression 3D", emoji:"🌙", type:"print3d"},
-  {id:37,label:"Mosasaurus squelette",  price:18,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
-  {id:38,label:"Spinosaurus squelette", price:15,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
-  {id:39,label:"Ankylosaure squelette", price:18,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
-  {id:35,label:"Oeuf raptor (fils)",    price:15,   cat:"Impression 3D", emoji:"🥚", type:"print3d"},
-  {id:19,label:"Étoile fidgets grand",  price:10,   cat:"Impression 3D", emoji:"⭐", type:"print3d"},
-  {id:20,label:"Étoile fidgets moyen",  price:8,    cat:"Impression 3D", emoji:"🌟", type:"print3d"},
-  {id:21,label:"Étoile fidgets petit",  price:5,    cat:"Impression 3D", emoji:"✨", type:"print3d"},
-  {id:29,label:"Handspinner",           price:3,    cat:"Impression 3D", emoji:"🌀", type:"print3d"},
-  {id:30,label:"Anti stress",           price:5,    cat:"Impression 3D", emoji:"🫶", type:"print3d"},
-  {id:31,label:"Balle anti stress",     price:8,    cat:"Impression 3D", emoji:"🎾", type:"print3d"},
-  {id:28,label:"Boite Gameboy cartes",  price:12,   cat:"Impression 3D", emoji:"🎮", type:"print3d"},
-  {id:17,label:"Hueforge",              price:15,   cat:"Impression 3D", emoji:"🦋", type:"print3d"},
-  {id:22,label:"Cadre hueforge",        price:3,    cat:"Impression 3D", emoji:"🖼️", type:"print3d"},
-  {id:27,label:"Box bureau hueforge",   price:25,   cat:"Impression 3D", emoji:"📦", type:"print3d"},
-  {id:16,label:"Figurine 3D",           price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:26,label:"Marque page",           price:8,    cat:"Impression 3D", emoji:"📖", type:"print3d"},
-  {id:18,label:"Porte-clés",            price:3.50, cat:"Impression 3D", emoji:"🔑", type:"print3d"},
-  {id:40,label:"Cadre Star Wars",       price:15,   cat:"Impression 3D", emoji:"⚔️", type:"print3d"},
-  {id:41,label:"Aliens support stylo",  price:15,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
-  {id:42,label:"Aliens support tél",    price:15,   cat:"Impression 3D", emoji:"📱", type:"print3d"},
-  {id:43,label:"Albator",               price:10,   cat:"Impression 3D", emoji:"🏴‍☠️", type:"print3d"},
-  {id:47,label:"Serviette",               price:10,   cat:"Broderie", emoji:"🏴‍☠️", type:"brod"},
-  {id:48,label:"Gobelet",               price:10,   cat:"Flex", emoji:"🏴‍☠️", type:"flex"},
-  {id:23,label:"Pack Souvenir",         price:28,   cat:"Pack",          emoji:"🎁", type:"pack", desc:"Mug + Porte-clés"},
-  {id:24,label:"Pack Duo",              price:35,   cat:"Pack",          emoji:"🎀", type:"pack", desc:"T-shirt + Mug"},
-  {id:25,label:"Pack Déco 3D",          price:40,   cat:"Pack",          emoji:"✨", type:"pack", desc:"Vase + Décoration"},
+  // 🎨 SUBLIMATION
+  {id:1,  label:"Mug personnalisé",      price:9.99, cat:"Sublimation",   emoji:"☕", type:"sublim"},
+  {id:2,  label:"T-shirt sublimé",       price:22,   cat:"Sublimation",   emoji:"🎽", type:"sublim"},
+  {id:3,  label:"Pull sublimé",          price:35.90,cat:"Sublimation",   emoji:"👕", type:"sublim"},
+  {id:4,  label:"Casquette",             price:19,   cat:"Sublimation",   emoji:"🧢", type:"sublim"},
+  {id:5,  label:"Tote bag",              price:14,   cat:"Sublimation",   emoji:"👜", type:"sublim"},
+  {id:6,  label:"Puzzle photo",          price:25,   cat:"Sublimation",   emoji:"🧩", type:"sublim"},
+  {id:7,  label:"Petite plaque alu",     price:12,   cat:"Sublimation",   emoji:"🖼️", type:"sublim"},
+  {id:8,  label:"Grande plaque alu",     price:20,   cat:"Sublimation",   emoji:"🖼️", type:"sublim"},
+  {id:9,  label:"Magnette frigo",        price:3.90, cat:"Sublimation",   emoji:"🧲", type:"sublim"},
+  {id:10, label:"Stylo",                 price:5.50, cat:"Sublimation",   emoji:"✏️", type:"sublim"},
+  {id:49, label:"Badge 58mm",            price:6.50, cat:"Sublimation",   emoji:"🎖️", type:"sublim"},
+  {id:50, label:"Badge 32mm",            price:4.50, cat:"Sublimation",   emoji:"🎖️", type:"sublim"},
+  {id:51, label:"Badge 25mm",            price:2.50, cat:"Sublimation",   emoji:"🎖️", type:"sublim"},
+  // 🐉 IMPRESSION 3D — Dragons
+  {id:11, label:"Dragon 3 couleurs",     price:10,   cat:"Impression 3D", emoji:"🐉", type:"print3d"},
+  {id:14, label:"Dragon XXL aile",       price:20,   cat:"Impression 3D", emoji:"🐲", type:"print3d"},
+  {id:12, label:"Dragon Cristal",        price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
+  {id:44, label:"Oeuf lampe dragon",     price:10,   cat:"Impression 3D", emoji:"🥚", type:"print3d"},
+  {id:45, label:"Oeuf bébé dragon",      price:10,   cat:"Impression 3D", emoji:"🐣", type:"print3d"},
+  {id:34, label:"Baguette Dragon",       price:8,    cat:"Impression 3D", emoji:"🪄", type:"print3d"},
+  {id:66, label:"Lampe dragon",          price:40,   cat:"Impression 3D", emoji:"🔆", type:"print3d"},
+  // 🐍 IMPRESSION 3D — Animaux
+  {id:13, label:"Serpent XXL",           price:18,   cat:"Impression 3D", emoji:"🐍", type:"print3d"},
+  {id:46, label:"Animaux Flex",          price:5,    cat:"Impression 3D", emoji:"🐾", type:"print3d"},
+  {id:36, label:"Poisson pêcheur",       price:12,   cat:"Impression 3D", emoji:"🐟", type:"print3d"},
+  // 🦕 IMPRESSION 3D — Dinosaures
+  {id:32, label:"Lampe dinosaure XXL",   price:30,   cat:"Impression 3D", emoji:"🦕", type:"print3d"},
+  {id:33, label:"Veilleuse dino petit",  price:15,   cat:"Impression 3D", emoji:"🌙", type:"print3d"},
+  {id:37, label:"Mosasaurus squelette",  price:18,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
+  {id:38, label:"Spinosaurus squelette", price:15,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
+  {id:39, label:"Ankylosaure squelette", price:18,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
+  {id:35, label:"Oeuf raptor (fils)",    price:15,   cat:"Impression 3D", emoji:"🥚", type:"print3d"},
+  // 👽 IMPRESSION 3D — Alien / Horreur
+  {id:52, label:"Lampe alien",           price:35,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
+  {id:53, label:"Bloc livre alien",      price:25,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
+  {id:54, label:"Buste alien",           price:60,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
+  {id:63, label:"Déco mur alien",        price:25,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
+  {id:64, label:"Face hugger alien",     price:40,   cat:"Impression 3D", emoji:"👾", type:"print3d"},
+  {id:55, label:"Main mercredi",         price:20,   cat:"Impression 3D", emoji:"🖐️", type:"print3d"},
+  {id:57, label:"Mini clown Ça",         price:8,    cat:"Impression 3D", emoji:"🤡", type:"print3d"},
+  {id:59, label:"Bloc livre Ça",         price:35,   cat:"Impression 3D", emoji:"🤡", type:"print3d"},
+  {id:58, label:"Dobby",                 price:15,   cat:"Impression 3D", emoji:"🧝", type:"print3d"},
+  {id:67, label:"Vaisseau",              price:20,   cat:"Impression 3D", emoji:"🚀", type:"print3d"},
+  // 🌀 IMPRESSION 3D — Fidgets & Anti-stress
+  {id:19, label:"Étoile fidgets grand",  price:10,   cat:"Impression 3D", emoji:"⭐", type:"print3d"},
+  {id:20, label:"Étoile fidgets moyen",  price:8,    cat:"Impression 3D", emoji:"🌟", type:"print3d"},
+  {id:21, label:"Étoile fidgets petit",  price:5,    cat:"Impression 3D", emoji:"✨", type:"print3d"},
+  {id:29, label:"Handspinner",           price:3,    cat:"Impression 3D", emoji:"🌀", type:"print3d"},
+  {id:30, label:"Anti stress",           price:5,    cat:"Impression 3D", emoji:"🫶", type:"print3d"},
+  {id:31, label:"Balle anti stress",     price:8,    cat:"Impression 3D", emoji:"🎾", type:"print3d"},
+  // 🖼️ IMPRESSION 3D — Hueforge & Déco
+  {id:17, label:"Hueforge",              price:15,   cat:"Impression 3D", emoji:"🦋", type:"print3d"},
+  {id:60, label:"Hueforge Ça",           price:20,   cat:"Impression 3D", emoji:"🎨", type:"print3d"},
+  {id:61, label:"Hueforge XXL",          price:30,   cat:"Impression 3D", emoji:"🎨", type:"print3d"},
+  {id:62, label:"Hueforge petit",        price:12,   cat:"Impression 3D", emoji:"🎨", type:"print3d"},
+  {id:68, label:"Mini hueforge",         price:5,    cat:"Impression 3D", emoji:"🎨", type:"print3d"},
+  {id:22, label:"Cadre hueforge",        price:3,    cat:"Impression 3D", emoji:"🖼️", type:"print3d"},
+  {id:27, label:"Box bureau hueforge",   price:25,   cat:"Impression 3D", emoji:"📦", type:"print3d"},
+  {id:16, label:"Figurine 3D",           price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
+  {id:26, label:"Marque page",           price:8,    cat:"Impression 3D", emoji:"📖", type:"print3d"},
+  {id:56, label:"Marque page grand",     price:10,   cat:"Impression 3D", emoji:"📖", type:"print3d"},
+  {id:65, label:"Marque page HP",        price:10,   cat:"Impression 3D", emoji:"⚡", type:"print3d"},
+  // 🎮 IMPRESSION 3D — Geek
+  {id:40, label:"Cadre Star Wars",       price:15,   cat:"Impression 3D", emoji:"⚔️", type:"print3d"},
+  {id:41, label:"Aliens support stylo",  price:15,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
+  {id:42, label:"Aliens support tél",    price:15,   cat:"Impression 3D", emoji:"📱", type:"print3d"},
+  {id:43, label:"Albator",               price:10,   cat:"Impression 3D", emoji:"🏴‍☠️", type:"print3d"},
+  {id:28, label:"Boite Gameboy cartes",  price:12,   cat:"Impression 3D", emoji:"🎮", type:"print3d"},
+  // 🔑 IMPRESSION 3D — Porte-clés
+  {id:18, label:"Porte-clés",            price:3.50, cat:"Impression 3D", emoji:"🔑", type:"print3d"},
+  // 🧵 BRODERIE
+  {id:47, label:"Serviette brodée",      price:10,   cat:"Broderie",      emoji:"🧵", type:"brod"},
+  // 🧴 FLEX
+  {id:48, label:"Gobelet flex",          price:10,   cat:"Flex",          emoji:"🥤", type:"flex"},
+  // 🎁 PACKS
+  {id:23, label:"Pack Souvenir",         price:28,   cat:"Pack",          emoji:"🎁", type:"pack", desc:"Mug + Porte-clés"},
+  {id:24, label:"Pack Duo",              price:35,   cat:"Pack",          emoji:"🎀", type:"pack", desc:"T-shirt + Mug"},
+  {id:25, label:"Pack Déco 3D",          price:40,   cat:"Pack",          emoji:"✨", type:"pack", desc:"Vase + Décoration"},
 ];
 
 // ── ÉTAT ──────────────────────────────────────────────────────
 var cart=[],payMode=null,tickets=[],totalCA=0,currentCat="Tous",salesData={},stockData={};
 var promoCodes={},activePromo=null,flashTimer=null,flashActive=false;
+var disabledProducts={};
 var fondCaisse=0,sortiesCaisse=[],autresVentes=[],donsTombola=[],gainsObjets=[];
 var promoCodes={};
 var activePromo=null;
@@ -839,96 +863,100 @@ var flashActive=false;
 
 // Stock de départ — ne s'applique QUE si aucun localStorage n'existe
 var STOCK_DEPART = {
-  // 🎨 SUBLIMATION
-  1:4,  // Mug personnalisé
-  2:0,  // T-shirt sublimé
-  3:0,  // Pull sublimé
-  4:0,  // Casquette
-  5:0,  // Tote bag
-  6:0,  // Puzzle photo
-  7:14,  // Petite plaque alu
-  8:0,  // Grande plaque alu
-  49:2, // Badge 58mm
-  50:34, // Badge 32mm
-  51:0, // Badge 25mm
-  9:0,  // Magnette frigo
-  10:0, // Stylo
+  // 🎨 Sublimation
+  1:4,    // Mug personnalisé
+  2:0,    // T-shirt sublimé
+  3:0,    // Pull sublimé
+  4:0,    // Casquette
+  5:0,    // Tote bag
+  6:0,    // Puzzle photo
+  7:14,   // Petite plaque alu
+  8:0,    // Grande plaque alu
+  9:0,    // Magnette frigo
+  10:0,   // Stylo
+  49:2,   // Badge 58mm
+  50:34,  // Badge 32mm
+  51:0,   // Badge 25mm
   // 🐉 Dragons
-  11:22, // Dragon 3 couleurs
-  14:0, // Dragon XXL aile
-  12:0, // Dragon Cristal
-  44:1, // Oeuf lampe dragon
-  45:9, // Oeuf bébé dragon
-  34:1, // Baguette Dragon
+  11:22,  // Dragon 3 couleurs
+  14:0,   // Dragon XXL aile
+  12:0,   // Dragon Cristal
+  44:1,   // Oeuf lampe dragon
+  45:9,   // Oeuf bébé dragon
+  34:1,   // Baguette Dragon
+  66:1,   // Lampe dragon
   // 🐍 Animaux
-  13:1, // Serpent XXL
-  46:41, // Animaux Flex
-  36:1, // Poisson pecheur
+  13:1,   // Serpent XXL
+  46:41,  // Animaux Flex
+  36:1,   // Poisson pêcheur
   // 🦕 Dinosaures
-  32:1, // Lampe dinosaure XXL
-  33:0, // Veilleuse dino petit
-  37:1, // Mosasaurus squelette
-  38:1, // Spinosaurus squelette
-  39:1, // Ankylosaure squelette
-  35:1, // Oeuf raptor (fils)
+  32:1,   // Lampe dinosaure XXL
+  33:0,   // Veilleuse dino petit
+  37:1,   // Mosasaurus squelette
+  38:1,   // Spinosaurus squelette
+  39:1,   // Ankylosaure squelette
+  35:1,   // Oeuf raptor
+  // 👽 Alien / Horreur
+  52:1,   // Lampe alien
+  53:1,   // Bloc livre alien
+  54:1,   // Buste alien
+  63:1,   // Déco mur alien
+  64:1,   // Face hugger alien
+  55:1,   // Main mercredi
+  57:5,   // Mini clown Ça
+  59:1,   // Bloc livre Ça
+  58:1,   // Dobby
+  67:1,   // Vaisseau
   // 🌀 Fidgets
-  19:9, // Etoile fidgets grand
-  20:9, // Etoile fidgets moyen
-  21:19, // Etoile fidgets petit
-  29:0, // Handspinner
-  30:6, // Anti stress
-  31:0, // Balle anti stress
-  28:2, // Boite Gameboy cartes
-  // 🖼 Deco
-  17:69, // Hueforge
-  22:10, // Cadre hueforge
-  27:6, // Box bureau hueforge
-  16:4, // Figurine 3D
-  26:23, // Marque page
-  18:221, // Porte-cles
-  // 🚀 Geek
-  40:2, // Cadre Star Wars
-  41:2, // Aliens support stylo
-  42:2, // Aliens support tel
-  43:0, // Albator
+  19:9,   // Étoile fidgets grand
+  20:9,   // Étoile fidgets moyen
+  21:19,  // Étoile fidgets petit
+  29:0,   // Handspinner
+  30:6,   // Anti stress
+  31:0,   // Balle anti stress
+  // 🖼️ Hueforge & Déco
+  17:69,  // Hueforge
+  60:1,   // Hueforge Ça
+  61:1,   // Hueforge XXL
+  62:1,   // Hueforge petit
+  68:29,  // Mini hueforge
+  22:10,  // Cadre hueforge
+  27:6,   // Box bureau hueforge
+  16:4,   // Figurine 3D
+  26:23,  // Marque page
+  56:2,   // Marque page grand
+  65:1,   // Marque page HP
+  // 🎮 Geek
+  40:2,   // Cadre Star Wars
+  41:2,   // Aliens support stylo
+  42:2,   // Aliens support tél
+  43:0,   // Albator
+  28:2,   // Boite Gameboy cartes
+  18:221, // Porte-clés
+  // 🧵 Broderie / Flex
+  47:0,   // Serviette brodée
+  48:0,   // Gobelet flex
   // 🎁 Packs
-  23:0, // Pack Souvenir
-  24:0, // Pack Duo
-  25:0, // Pack Deco 3D
-  52:1, // Lampe alien
-  53:1, // Bloc livre alien
-  54:1, // Buste alien
-  55:1, // Main mercredi
-  56:2, // Marque page grand
-  57:5, // Mini clown ça
-  58:1, // Dobby
-  59:1, // Bloc livre ça
-  60:1, // Hueforge ça
-  61:1, // Hueforge xxl
-  62:1, // Petit hueforge
-  63:1, // Déco mur alien
-  64:1, // Facehugger alien
-  65:1, // Marque page HP
-  66:1, // Lampe dragon
-  67:1, // Vaisseau
-  68:29, // Mini huefirge
+  23:0,   // Pack Souvenir
+  24:0,   // Pack Duo
+  25:0,   // Pack Déco 3D
 };
 
 PRODUCTS.forEach(function(p){
   salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};
   // Stock par défaut depuis STOCK_DEPART — sera écrasé par localStorage si existant
-  stockData[p.id] = STOCK_DEPART[p.id] !== undefined ? STOCK_DEPART[p.id] : 9999;
+  stockData[p.id] = STOCK_DEPART[p.id] !== undefined ? STOCK_DEPART[p.id] : 99;
 });
 
 // ── LOCALSTORAGE ───────────────────────────────────────────────
-var SAVE_KEY="shaya_caisse_v3";  // Incrémenté pour forcer reset propre
+var SAVE_KEY="shaya_caisse_v4";  // Incrémenté pour forcer reset propre
 
 function sauvegarder(){
   try{
     localStorage.setItem(SAVE_KEY,JSON.stringify({
       tickets:tickets,totalCA:totalCA,salesData:salesData,
       stockData:stockData,wheelGains:wheelGains,clients:clients,
-      promoCodes:promoCodes,fondCaisse:fondCaisse,sortiesCaisse:sortiesCaisse,
+      promoCodes:promoCodes,disabledProducts:disabledProducts,fondCaisse:fondCaisse,sortiesCaisse:sortiesCaisse,
       autresVentes:autresVentes,donsTombola:donsTombola,gainsObjets:gainsObjets,
       date:new Date().toLocaleDateString("fr-FR")
     }));
@@ -957,6 +985,7 @@ function restaurer(){
     if(data.stockData){for(var sid2 in data.stockData){stockData[parseInt(sid2)]=data.stockData[sid2];}}
     if(data.promoCodes){promoCodes=data.promoCodes;}
     if(data.promoCodes)promoCodes=data.promoCodes;
+    if(data.disabledProducts)disabledProducts=data.disabledProducts;
     if(data.fondCaisse!==undefined)fondCaisse=data.fondCaisse;
     if(data.sortiesCaisse)sortiesCaisse=data.sortiesCaisse;
     if(data.autresVentes)autresVentes=data.autresVentes;
@@ -997,8 +1026,9 @@ function renderProducts(){
       else if(isLow) stockBadge="<span class='stock-badge stock-low'>"+stock+" restants</span>";
       else stockBadge="<span class='stock-badge stock-ok'>"+stock+" en stock</span>";
     }
-    var cardClass="product-card "+p.type+(isOut?" out-of-stock":"");
-    var onclick=isOut?"":" onclick='addToCart("+p.id+")'";
+    var isDisabled=disabledProducts[p.id]===true;
+    var cardClass="product-card "+p.type+(isOut?" out-of-stock":"")+(isDisabled?" disabled":"");
+    var onclick=(isOut||isDisabled)?"":" onclick='addToCart("+p.id+")'";
     html+="<div class='"+cardClass+"'"+onclick+">";
     html+=stockBadge;
     html+="<div class='product-icon'>"+p.emoji+"</div>";
@@ -1029,13 +1059,11 @@ window.addToCart=function(id){
 };
 
 window.changeQty=function(id,delta){
-  // Convertir en int si c'est un id numérique
-  var realId=isNaN(id)?id:parseInt(id);
-  var idx=cart.findIndex(function(i){return i.id===realId||i.id===id;});
+  var idx=cart.findIndex(function(i){return i.id===id;});
   if(idx===-1)return;
-  // Vérifier stock si on augmente (seulement pour les vrais produits)
-  if(delta>0&&!cart[idx].isAutre){
-    var stock=stockData[realId]!==undefined?stockData[realId]:99;
+  // Vérifier stock si on augmente
+  if(delta>0){
+    var stock=stockData[id]!==undefined?stockData[id]:99;
     if(stock<99&&cart[idx].qty>=stock){showToast("⚠️ Stock insuffisant");return;}
   }
   cart[idx].qty+=delta;
@@ -1050,11 +1078,9 @@ function renderCart(){
   if(!cart.length){container.innerHTML="<div class='empty-cart'><div style='font-size:30px;opacity:.35'>🛒</div><span>Panier vide</span><span style='font-size:11px;color:var(--text3)'>Touchez un article</span></div>";return;}
   var html="";
   cart.forEach(function(item){
-    var autreBadge=item.isAutre?"<span style='font-size:9px;background:rgba(74,158,255,.2);color:var(--blue);border-radius:4px;padding:1px 5px;margin-left:4px'>Autre</span>":"";
-    var itemIdStr=String(item.id).replace(/'/g,"");
     html+="<div class='cart-item'><div style='font-size:18px'>"+item.emoji+"</div>";
-    html+="<div class='cart-item-info'><div class='cart-item-name'>"+item.name+autreBadge+"</div><div class='cart-item-sub'>"+fmt(item.price)+" / unité</div></div>";
-    html+="<div class='qty-ctrl'><button class='qty-btn' onclick='changeQty("+JSON.stringify(item.id)+",-1)'>−</button><span class='qty-num'>"+item.qty+"</span><button class='qty-btn' onclick='changeQty("+JSON.stringify(item.id)+",1)'>+</button></div>";
+    html+="<div class='cart-item-info'><div class='cart-item-name'>"+item.name+"</div><div class='cart-item-sub'>"+fmt(item.price)+" / unité</div></div>";
+    html+="<div class='qty-ctrl'><button class='qty-btn' onclick='changeQty("+item.id+",-1)'>−</button><span class='qty-num'>"+item.qty+"</span><button class='qty-btn' onclick='changeQty("+item.id+",1)'>+</button></div>";
     html+="<div class='cart-item-price'>"+fmt(item.price*item.qty)+"</div></div>";
   });
   container.innerHTML=html;
@@ -1108,16 +1134,11 @@ window.confirmerPaiement=function(){
   var ticket={num:tickets.length+1,items:cart.map(function(i){return{id:i.id,name:i.name,cat:i.cat,price:i.price,qty:i.qty,emoji:i.emoji};}),total:total,mode:payMode==="Especes"?"Espèces":payMode,promoCode:activePromo?activePromo.code:null,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR"),disc:disc};
   tickets.unshift(ticket);totalCA+=total;
   cart.forEach(function(item){
-    if(item.isAutre){
-      // Article hors catalogue — tracer dans autresVentes
-      autresVentes.push({label:item.name,montant:item.price*item.qty,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR")});
-    } else {
-      salesData[item.id].qty+=item.qty;
-      salesData[item.id].ca+=item.price*item.qty;
-      // Décompter stock
-      if(stockData[item.id]!==undefined&&stockData[item.id]<99){
-        stockData[item.id]=Math.max(0,stockData[item.id]-item.qty);
-      }
+    salesData[item.id].qty+=item.qty;
+    salesData[item.id].ca+=item.price*item.qty;
+    // Décompter stock
+    if(stockData[item.id]!==undefined&&stockData[item.id]<99){
+      stockData[item.id]=Math.max(0,stockData[item.id]-item.qty);
     }
   });
   document.getElementById("nbVentes").textContent=tickets.length;
@@ -1164,9 +1185,11 @@ function renderStockPanel(){
     var isOut=stock<=0,isLow=stock>0&&stock<=3;
     var numCls=isOut?"out":isLow?"low":"ok";
     var display=stock>=99?"∞":stock;
-    html+="<div class='sp-item'>";
-    html+="<div style='font-size:20px'>"+p.emoji+"</div>";
-    html+="<div class='sp-item-info'><div class='sp-item-name'>"+p.label+"</div><div class='sp-item-cat'>"+p.cat+"</div></div>";
+    var isDisabledP=disabledProducts[p.id]===true;
+    html+="<div class='sp-item'"+(isDisabledP?" style='opacity:.5'":"")+">"; 
+    html+="<button class='sp-toggle "+(isDisabledP?"off":"on")+"' onclick='toggleProduct("+p.id+")' title='"+(isDisabledP?"Activer":"Désactiver")+"'></button>";
+    html+="<div style='font-size:18px'>"+p.emoji+"</div>";
+    html+="<div class='sp-item-info'><div class='sp-item-name'"+(isDisabledP?" style='text-decoration:line-through;color:var(--text3)'":'')+"'>"+p.label+"</div><div class='sp-item-cat'>"+p.cat+"</div></div>";
     html+="<div class='sp-qty-ctrl'>";
     html+="<button class='sp-qty-btn' onclick='changeStock("+p.id+",-1)'>−</button>";
     html+="<span class='sp-qty-num "+numCls+"'>"+display+"</span>";
@@ -1339,6 +1362,11 @@ window.doReset=function(){
   tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];activePromo=null;
   fondCaisse=0;sortiesCaisse=[];autresVentes=[];donsTombola=[];gainsObjets=[];
   if(typeof window.stopOffreFlash==="function")window.stopOffreFlash();
+  document.getElementById("nbVentes").textContent="0";
+  document.getElementById("caJour").textContent="0,00\u00a0€";
+  document.getElementById("caTotal").textContent="0,00\u00a0€";
+  document.getElementById("discountInput").value="";
+  ["btnCB","btnCash","btnSumup","btnVir"].forEach(function(id){var b=document.getElementById(id);if(b)b.classList.remove("selected");});
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
   renderCart();updateTotals();renderTickets();renderExcelPanel();renderStockPanel();renderProducts();
   if(typeof renderCaisse==="function"){renderCaisse();renderAutres();renderDons();}
@@ -1367,6 +1395,25 @@ window.doReset=function(){
 
 
 function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
+
+// ── ACTIVATION / DÉSACTIVATION PRODUITS ──────────────────────
+window.toggleProduct=function(id){
+  disabledProducts[id]=!disabledProducts[id];
+  if(!disabledProducts[id])delete disabledProducts[id];
+  renderStockPanel();renderProducts();sauvegarder();
+  var p=PRODUCTS.find(function(p){return p.id===id;});
+  if(p)showToast(disabledProducts[id]?"🚫 "+p.label+" désactivé":"✅ "+p.label+" activé");
+};
+window.enableAllProducts=function(){
+  disabledProducts={};
+  renderStockPanel();renderProducts();sauvegarder();
+  showToast("✅ Tous les produits activés !");
+};
+window.disableAllProducts=function(){
+  PRODUCTS.forEach(function(p){disabledProducts[p.id]=true;});
+  renderStockPanel();renderProducts();sauvegarder();
+  showToast("🚫 Tous les produits désactivés");
+};
 
 var toastTimer;
 function showToast(msg,isWheel){
@@ -1447,25 +1494,6 @@ function renderCaisse(){
   });histo.innerHTML=h;
 }
 // ── AUTRES VENTES ─────────────────────────────────────────────
-window.addAutrePanier=function(){
-  var label=document.getElementById("autreLabel").value.trim();
-  var raw=(document.getElementById("autreMontant").value||"").replace(",",".");
-  var prix=parseFloat(raw)||0;
-  if(!label){showToast("Entrez une description");return;}
-  if(prix<=0){showToast("Entrez un prix");return;}
-  // Créer un produit temporaire et l'ajouter au panier
-  var tempId="autre_"+Date.now();
-  var ex=cart.find(function(i){return i.id===tempId;});
-  if(ex){ex.qty++;}
-  else{cart.push({id:tempId,name:label,price:prix,emoji:"📦",cat:"Autre",qty:1,isAutre:true});}
-  document.getElementById("autreLabel").value="";
-  document.getElementById("autreMontant").value="";
-  // Fermer panel Autres et montrer le panier
-  document.getElementById("autresPanel").classList.remove("open");
-  renderCart();updateTotals();
-  showToast("📦 "+label+" ajouté au panier !");
-};
-
 window.addAutreVente=function(){
   var label=document.getElementById("autreLabel").value.trim();
   var raw=(document.getElementById("autreMontant").value||"").replace(",",".");var montant=parseFloat(raw)||0;
@@ -1493,8 +1521,6 @@ window.addAutreVente=function(){
   // Mettre à jour les modes de paiement dans salesData (cat Autre)
   renderTickets();renderExcelPanel();
   updateSoldeCaisse();renderAutres();sauvegarder();
-  // Ouvrir le panel Tickets pour montrer la vente
-  document.getElementById("ticketPanel").classList.add("open");
   showToast("📦 "+label+" — "+fmt(montant)+" ajouté !");
 };
 window.deleteAutreVente=function(idx){
