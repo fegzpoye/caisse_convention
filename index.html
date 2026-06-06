@@ -967,7 +967,7 @@ var STOCK_DEPART = {
 PRODUCTS.forEach(function(p){
   salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};
   // Stock par défaut depuis STOCK_DEPART — sera écrasé par localStorage si existant
-  stockData[p.id] = STOCK_DEPART[p.id] !== undefined ? STOCK_DEPART[p.id] : 9999;
+  stockData[p.id] = STOCK_DEPART[p.id] !== undefined ? STOCK_DEPART[p.id] : 99;
 });
 
 // ── LOCALSTORAGE ───────────────────────────────────────────────
