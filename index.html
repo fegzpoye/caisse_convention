@@ -84,14 +84,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .sp-qty-num.ok{color:var(--green)}
 .sp-footer{padding:10px 14px;border-top:1px solid var(--border);flex-shrink:0}
 .sp-reset-btn{width:100%;padding:10px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer}
-.sp-toggle{width:36px;height:20px;border-radius:99px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.sp-toggle{width:36px;height:20px;border-radius:99px;border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;outline:none}
 .sp-toggle.on{background:var(--green)}
 .sp-toggle.off{background:var(--surface3)}
-.sp-toggle::after{content:'';position:absolute;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s}
+.sp-toggle::after{content:'';position:absolute;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .sp-toggle.on::after{left:19px}
 .sp-toggle.off::after{left:3px}
-.product-card.disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
-.product-card.disabled::after{content:"DÉSACTIVÉ";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text3);background:rgba(0,0,0,.3);border-radius:var(--r)}
+.product-card.disabled{display:none}
 /* ── SAVE INDICATOR ────────────────────────────────────────── */
 .save-indicator{position:absolute;bottom:60px;right:16px;background:var(--surface2);border:1px solid var(--green);border-radius:99px;padding:5px 12px;font-size:11px;color:var(--green);opacity:0;transition:opacity .3s;pointer-events:none;z-index:400}
 .save-indicator.show{opacity:1}
@@ -442,8 +441,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   <div class="sp-body" id="spBody"></div>
   <div class="sp-footer" style="display:flex;flex-direction:column;gap:6px">
     <div style="display:flex;gap:6px">
-      <button class="sp-reset-btn" style="flex:1" onclick="enableAllProducts()">✅ Tout activer</button>
-      <button class="sp-reset-btn" style="flex:1" onclick="disableAllProducts()">🚫 Tout désactiver</button>
+      <button class="sp-reset-btn" style="flex:1;color:var(--green)" onclick="enableAllProducts()">✅ Tout activer</button>
+      <button class="sp-reset-btn" style="flex:1;color:var(--accent2)" onclick="disableAllProducts()">🚫 Tout désactiver</button>
     </div>
     <button class="sp-reset-btn" onclick="resetAllStock()">↺ Remettre tous les stocks à zéro</button>
   </div>
@@ -770,85 +769,96 @@ window.skipClient=function(){
 
 // ── PRODUITS ───────────────────────────────────────────────────
 var PRODUCTS=[
-  // 🎨 SUBLIMATION
-  {id:1,  label:"Mug personnalisé",      price:9.99, cat:"Sublimation",   emoji:"☕", type:"sublim"},
-  {id:2,  label:"T-shirt sublimé",       price:22,   cat:"Sublimation",   emoji:"🎽", type:"sublim"},
-  {id:3,  label:"Pull sublimé",          price:35.90,cat:"Sublimation",   emoji:"👕", type:"sublim"},
-  {id:4,  label:"Casquette",             price:19,   cat:"Sublimation",   emoji:"🧢", type:"sublim"},
-  {id:5,  label:"Tote bag",              price:14,   cat:"Sublimation",   emoji:"👜", type:"sublim"},
-  {id:6,  label:"Puzzle photo",          price:25,   cat:"Sublimation",   emoji:"🧩", type:"sublim"},
-  {id:7,  label:"Petite plaque alu",     price:12,   cat:"Sublimation",   emoji:"🖼️", type:"sublim"},
-  {id:8,  label:"Grande plaque alu",     price:20,   cat:"Sublimation",   emoji:"🖼️", type:"sublim"},
-  {id:9,  label:"Magnette frigo",        price:3.90, cat:"Sublimation",   emoji:"🧲", type:"sublim"},
-  {id:10, label:"Stylo",                 price:5.50, cat:"Sublimation",   emoji:"✏️", type:"sublim"},
-  {id:49, label:"Badge 58mm",            price:6.50, cat:"Sublimation",   emoji:"🎖️", type:"sublim"},
-  {id:50, label:"Badge 32mm",            price:4.50, cat:"Sublimation",   emoji:"🎖️", type:"sublim"},
-  {id:51, label:"Badge 25mm",            price:2.50, cat:"Sublimation",   emoji:"🎖️", type:"sublim"},
-  // 🐉 IMPRESSION 3D — Dragons
-  {id:11, label:"Dragon 3 couleurs",     price:10,   cat:"Impression 3D", emoji:"🐉", type:"print3d"},
-  {id:14, label:"Dragon XXL aile",       price:20,   cat:"Impression 3D", emoji:"🐲", type:"print3d"},
-  {id:12, label:"Dragon Cristal",        price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:44, label:"Oeuf lampe dragon",     price:10,   cat:"Impression 3D", emoji:"🥚", type:"print3d"},
-  {id:45, label:"Oeuf bébé dragon",      price:10,   cat:"Impression 3D", emoji:"🐣", type:"print3d"},
-  {id:34, label:"Baguette Dragon",       price:8,    cat:"Impression 3D", emoji:"🪄", type:"print3d"},
-  {id:66, label:"Lampe dragon",          price:40,   cat:"Impression 3D", emoji:"🔆", type:"print3d"},
-  // 🐍 IMPRESSION 3D — Animaux
-  {id:13, label:"Serpent XXL",           price:18,   cat:"Impression 3D", emoji:"🐍", type:"print3d"},
-  {id:46, label:"Animaux Flex",          price:5,    cat:"Impression 3D", emoji:"🐾", type:"print3d"},
-  {id:36, label:"Poisson pêcheur",       price:12,   cat:"Impression 3D", emoji:"🐟", type:"print3d"},
-  // 🦕 IMPRESSION 3D — Dinosaures
-  {id:32, label:"Lampe dinosaure XXL",   price:30,   cat:"Impression 3D", emoji:"🦕", type:"print3d"},
-  {id:33, label:"Veilleuse dino petit",  price:15,   cat:"Impression 3D", emoji:"🌙", type:"print3d"},
-  {id:37, label:"Mosasaurus squelette",  price:18,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
-  {id:38, label:"Spinosaurus squelette", price:15,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
-  {id:39, label:"Ankylosaure squelette", price:18,   cat:"Impression 3D", emoji:"🦴", type:"print3d"},
-  {id:35, label:"Oeuf raptor (fils)",    price:15,   cat:"Impression 3D", emoji:"🥚", type:"print3d"},
-  // 👽 IMPRESSION 3D — Alien / Horreur
-  {id:52, label:"Lampe alien",           price:35,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
-  {id:53, label:"Bloc livre alien",      price:25,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
-  {id:54, label:"Buste alien",           price:60,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
-  {id:63, label:"Déco mur alien",        price:25,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
-  {id:64, label:"Face hugger alien",     price:40,   cat:"Impression 3D", emoji:"👾", type:"print3d"},
-  {id:55, label:"Main mercredi",         price:20,   cat:"Impression 3D", emoji:"🖐️", type:"print3d"},
-  {id:57, label:"Mini clown Ça",         price:8,    cat:"Impression 3D", emoji:"🤡", type:"print3d"},
-  {id:59, label:"Bloc livre Ça",         price:35,   cat:"Impression 3D", emoji:"🤡", type:"print3d"},
-  {id:58, label:"Dobby",                 price:15,   cat:"Impression 3D", emoji:"🧝", type:"print3d"},
-  {id:67, label:"Vaisseau",              price:20,   cat:"Impression 3D", emoji:"🚀", type:"print3d"},
-  // 🌀 IMPRESSION 3D — Fidgets & Anti-stress
-  {id:19, label:"Étoile fidgets grand",  price:10,   cat:"Impression 3D", emoji:"⭐", type:"print3d"},
-  {id:20, label:"Étoile fidgets moyen",  price:8,    cat:"Impression 3D", emoji:"🌟", type:"print3d"},
-  {id:21, label:"Étoile fidgets petit",  price:5,    cat:"Impression 3D", emoji:"✨", type:"print3d"},
-  {id:29, label:"Handspinner",           price:3,    cat:"Impression 3D", emoji:"🌀", type:"print3d"},
-  {id:30, label:"Anti stress",           price:5,    cat:"Impression 3D", emoji:"🫶", type:"print3d"},
-  {id:31, label:"Balle anti stress",     price:8,    cat:"Impression 3D", emoji:"🎾", type:"print3d"},
-  // 🖼️ IMPRESSION 3D — Hueforge & Déco
-  {id:17, label:"Hueforge",              price:15,   cat:"Impression 3D", emoji:"🦋", type:"print3d"},
-  {id:60, label:"Hueforge Ça",           price:20,   cat:"Impression 3D", emoji:"🎨", type:"print3d"},
-  {id:61, label:"Hueforge XXL",          price:30,   cat:"Impression 3D", emoji:"🎨", type:"print3d"},
-  {id:62, label:"Hueforge petit",        price:12,   cat:"Impression 3D", emoji:"🎨", type:"print3d"},
-  {id:68, label:"Mini hueforge",         price:5,    cat:"Impression 3D", emoji:"🎨", type:"print3d"},
-  {id:22, label:"Cadre hueforge",        price:3,    cat:"Impression 3D", emoji:"🖼️", type:"print3d"},
-  {id:27, label:"Box bureau hueforge",   price:25,   cat:"Impression 3D", emoji:"📦", type:"print3d"},
-  {id:16, label:"Figurine 3D",           price:15,   cat:"Impression 3D", emoji:"💎", type:"print3d"},
-  {id:26, label:"Marque page",           price:8,    cat:"Impression 3D", emoji:"📖", type:"print3d"},
-  {id:56, label:"Marque page grand",     price:10,   cat:"Impression 3D", emoji:"📖", type:"print3d"},
-  {id:65, label:"Marque page HP",        price:10,   cat:"Impression 3D", emoji:"⚡", type:"print3d"},
-  // 🎮 IMPRESSION 3D — Geek
-  {id:40, label:"Cadre Star Wars",       price:15,   cat:"Impression 3D", emoji:"⚔️", type:"print3d"},
-  {id:41, label:"Aliens support stylo",  price:15,   cat:"Impression 3D", emoji:"👽", type:"print3d"},
-  {id:42, label:"Aliens support tél",    price:15,   cat:"Impression 3D", emoji:"📱", type:"print3d"},
-  {id:43, label:"Albator",               price:10,   cat:"Impression 3D", emoji:"🏴‍☠️", type:"print3d"},
-  {id:28, label:"Boite Gameboy cartes",  price:12,   cat:"Impression 3D", emoji:"🎮", type:"print3d"},
-  // 🔑 IMPRESSION 3D — Porte-clés
-  {id:18, label:"Porte-clés",            price:3.50, cat:"Impression 3D", emoji:"🔑", type:"print3d"},
-  // 🧵 BRODERIE
-  {id:47, label:"Serviette brodée",      price:10,   cat:"Broderie",      emoji:"🧵", type:"brod"},
-  // 🧴 FLEX
-  {id:48, label:"Gobelet flex",          price:10,   cat:"Flex",          emoji:"🥤", type:"flex"},
-  // 🎁 PACKS
-  {id:23, label:"Pack Souvenir",         price:28,   cat:"Pack",          emoji:"🎁", type:"pack", desc:"Mug + Porte-clés"},
-  {id:24, label:"Pack Duo",              price:35,   cat:"Pack",          emoji:"🎀", type:"pack", desc:"T-shirt + Mug"},
-  {id:25, label:"Pack Déco 3D",          price:40,   cat:"Pack",          emoji:"✨", type:"pack", desc:"Vase + Décoration"},
+  // ────── 🎨 SUBLIMATION ──────
+  {id:1,  label:"Mug personnalisé",           price:9.99, cat:"Sublimation",   emoji:"☕",  type:"sublim"},
+  {id:2,  label:"T-shirt sublimé",            price:22,   cat:"Sublimation",   emoji:"🎽",  type:"sublim"},
+  {id:3,  label:"Pull sublimé",               price:35.90,cat:"Sublimation",   emoji:"👕",  type:"sublim"},
+  {id:4,  label:"Casquette",                  price:19,   cat:"Sublimation",   emoji:"🧢",  type:"sublim"},
+  {id:5,  label:"Tote bag",                   price:14,   cat:"Sublimation",   emoji:"👜",  type:"sublim"},
+  {id:6,  label:"Puzzle photo",               price:25,   cat:"Sublimation",   emoji:"🧩",  type:"sublim"},
+  {id:7,  label:"Petite plaque alu",          price:12,   cat:"Sublimation",   emoji:"🖼️",  type:"sublim"},
+  {id:8,  label:"Grande plaque alu",          price:20,   cat:"Sublimation",   emoji:"🖼️",  type:"sublim"},
+  {id:9,  label:"Magnette frigo",             price:3.90, cat:"Sublimation",   emoji:"🧲",  type:"sublim"},
+  {id:10, label:"Stylo",                      price:5.50, cat:"Sublimation",   emoji:"✏️",  type:"sublim"},
+  {id:49, label:"Badge 58mm",                 price:6.50, cat:"Sublimation",   emoji:"🎖️",  type:"sublim"},
+  {id:50, label:"Badge 32mm",                 price:4.50, cat:"Sublimation",   emoji:"🎖️",  type:"sublim"},
+  {id:51, label:"Badge 25mm",                 price:2.50, cat:"Sublimation",   emoji:"🎖️",  type:"sublim"},
+  // ────── 🐉 IMPRESSION 3D — Dragons ──────
+  {id:11, label:"Dragon 3 couleurs",          price:10,   cat:"Impression 3D", emoji:"🐉",  type:"print3d"},
+  {id:14, label:"Dragon XXL aile",            price:20,   cat:"Impression 3D", emoji:"🐲",  type:"print3d"},
+  {id:12, label:"Dragon Cristal",             price:15,   cat:"Impression 3D", emoji:"💎",  type:"print3d"},
+  {id:44, label:"Oeuf lampe dragon",          price:10,   cat:"Impression 3D", emoji:"🥚",  type:"print3d"},
+  {id:45, label:"Oeuf bébé dragon",           price:10,   cat:"Impression 3D", emoji:"🐣",  type:"print3d"},
+  {id:34, label:"Baguette Dragon",            price:8,    cat:"Impression 3D", emoji:"🪄",  type:"print3d"},
+  {id:66, label:"Lampe dragon",               price:40,   cat:"Impression 3D", emoji:"🔆",  type:"print3d"},
+  // ────── 🐍 IMPRESSION 3D — Animaux ──────
+  {id:13, label:"Serpent XXL",                price:18,   cat:"Impression 3D", emoji:"🐍",  type:"print3d"},
+  {id:46, label:"Animaux Flex",               price:5,    cat:"Impression 3D", emoji:"🐾",  type:"print3d"},
+  {id:36, label:"Poisson pêcheur",            price:12,   cat:"Impression 3D", emoji:"🐟",  type:"print3d"},
+  // ────── 🦕 IMPRESSION 3D — Dinosaures ──────
+  {id:32, label:"Lampe dinosaure XXL",        price:30,   cat:"Impression 3D", emoji:"🦕",  type:"print3d"},
+  {id:33, label:"Veilleuse dino petit",       price:15,   cat:"Impression 3D", emoji:"🌙",  type:"print3d"},
+  {id:37, label:"Mosasaurus squelette",       price:18,   cat:"Impression 3D", emoji:"🦴",  type:"print3d"},
+  {id:38, label:"Spinosaurus squelette",      price:15,   cat:"Impression 3D", emoji:"🦴",  type:"print3d"},
+  {id:39, label:"Ankylosaure squelette",      price:18,   cat:"Impression 3D", emoji:"🦴",  type:"print3d"},
+  {id:35, label:"Oeuf raptor (fils)",         price:15,   cat:"Impression 3D", emoji:"🥚",  type:"print3d"},
+  // ────── 👽 IMPRESSION 3D — Alien & Horreur ──────
+  {id:52, label:"Lampe alien",                price:35,   cat:"Impression 3D", emoji:"👽",  type:"print3d"},
+  {id:53, label:"Bloc livre alien",           price:25,   cat:"Impression 3D", emoji:"👽",  type:"print3d"},
+  {id:54, label:"Buste alien",                price:60,   cat:"Impression 3D", emoji:"👾",  type:"print3d"},
+  {id:63, label:"Déco mur alien",             price:25,   cat:"Impression 3D", emoji:"👽",  type:"print3d"},
+  {id:64, label:"Face hugger alien",          price:40,   cat:"Impression 3D", emoji:"🎭",  type:"print3d"},
+  {id:41, label:"Aliens support stylo",       price:15,   cat:"Impression 3D", emoji:"👽",  type:"print3d"},
+  {id:42, label:"Aliens support tél",         price:15,   cat:"Impression 3D", emoji:"👽",  type:"print3d"},
+  {id:55, label:"Main mercredi",              price:20,   cat:"Impression 3D", emoji:"🖐️",  type:"print3d"},
+  {id:57, label:"Mini clown Ça",              price:8,    cat:"Impression 3D", emoji:"🤡",  type:"print3d"},
+  {id:59, label:"Bloc livre Ça",              price:35,   cat:"Impression 3D", emoji:"🤡",  type:"print3d"},
+  {id:58, label:"Dobby",                      price:15,   cat:"Impression 3D", emoji:"🧝",  type:"print3d"},
+  {id:67, label:"Vaisseau",                   price:20,   cat:"Impression 3D", emoji:"🚀",  type:"print3d"},
+  // ────── 🌀 IMPRESSION 3D — Fidgets & Anti-stress ──────
+  {id:19, label:"Étoile fidgets grand",       price:10,   cat:"Impression 3D", emoji:"⭐",  type:"print3d"},
+  {id:20, label:"Étoile fidgets moyen",       price:8,    cat:"Impression 3D", emoji:"🌟",  type:"print3d"},
+  {id:21, label:"Étoile fidgets petit",       price:5,    cat:"Impression 3D", emoji:"✨",  type:"print3d"},
+  {id:29, label:"Handspinner",                price:3,    cat:"Impression 3D", emoji:"🌀",  type:"print3d"},
+  {id:30, label:"Anti stress",                price:5,    cat:"Impression 3D", emoji:"🫶",  type:"print3d"},
+  {id:31, label:"Balle anti stress",          price:8,    cat:"Impression 3D", emoji:"🎾",  type:"print3d"},
+  // ────── 🖼️ IMPRESSION 3D — Hueforge & Cadres ──────
+  {id:17, label:"Hueforge",                   price:15,   cat:"Impression 3D", emoji:"🦋",  type:"print3d"},
+  {id:60, label:"Hueforge Ça",               price:20,   cat:"Impression 3D", emoji:"🎨",  type:"print3d"},
+  {id:61, label:"Hueforge XXL",               price:30,   cat:"Impression 3D", emoji:"🎨",  type:"print3d"},
+  {id:62, label:"Hueforge petit",             price:12,   cat:"Impression 3D", emoji:"🎨",  type:"print3d"},
+  {id:68, label:"Mini hueforge",              price:5,    cat:"Impression 3D", emoji:"🎨",  type:"print3d"},
+  {id:22, label:"Cadre hueforge",             price:3,    cat:"Impression 3D", emoji:"🖼️",  type:"print3d"},
+  {id:40, label:"Cadre Star Wars",            price:15,   cat:"Impression 3D", emoji:"⚔️",  type:"print3d"},
+  {id:77, label:"Cadre tortue",               price:20,   cat:"Impression 3D", emoji:"🐢",  type:"print3d"},
+  // ────── 📚 IMPRESSION 3D — Marque-pages ──────
+  {id:26, label:"Marque page",                price:8,    cat:"Impression 3D", emoji:"📖",  type:"print3d"},
+  {id:56, label:"Marque page grand",          price:10,   cat:"Impression 3D", emoji:"📖",  type:"print3d"},
+  {id:65, label:"Marque page HP",             price:10,   cat:"Impression 3D", emoji:"⚡",  type:"print3d"},
+  // ────── 🎮 IMPRESSION 3D — Geek & Déco ──────
+  {id:43, label:"Albator",                    price:10,   cat:"Impression 3D", emoji:"🏴‍☠️", type:"print3d"},
+  {id:28, label:"Boite Gameboy cartes",       price:12,   cat:"Impression 3D", emoji:"🎮",  type:"print3d"},
+  {id:27, label:"Box bureau hueforge",        price:25,   cat:"Impression 3D", emoji:"📦",  type:"print3d"},
+  {id:16, label:"Figurine 3D",                price:15,   cat:"Impression 3D", emoji:"💎",  type:"print3d"},
+  // ────── 🌸 IMPRESSION 3D — Déco & Cadeaux ──────
+  {id:69, label:"Coeur Articulé mama",        price:5,    cat:"Impression 3D", emoji:"❤️",  type:"print3d"},
+  {id:70, label:"Best Mom",                   price:8,    cat:"Impression 3D", emoji:"🌸",  type:"print3d"},
+  {id:71, label:"Petit Vase",                 price:10,   cat:"Impression 3D", emoji:"🌺",  type:"print3d"},
+  {id:72, label:"Pot de fleur petite fille",  price:15,   cat:"Impression 3D", emoji:"🌼",  type:"print3d"},
+  {id:73, label:"Vide poche grenouille",      price:12,   cat:"Impression 3D", emoji:"🐸",  type:"print3d"},
+  {id:74, label:"Lettre love",                price:12,   cat:"Impression 3D", emoji:"💌",  type:"print3d"},
+  {id:75, label:"Couple coeur",               price:15,   cat:"Impression 3D", emoji:"💑",  type:"print3d"},
+  {id:76, label:"Vase",                       price:20,   cat:"Impression 3D", emoji:"🏺",  type:"print3d"},
+  // ────── 🔑 IMPRESSION 3D — Porte-clés ──────
+  {id:18, label:"Porte-clés",                 price:3.50, cat:"Impression 3D", emoji:"🔑",  type:"print3d"},
+  // ────── 🧵 BRODERIE ──────
+  {id:47, label:"Serviette brodée",           price:10,   cat:"Broderie",      emoji:"🧵",  type:"brod"},
+  // ────── 🧴 FLEX ──────
+  {id:48, label:"Gobelet flex",               price:10,   cat:"Flex",          emoji:"🥤",  type:"flex"},
+  // ────── 🎁 PACKS ──────
+  {id:23, label:"Pack Souvenir",              price:28,   cat:"Pack",          emoji:"🎁",  type:"pack", desc:"Mug + Porte-clés"},
+  {id:24, label:"Pack Duo",                   price:35,   cat:"Pack",          emoji:"🎀",  type:"pack", desc:"T-shirt + Mug"},
+  {id:25, label:"Pack Déco 3D",               price:40,   cat:"Pack",          emoji:"✨",  type:"pack", desc:"Vase + Décoration"},
 ];
 
 // ── ÉTAT ──────────────────────────────────────────────────────
@@ -896,12 +906,14 @@ var STOCK_DEPART = {
   38:1,   // Spinosaurus squelette
   39:1,   // Ankylosaure squelette
   35:1,   // Oeuf raptor
-  // 👽 Alien / Horreur
+  // 👽 Alien & Horreur
   52:1,   // Lampe alien
   53:1,   // Bloc livre alien
   54:1,   // Buste alien
   63:1,   // Déco mur alien
   64:1,   // Face hugger alien
+  41:2,   // Aliens support stylo
+  42:2,   // Aliens support tél
   55:1,   // Main mercredi
   57:5,   // Mini clown Ça
   59:1,   // Bloc livre Ça
@@ -914,24 +926,34 @@ var STOCK_DEPART = {
   29:0,   // Handspinner
   30:6,   // Anti stress
   31:0,   // Balle anti stress
-  // 🖼️ Hueforge & Déco
+  // 🖼️ Hueforge & Cadres
   17:69,  // Hueforge
   60:1,   // Hueforge Ça
   61:1,   // Hueforge XXL
   62:1,   // Hueforge petit
   68:29,  // Mini hueforge
   22:10,  // Cadre hueforge
-  27:6,   // Box bureau hueforge
-  16:4,   // Figurine 3D
+  40:2,   // Cadre Star Wars
+  77:1,   // Cadre tortue
+  // 📚 Marque-pages
   26:23,  // Marque page
   56:2,   // Marque page grand
   65:1,   // Marque page HP
-  // 🎮 Geek
-  40:2,   // Cadre Star Wars
-  41:2,   // Aliens support stylo
-  42:2,   // Aliens support tél
+  // 🎮 Geek & Déco
   43:0,   // Albator
   28:2,   // Boite Gameboy cartes
+  27:6,   // Box bureau hueforge
+  16:4,   // Figurine 3D
+  // 🌸 Déco & Cadeaux
+  69:1,   // Coeur Articulé mama
+  70:1,   // Best Mom
+  71:1,   // Petit Vase
+  72:1,   // Pot de fleur petite fille
+  73:1,   // Vide poche grenouille
+  74:1,   // Lettre love
+  75:1,   // Couple coeur
+  76:3,   // Vase
+  // 🔑 Porte-clés
   18:221, // Porte-clés
   // 🧵 Broderie / Flex
   47:0,   // Serviette brodée
@@ -1013,6 +1035,8 @@ function fmt(n){return n.toFixed(2).replace(".",",")+"\u00a0€";}
 function renderProducts(){
   var grid=document.getElementById("productsGrid");
   var list=currentCat==="Tous"?PRODUCTS:PRODUCTS.filter(function(p){return p.cat===currentCat;});
+  // Filtrer les produits désactivés
+  list=list.filter(function(p){return !disabledProducts[p.id];});
   var html="";
   list.forEach(function(p){
     var stock=stockData[p.id]!==undefined?stockData[p.id]:99;
@@ -1026,9 +1050,8 @@ function renderProducts(){
       else if(isLow) stockBadge="<span class='stock-badge stock-low'>"+stock+" restants</span>";
       else stockBadge="<span class='stock-badge stock-ok'>"+stock+" en stock</span>";
     }
-    var isDisabled=disabledProducts[p.id]===true;
-    var cardClass="product-card "+p.type+(isOut?" out-of-stock":"")+(isDisabled?" disabled":"");
-    var onclick=(isOut||isDisabled)?"":" onclick='addToCart("+p.id+")'";
+    var cardClass="product-card "+p.type+(isOut?" out-of-stock":"");
+    var onclick=isOut?"":" onclick='addToCart("+p.id+")'";
     html+="<div class='"+cardClass+"'"+onclick+">";
     html+=stockBadge;
     html+="<div class='product-icon'>"+p.emoji+"</div>";
@@ -1184,12 +1207,12 @@ function renderStockPanel(){
     var stock=stockData[p.id]!==undefined?stockData[p.id]:99;
     var isOut=stock<=0,isLow=stock>0&&stock<=3;
     var numCls=isOut?"out":isLow?"low":"ok";
-    var display=stock>=99?"∞":stock;
-    var isDisabledP=disabledProducts[p.id]===true;
-    html+="<div class='sp-item'"+(isDisabledP?" style='opacity:.5'":"")+">"; 
-    html+="<button class='sp-toggle "+(isDisabledP?"off":"on")+"' onclick='toggleProduct("+p.id+")' title='"+(isDisabledP?"Activer":"Désactiver")+"'></button>";
-    html+="<div style='font-size:18px'>"+p.emoji+"</div>";
-    html+="<div class='sp-item-info'><div class='sp-item-name'"+(isDisabledP?" style='text-decoration:line-through;color:var(--text3)'":'')+"'>"+p.label+"</div><div class='sp-item-cat'>"+p.cat+"</div></div>";
+    var display=stock>=9999?"∞":stock;
+    var isDis=disabledProducts[p.id]===true;
+    html+="<div class='sp-item'"+(isDis?" style='opacity:.55'":"")+"> ";
+    html+="<button class='sp-toggle "+(isDis?"off":"on")+"' onclick='toggleProduct("+p.id+")'></button>";
+    html+="<div style='font-size:16px'>"+p.emoji+"</div>";
+    html+="<div class='sp-item-info'><div class='sp-item-name'"+(isDis?" style='color:var(--text3)'":"")+">"+p.label+"</div><div class='sp-item-cat'>"+p.cat+"</div></div>";
     html+="<div class='sp-qty-ctrl'>";
     html+="<button class='sp-qty-btn' onclick='changeStock("+p.id+",-1)'>−</button>";
     html+="<span class='sp-qty-num "+numCls+"'>"+display+"</span>";
@@ -1398,10 +1421,10 @@ function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
 
 // ── ACTIVATION / DÉSACTIVATION PRODUITS ──────────────────────
 window.toggleProduct=function(id){
-  disabledProducts[id]=!disabledProducts[id];
-  if(!disabledProducts[id])delete disabledProducts[id];
+  if(disabledProducts[id])delete disabledProducts[id];
+  else disabledProducts[id]=true;
   renderStockPanel();renderProducts();sauvegarder();
-  var p=PRODUCTS.find(function(p){return p.id===id;});
+  var p=PRODUCTS.find(function(x){return x.id===id;});
   if(p)showToast(disabledProducts[id]?"🚫 "+p.label+" désactivé":"✅ "+p.label+" activé");
 };
 window.enableAllProducts=function(){
