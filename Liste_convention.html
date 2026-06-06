@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Les Projets de Shaya</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <style>
 :root{--bg:#0d0f14;--sf:#14171f;--sf2:#1c2030;--sf3:#242840;--bd:rgba(255,255,255,0.07);--tx:#e8eaf0;--dim:#7880a0;--ac:#6c63ff;--acg:rgba(108,99,255,0.25);
 --brouillon:#7880a0;--email-envoye:#a78bfa;--en-attente:#f59e0b;--accepte:#22d3a0;--refuse:#ef4444;--confirme:#3b82f6;--fait:#64748b;--annule:#ef4444;}
@@ -168,7 +170,7 @@ select option{background:var(--sf)}textarea{resize:vertical;min-height:60px}
     <h1>Les Projets <span>de Shaya</span></h1>
     <div class="hsub">Conventions &amp; march&#233;s &#8212; statuts, contacts, h&#233;bergement, carte &amp; rappels</div>
   </div>
-  <div class="hact">
+  <div class="hact"><span id="fbStatus" style="font-size:.72rem;padding:.3rem .65rem;border-radius:20px;background:var(--sf2);border:1px solid var(--bd);white-space:nowrap">⏳ Connexion...</span>
     <button class="btn bg" onclick="checkRappels()">&#128276; Rappels</button>
     <button class="btn bg" onclick="exportData()">&#8595; Export</button>
     <button class="btn bg" onclick="importData()">&#8593; Import</button>
@@ -409,10 +411,11 @@ const PC={
 
 // STATE
 let evs=JSON.parse(localStorage.getItem('cvt3')||'[]');
-// migrate
+// migrate (only local, Firebase will sync)
 try{
   const old2=localStorage.getItem('cvt2');
-  if(old2&&!evs.length){const o=JSON.parse(old2);evs=o.map(e=>({...e,horairesExpo:{},horairesPublic:{},horairesNotes:'',nbJours:1,checks:{...(e.checks||{})},checksNA:{}}));localStorage.setItem('cvt3',JSON.stringify(evs));}
+  const cur=localStorage.getItem('cvt3');
+  if(old2&&!cur){const o=JSON.parse(old2);const migrated=o.map(e=>({...e,horairesExpo:{},horairesPublic:{},horairesNotes:'',nbJours:1,checks:{...(e.checks||{})},checksNA:{}}));localStorage.setItem('cvt3',JSON.stringify(migrated));}
 }catch(e){}
 
 let filt='all',eid=null,geo=null,geoT=null,pills={},rapD=[],checksNA={};
@@ -516,7 +519,63 @@ const Map2=(()=>{
   return{init,sv,fb,clrM,addM,closePop,zi,zo};
 })();
 
-function save(){localStorage.setItem('cvt3',JSON.stringify(evs));}
+// ===== FIREBASE =====
+const FB_CONFIG={apiKey:'AIzaSyDummy',authDomain:'roue-shaya.firebaseapp.com',databaseURL:'https://roue-shaya-default-rtdb.europe-west1.firebasedatabase.app',projectId:'roue-shaya'};
+let fbApp,fbDb,fbRef;
+let fbConnected=false;
+
+function initFirebase(){
+  try{
+    fbApp=firebase.initializeApp(FB_CONFIG,'tracker');
+    fbDb=firebase.database(fbApp);
+    fbRef=fbDb.ref('conventions');
+    // Listen for realtime updates
+    fbRef.on('value',snap=>{
+      const data=snap.val();
+      if(data){
+        evs=Object.values(data).sort((a,b)=>(a.datestart||'9999')<(b.datestart||'9999')?-1:1);
+      }else{
+        evs=[];
+      }
+      fbConnected=true;
+      setStatus('connected');
+      renderList();refreshMap();
+    },err=>{
+      console.warn('Firebase error:',err);
+      fbConnected=false;
+      setStatus('offline');
+      loadLocal();
+    });
+  }catch(e){
+    console.warn('Firebase init failed:',e);
+    setStatus('offline');
+    loadLocal();
+  }
+}
+
+function setStatus(s){
+  const el=document.getElementById('fbStatus');
+  if(!el)return;
+  if(s==='connected'){el.textContent='\u2601\ufe0f Sync\u00e9';el.style.color='var(--accepte)';}
+  else if(s==='saving'){el.textContent='\u23f3 Sauvegarde...';el.style.color='var(--en-attente)';}
+  else{el.textContent='\u26a0\ufe0f Hors ligne';el.style.color='var(--refuse)';}
+}
+
+function loadLocal(){
+  try{evs=JSON.parse(localStorage.getItem('cvt3')||'[]');}catch(e){evs=[];}
+  renderList();refreshMap();
+}
+
+function save(){
+  // Always save locally as backup
+  localStorage.setItem('cvt3',JSON.stringify(evs));
+  if(!fbConnected||!fbRef){return;}
+  setStatus('saving');
+  // Save all events as object keyed by id
+  const obj={};
+  evs.forEach(e=>{obj[e.id]=e;});
+  fbRef.set(obj).then(()=>setStatus('connected')).catch(err=>{console.warn('Save error:',err);setStatus('offline');});
+}
 
 function refreshMap(){
   Map2.clrM();
@@ -737,10 +796,15 @@ function saveEvent(){
     lat:geo?.lat||null,lng:geo?.lng||null,
   };
   if(eid){const i=evs.findIndex(x=>x.id===eid);if(i>-1)evs[i]=data;}else evs.push(data);
-  save();closeModal();renderList();refreshMap();toast('\u00c9v\u00e9nement enregistr\u00e9 !');
+  localStorage.setItem('cvt3',JSON.stringify(evs));
+  if(fbConnected&&fbRef){
+    setStatus('saving');
+    fbRef.child(data.id).set(data).then(()=>setStatus('connected')).catch(e=>{console.warn(e);setStatus('offline');});
+  }
+  closeModal();renderList();refreshMap();toast('\u00c9v\u00e9nement enregistr\u00e9 !');
 }
 
-function delEv(id,e){e.stopPropagation();if(!confirm('Supprimer ?'))return;evs=evs.filter(x=>x.id!==id);save();renderList();refreshMap();toast('Supprim\u00e9');}
+function delEv(id,e){e.stopPropagation();if(!confirm('Supprimer ?'))return;evs=evs.filter(x=>x.id!==id);localStorage.setItem('cvt3',JSON.stringify(evs));if(fbConnected&&fbRef){fbRef.child(id).remove().catch(err=>console.warn('Del error:',err));}renderList();refreshMap();toast('Supprim\u00e9');}
 
 function debGeo(){clearTimeout(geoT);geoT=setTimeout(doGeo,900);}
 async function doGeo(){
@@ -752,17 +816,24 @@ function showGeoOk(dn){const st=document.getElementById('geoStatus');st.classNam
 
 function exportData(){const b=new Blob([JSON.stringify(evs,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='projets-shaya-'+new Date().toISOString().slice(0,10)+'.json';a.click();toast('Export OK');}
 function importData(){document.getElementById('importInput').click();}
-function handleImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!Array.isArray(d))throw 0;if(!confirm('Importer '+d.length+' \u00e9v\u00e9nements ?'))return;evs=d;save();renderList();refreshMap();toast(d.length+' import\u00e9s');}catch{toast('Fichier invalide');}};r.readAsText(f);e.target.value='';}
+function handleImport(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!Array.isArray(d))throw 0;if(!confirm('Importer '+d.length+' \u00e9v\u00e9nements ?'))return;
+          evs=d;localStorage.setItem('cvt3',JSON.stringify(evs));
+          if(fbConnected&&fbRef){const obj={};evs.forEach(e=>{obj[e.id]=e;});fbRef.set(obj);}
+          renderList();refreshMap();toast(d.length+' import\u00e9s');}catch{toast('Fichier invalide');}};r.readAsText(f);e.target.value='';}
 
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2600);}
 
 document.getElementById('mo').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 
 window.addEventListener('load',()=>{
-  Map2.init('map');renderList();refreshMap();
-  const today=new Date();today.setHours(0,0,0,0);
-  const al=[];evs.forEach(ev=>{if(!ev.datestart)return;const d=Math.ceil((new Date(ev.datestart)-today)/86400000);if(d<0||d>30)return;(ev.rappelDays||[]).forEach(r=>{if(d<=r)al.push(ev.name);});});
-  if(al.length)setTimeout(()=>toast('\u{1f514} '+al.length+' rappel(s) actif(s)'),800);
+  Map2.init('map');
+  initFirebase();
+  // Check rappels after data loads (firebase listener will call renderList)
+  setTimeout(()=>{
+    const today=new Date();today.setHours(0,0,0,0);
+    const al=[];evs.forEach(ev=>{if(!ev.datestart)return;const d=Math.ceil((new Date(ev.datestart)-today)/86400000);if(d<0||d>30)return;(ev.rappelDays||[]).forEach(r=>{if(d<=r)al.push(ev.name);});});
+    if(al.length)toast('\u{1f514} '+al.length+' rappel(s) actif(s)');
+  },3000);
 });
 </script>
 </body>
