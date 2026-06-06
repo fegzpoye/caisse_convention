@@ -1204,7 +1204,7 @@ function renderStockPanel(){
   var body=document.getElementById("spBody");if(!body)return;
   var html="";
   PRODUCTS.forEach(function(p){
-    var stock=stockData[p.id]!==undefined?stockData[p.id]:99;
+    var stock=stockData[p.id]!==undefined?stockData[p.id]:9999;
     var isOut=stock<=0,isLow=stock>0&&stock<=3;
     var numCls=isOut?"out":isLow?"low":"ok";
     var display=stock>=9999?"∞":stock;
