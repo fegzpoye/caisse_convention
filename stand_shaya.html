@@ -22,23 +22,29 @@
   @keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(-100px) rotate(720deg);opacity:0}}
 
   /* ── ÉCRAN 1 : VEILLE ──────────────────────────────────────── */
-  #idleScreen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;z-index:5;transition:background 1.2s ease;background:radial-gradient(circle at 50% 40%,#1a1730,#0a0a14 75%)}
-  #idleScreen.buildup-wheel{background:radial-gradient(circle at 50% 40%,#3a1420,#0a0a14 75%)}
-  #idleScreen.buildup-scratch{background:radial-gradient(circle at 50% 40%,#241a3a,#0a0a14 75%)}
+  #idleScreen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;z-index:5;transition:background 1s ease;background:radial-gradient(circle at 50% 40%,#1a1730,#0a0a14 75%)}
+  #idleScreen.buildup-wheel{background:radial-gradient(circle at 50% 40%,#7a1030 0%,#3a0a18 45%,#0a0a14 85%);animation:buildupFlashWheel 1.6s ease-in-out infinite}
+  #idleScreen.buildup-scratch{background:radial-gradient(circle at 50% 40%,#5a2fc4 0%,#2a1560 45%,#0a0a14 85%);animation:buildupFlashScratch 1.6s ease-in-out infinite}
+  @keyframes buildupFlashWheel{0%,100%{box-shadow:inset 0 0 120px rgba(233,69,96,.15)}50%{box-shadow:inset 0 0 220px rgba(233,69,96,.5)}}
+  @keyframes buildupFlashScratch{0%,100%{box-shadow:inset 0 0 120px rgba(138,92,246,.15)}50%{box-shadow:inset 0 0 220px rgba(138,92,246,.5)}}
   .idle-logo-wrap{position:relative;width:260px;height:260px;display:flex;align-items:center;justify-content:center}
   .idle-logo-ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(245,166,35,.25);animation:ringPulse 3s ease-in-out infinite}
   .idle-logo-ring.r2{inset:-24px;animation-delay:.5s;border-color:rgba(245,166,35,.15)}
   @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.08);opacity:1}}
+  #idleScreen.buildup .idle-logo-ring{border-width:4px;animation-duration:1s}
+  #idleScreen.buildup-wheel .idle-logo-ring{border-color:rgba(233,69,96,.7)}
+  #idleScreen.buildup-scratch .idle-logo-ring{border-color:rgba(138,92,246,.7)}
   .idle-logo{width:180px;height:180px;animation:logoBreathe 3.2s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(245,166,35,.35))}
   @keyframes logoBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
   .idle-title{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:8px;text-align:center;text-shadow:0 0 30px rgba(245,166,35,.4)}
   .idle-sub{font-size:.95rem;letter-spacing:3px;color:var(--silver);text-transform:uppercase;opacity:.7;transition:opacity .6s}
-  .idle-status{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:4px;color:var(--gold);opacity:0;transition:opacity .8s;text-align:center;min-height:24px}
-  #idleScreen.buildup .idle-status{opacity:1}
+  .idle-status{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:5px;color:var(--gold);opacity:0;transform:scale(.85);transition:opacity .5s,transform .5s;text-align:center;min-height:32px}
+  #idleScreen.buildup .idle-status{opacity:1;transform:scale(1);animation:statusFlash 1.2s ease-in-out infinite}
+  @keyframes statusFlash{0%,100%{opacity:.6}50%{opacity:1}}
   #idleScreen.buildup .idle-logo-wrap{animation:none}
-  #idleScreen.buildup .idle-logo{animation-duration:1.4s}
-  #idleScreen.buildup-wheel .idle-status{color:var(--pink)}
-  #idleScreen.buildup-scratch .idle-status{color:var(--purple)}
+  #idleScreen.buildup .idle-logo{animation-duration:1s;filter:drop-shadow(0 0 46px rgba(245,166,35,.7))}
+  #idleScreen.buildup-wheel .idle-status{color:var(--pink);text-shadow:0 0 24px rgba(233,69,96,.8)}
+  #idleScreen.buildup-scratch .idle-status{color:var(--purple);text-shadow:0 0 24px rgba(138,92,246,.8)}
 
   /* ── ÉCRAN 2 : ROUE ────────────────────────────────────────── */
   #wheelScreen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:40px;z-index:10;background:radial-gradient(circle at 50% 35%,#1a1730,#0a0a14 80%)}
