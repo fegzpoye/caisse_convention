@@ -42,6 +42,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 @keyframes wheelGlow{from{box-shadow:0 0 8px rgba(233,69,96,.3)}to{box-shadow:0 0 20px rgba(233,69,96,.6)}}
 .btn-wheel:active{transform:scale(.96)}
 .btn-wheel:disabled{background:#444;box-shadow:none;animation:none;cursor:not-allowed}
+.btn-scratch{background:linear-gradient(135deg,#8A5CF6,#4C3A9C);border:none;border-radius:var(--r-sm);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:6px 14px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;transition:all .12s;box-shadow:0 0 14px rgba(138,92,246,.35);animation:scratchGlow 2s ease-in-out infinite alternate}
+@keyframes scratchGlow{from{box-shadow:0 0 8px rgba(138,92,246,.3)}to{box-shadow:0 0 20px rgba(138,92,246,.6)}}
+.btn-scratch:active{transform:scale(.96)}
+.btn-scratch:disabled{background:#444;box-shadow:none;animation:none;cursor:not-allowed}
 .fb-indicator{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)}
 .fb-dot-small{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green)}
 .fb-dot-small.off{background:#e94560;box-shadow:0 0 4px #e94560}
@@ -166,9 +170,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 @keyframes wheelPulse{from{box-shadow:0 4px 12px rgba(233,69,96,.3)}to{box-shadow:0 4px 28px rgba(233,69,96,.7)}}
 .modal-btn-wheel:active{transform:scale(.97)}
 .modal-btn-wheel.used{background:var(--surface3);border:1px solid var(--border);color:var(--text3);animation:none;box-shadow:none;cursor:not-allowed;font-size:12px}
+.modal-btn-scratch{width:100%;padding:14px;font-size:14px;font-weight:700;cursor:pointer;border-radius:var(--r-sm);border:none;background:linear-gradient(135deg,#8A5CF6,#4C3A9C);color:#fff;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .15s;box-shadow:0 4px 20px rgba(138,92,246,.45);animation:scratchPulse 1.5s ease-in-out infinite alternate}
+@keyframes scratchPulse{from{box-shadow:0 4px 12px rgba(138,92,246,.3)}to{box-shadow:0 4px 28px rgba(138,92,246,.7)}}
+.modal-btn-scratch:active{transform:scale(.97)}
+.modal-btn-scratch.used{background:var(--surface3);border:1px solid var(--border);color:var(--text3);animation:none;box-shadow:none;cursor:not-allowed;font-size:12px}
 .cooldown-bar{width:100%;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:none}
 .cooldown-bar.visible{display:block}
 .cooldown-fill{height:100%;background:#E94560;transform-origin:left;transition:transform linear}
+.cooldown-fill.scratch{background:#8A5CF6}
 .modal-overlay-reset{display:none;position:absolute;inset:0;background:rgba(0,0,0,.85);align-items:center;justify-content:center;z-index:500}
 .modal-overlay-reset.open{display:flex}
 .modal-reset{background:var(--surface);border:1px solid rgba(233,69,96,.3);border-radius:20px;padding:28px 24px;width:300px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
@@ -226,6 +235,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .toast{position:absolute;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--green);color:#fff;padding:10px 22px;border-radius:99px;font-size:13px;font-weight:500;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:300;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.wheel{background:linear-gradient(135deg,#E94560,#c42d4a)}
+.toast.scratch{background:linear-gradient(135deg,#8A5CF6,#4C3A9C)}
 .modal-client{position:absolute;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:600}
 .modal-client.open{display:flex}
 .modal-client-box{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:24px;width:340px;display:flex;flex-direction:column;gap:14px;max-height:90dvh;overflow-y:auto}
@@ -346,7 +356,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   <div class="topbar-right">
     <div class="stat-pill"><span>Ventes</span><strong id="nbVentes">0</strong></div>
     <div class="stat-pill"><span>CA</span><strong id="caJour">0,00 €</strong></div>
-    <div class="stat-pill-solde"><span style="color:var(--text2);margin-right:4px">Solde</span><strong id="soldeCaisse">0,00 €</strong></div>
+    <div class="stat-pill-solde"><span style="color:var(--text2);margin-right:4px">Solde</span><strong id="soldeCaisse">0,00 €</strong></div>
     <div class="fb-indicator"><div class="fb-dot-small" id="fbDotSmall"></div><span id="fbLabelSmall">...</span></div>
     <button class="btn-sm" onclick="toggleTickets()">Tickets</button>
     <button class="btn-sm" onclick="toggleStock()">📦 Stock</button>
@@ -355,6 +365,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <button class="btn-sm" onclick="toggleDons()">🎁 Dons</button>
     <button class="btn-xl" onclick="toggleExcel()">📊 Excel Live</button>
     <button class="btn-wheel" id="topWheelBtn" onclick="quickSpin()">🎡 Roue</button>
+    <button class="btn-scratch" id="topScratchBtn" onclick="quickScratch()">🎟️ Carte</button>
     <button class="btn-sm" onclick="togglePromo()">🏷️ Promos</button>
     <button class="btn-flash" id="btnFlash" onclick="toggleFlash()">⚡ Flash</button>
     <button class="btn-reset" onclick="askReset()">↺ Nouveau jour</button>
@@ -395,6 +406,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="wheel-history-section" id="wheelHistorySection" style="display:none">
       <div class="wheel-history-title">🎡 Gains roue</div>
       <div class="wheel-history-list" id="wheelHistoryList"></div>
+    </div>
+    <div class="wheel-history-section" id="scratchHistorySection" style="display:none">
+      <div class="wheel-history-title">🎟️ Gains carte à gratter</div>
+      <div class="wheel-history-list" id="scratchHistoryList"></div>
     </div>
     <div class="promo-input-row">
       <div class="promo-input-inner">
@@ -515,7 +530,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 <div class="caisse-panel" id="caissePanel">
   <div class="cp-header"><h3>💰 Caisse</h3><button class="btn-sm" onclick="toggleCaisse()">✕</button></div>
   <div class="cp-body">
-    <div class="cp-solde-box"><div class="cp-solde-lbl">Solde caisse</div><div class="cp-solde-val" id="cpSoldeVal">0,00 €</div><div class="cp-solde-detail" id="cpSoldeDetail">-</div></div>
+    <div class="cp-solde-box"><div class="cp-solde-lbl">Solde caisse</div><div class="cp-solde-val" id="cpSoldeVal">0,00 €</div><div class="cp-solde-detail" id="cpSoldeDetail">-</div></div>
     <div><div class="cp-section-title">Fond de caisse</div>
       <div class="cp-add-form"><div class="cp-input-row"><input class="cp-input" id="cpFond" type="text" inputmode="decimal" placeholder="Ex: 150"><span style="color:var(--text3);font-size:13px;flex-shrink:0">€</span><button class="cp-btn" onclick="setFondCaisse()">OK</button></div></div>
     </div>
@@ -540,7 +555,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       </div>
     </div>
     <div><div class="cp-section-title">Liste (<span id="autresCount">0</span>)</div><div id="autresListe"></div></div>
-    <div class="cp-solde-box"><div class="cp-solde-lbl">Total autres ventes</div><div class="cp-solde-val" id="autresTotalVal" style="font-size:20px">0,00 €</div></div>
+    <div class="cp-solde-box"><div class="cp-solde-lbl">Total autres ventes</div><div class="cp-solde-val" id="autresTotalVal" style="font-size:20px">0,00 €</div></div>
   </div>
 </div>
 
@@ -555,7 +570,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
         <div class="cp-input-row"><input class="cp-input" id="donValeur" type="text" inputmode="decimal" placeholder="Valeur €"><button class="cp-btn" style="background:var(--amber)" onclick="addDon()">+ Don</button></div>
       </div>
       <div id="donsListe"></div>
-      <div class="cp-solde-box" style="background:rgba(245,166,35,.08);border-color:rgba(245,166,35,.25)"><div class="cp-solde-lbl">Total dons</div><div class="cp-solde-val" id="donsTotalVal" style="font-size:20px;color:var(--amber)">0,00 €</div></div>
+      <div class="cp-solde-box" style="background:rgba(245,166,35,.08);border-color:rgba(245,166,35,.25)"><div class="cp-solde-lbl">Total dons</div><div class="cp-solde-val" id="donsTotalVal" style="font-size:20px;color:var(--amber)">0,00 €</div></div>
     </div>
     <div style="height:1px;background:var(--border)"></div>
     <div>
@@ -570,7 +585,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
         <button class="billet-btn" onclick="setGainPreset('Figurine 3D',15,this)">💎 Figurine</button>
       </div>
       <div id="gainsObjetsListe" style="margin-top:6px"></div>
-      <div class="cp-solde-box" style="background:rgba(124,106,247,.08);border-color:rgba(124,106,247,.25)"><div class="cp-solde-lbl">Valeur totale gains</div><div class="cp-solde-val" id="gainsTotalVal" style="font-size:20px;color:var(--purple)">0,00 €</div></div>
+      <div class="cp-solde-box" style="background:rgba(124,106,247,.08);border-color:rgba(124,106,247,.25)"><div class="cp-solde-lbl">Valeur totale gains</div><div class="cp-solde-val" id="gainsTotalVal" style="font-size:20px;color:var(--purple)">0,00 €</div></div>
     </div>
   </div>
 </div>
@@ -587,6 +602,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <button class="modal-btn-wheel" id="modalWheelBtn" onclick="launchWheelFromModal()">🎡 LANCER LA ROUE DES GAINS !</button>
     <div class="cooldown-bar" id="cooldownBar"><div class="cooldown-fill" id="cooldownFill"></div></div>
     <div id="modalWheelResult"></div>
+    <button class="modal-btn-scratch" id="modalScratchBtn" onclick="launchScratchFromModal()">🎟️ LANCER LA CARTE À GRATTER !</button>
+    <div class="cooldown-bar" id="cooldownBarScratch"><div class="cooldown-fill scratch" id="cooldownFillScratch"></div></div>
+    <div id="modalScratchResult"></div>
     <button class="modal-btn primary" onclick="closeModal()">Nouvelle commande</button>
     <button class="modal-btn success" onclick="downloadExcel()">⬇ Télécharger Excel</button>
   </div>
@@ -621,7 +639,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
   <div class="modal-client-box">
     <div class="modal-client-header">
       <div class="modal-client-icon">🎉</div>
-      <div class="modal-client-title">Fiche client — Gain roue</div>
+      <div class="modal-client-title">Fiche client — Gain</div>
     </div>
     <div class="modal-client-gain" id="clientGainLabel">Gain : —</div>
     <div class="client-field"><label>Prénom *</label><input id="cPrenom" placeholder="Prénom" autocomplete="given-name"></div>
@@ -662,9 +680,11 @@ onValue(ref(db,'.info/connected'),(snap)=>{
 });
 
 window.triggerWheelFirebase=function(){set(ref(db,'wheel/trigger'),true);};
+window.triggerScratchFirebase=function(){set(ref(db,'scratch/trigger'),true);};
 
 // ── ROUE RÉSULTAT ─────────────────────────────────────────────
 var wheelHistory=[],lastKnownTs=null,wheelGains=[],clients=[],pendingClientGain=null;
+var scratchHistory=[],lastKnownScratchTs=null;
 
 get(ref(db,'wheel/lastResult')).then((snap)=>{
   const existing=snap.val();
@@ -680,9 +700,9 @@ get(ref(db,'wheel/lastResult')).then((snap)=>{
     wheelHistory.unshift(item);
     if(wheelHistory.length>10) wheelHistory.pop();
     renderWheelHistory();
-    showWheelResultBanner(result);
+    showWheelResultBanner(result,'🎡 RÉSULTAT DE LA ROUE');
     const modalResult=document.getElementById('modalWheelResult');
-    if(modalResult) modalResult.innerHTML=buildResultHTML(result);
+    if(modalResult) modalResult.innerHTML=buildResultHTML(result,'🎡 Résultat de la roue');
     if(tickets.length>0&&result.type!=='lose'){
       tickets[0].wheelGain=result.label;
       tickets[0].wheelSub=result.sub;
@@ -697,14 +717,46 @@ get(ref(db,'wheel/lastResult')).then((snap)=>{
   });
 });
 
-function buildResultHTML(r){
-  return '<div class="wheel-result-box"><div class="wheel-result-emoji">'+r.emoji+'</div><div class="wheel-result-info"><div class="wheel-result-label">🎡 Résultat de la roue</div><div class="wheel-result-prize">'+r.label+'</div><div class="wheel-result-sub">'+r.sub+'</div></div></div>';
+// ── CARTE À GRATTER RÉSULTAT ────────────────────────────────────
+get(ref(db,'scratch/lastResult')).then((snap)=>{
+  const existing=snap.val();
+  if(existing&&existing.ts) lastKnownScratchTs=existing.ts;
+  onValue(ref(db,'scratch/lastResult'),(snap)=>{
+    const result=snap.val();
+    if(!result||!result.label) return;
+    if(result.ts&&result.ts===lastKnownScratchTs) return;
+    lastKnownScratchTs=result.ts;
+    const now=new Date();
+    const timeStr=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+    const item={label:result.label,emoji:result.emoji,sub:result.sub,time:timeStr,ts:result.ts};
+    scratchHistory.unshift(item);
+    if(scratchHistory.length>10) scratchHistory.pop();
+    renderScratchHistory();
+    showWheelResultBanner(result,'🎟️ RÉSULTAT DE LA CARTE');
+    const modalResult=document.getElementById('modalScratchResult');
+    if(modalResult) modalResult.innerHTML=buildResultHTML(result,'🎟️ Résultat de la carte');
+    if(tickets.length>0&&result.type!=='lose'){
+      tickets[0].wheelGain=result.label;
+      tickets[0].wheelSub=result.sub;
+      tickets[0].wheelEmoji=result.emoji;
+    }
+    wheelGains.unshift({ticket:tickets.length>0?'#'+('00'+tickets[0].num).slice(-3):'—',time:timeStr,label:result.label,sub:result.sub,emoji:result.emoji,type:result.type});
+    if(result.type!=='lose'){
+      pendingClientGain=result;
+      setTimeout(function(){openClientModal(result);},500);
+    }
+    sauvegarder();
+  });
+});
+
+function buildResultHTML(r,titre){
+  return '<div class="wheel-result-box"><div class="wheel-result-emoji">'+r.emoji+'</div><div class="wheel-result-info"><div class="wheel-result-label">'+titre+'</div><div class="wheel-result-prize">'+r.label+'</div><div class="wheel-result-sub">'+r.sub+'</div></div></div>';
 }
-function showWheelResultBanner(result){
+function showWheelResultBanner(result,titre){
   var ex=document.getElementById('wheelBanner');if(ex)ex.remove();
   var b=document.createElement('div');b.id='wheelBanner';
   b.style.cssText='position:fixed;top:70px;left:50%;transform:translateX(-50%) translateY(-20px);background:linear-gradient(135deg,#1a1a2e,#16213e);border:2px solid #F5A623;border-radius:16px;padding:16px 28px;display:flex;align-items:center;gap:14px;box-shadow:0 8px 40px rgba(245,166,35,.4);z-index:9999;transition:transform .4s cubic-bezier(.34,1.56,.64,1), opacity .4s;opacity:0;min-width:280px';
-  b.innerHTML='<div style="font-size:2.5rem;line-height:1">'+result.emoji+'</div><div><div style="font-size:10px;color:#F5A623;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">🎡 RÉSULTAT DE LA ROUE</div><div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">'+result.label+'</div><div style="font-size:12px;color:#9898a8;margin-top:1px">'+result.sub+'</div></div>';
+  b.innerHTML='<div style="font-size:2.5rem;line-height:1">'+result.emoji+'</div><div><div style="font-size:10px;color:#F5A623;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px">'+titre+'</div><div style="font-size:22px;font-weight:800;color:#fff;letter-spacing:-.5px">'+result.label+'</div><div style="font-size:12px;color:#9898a8;margin-top:1px">'+result.sub+'</div></div>';
   document.body.appendChild(b);
   requestAnimationFrame(function(){b.style.transform='translateX(-50%) translateY(0)';b.style.opacity='1';});
   setTimeout(function(){b.style.transform='translateX(-50%) translateY(-20px)';b.style.opacity='0';setTimeout(function(){b.remove();},400);},30000);
@@ -717,6 +769,15 @@ function renderWheelHistory(){
   list.innerHTML=wheelHistory.map(function(item){return'<div class="wheel-history-item"><span class="wheel-history-item-emoji">'+item.emoji+'</span><span class="wheel-history-item-prize">'+item.label+' — '+item.sub+'</span><span class="wheel-history-item-time">'+item.time+'</span></div>';}).join('');
   clearTimeout(window._wheelHistoryTimer);
   window._wheelHistoryTimer=setTimeout(function(){section.style.transition='opacity .5s';section.style.opacity='0';setTimeout(function(){section.style.display='none';section.style.opacity='1';section.style.transition='';},500);},8000);
+}
+function renderScratchHistory(){
+  const section=document.getElementById('scratchHistorySection');
+  const list=document.getElementById('scratchHistoryList');
+  if(!scratchHistory.length){section.style.display='none';return;}
+  section.style.display='block';
+  list.innerHTML=scratchHistory.map(function(item){return'<div class="wheel-history-item"><span class="wheel-history-item-emoji">'+item.emoji+'</span><span class="wheel-history-item-prize">'+item.label+' — '+item.sub+'</span><span class="wheel-history-item-time">'+item.time+'</span></div>';}).join('');
+  clearTimeout(window._scratchHistoryTimer);
+  window._scratchHistoryTimer=setTimeout(function(){section.style.transition='opacity .5s';section.style.opacity='0';setTimeout(function(){section.style.display='none';section.style.opacity='1';section.style.transition='';},500);},8000);
 }
 
 // ── WHEEL CONTROLS ─────────────────────────────────────────────
@@ -743,6 +804,32 @@ window.resetWheelBtn=function(){
   var btn=document.getElementById('modalWheelBtn');
   btn.textContent='🎡 LANCER LA ROUE DES GAINS !';btn.classList.remove('used');
   document.getElementById('cooldownBar').classList.remove('visible');
+};
+
+// ── CARTE À GRATTER CONTROLS ────────────────────────────────────
+var scratchOnCooldown=false;
+window.launchScratchFromModal=function(){
+  if(scratchOnCooldown)return;scratchOnCooldown=true;
+  window.triggerScratchFirebase();
+  var btn=document.getElementById('modalScratchBtn');
+  btn.textContent='✅ Carte lancée sur le grand écran !';btn.classList.add('used');
+  var bar=document.getElementById('cooldownBarScratch'),fill=document.getElementById('cooldownFillScratch');
+  bar.classList.add('visible');fill.style.transition='none';fill.style.transform='scaleX(1)';
+  setTimeout(function(){fill.style.transition='transform 6.5s linear';fill.style.transform='scaleX(0)';},50);
+  showToast('🎟️ Carte à gratter lancée !',true);
+};
+window.quickScratch=function(){
+  if(scratchOnCooldown){showToast('⏳ Carte en cours...');return;}
+  scratchOnCooldown=true;window.triggerScratchFirebase();
+  var btn=document.getElementById('topScratchBtn');btn.disabled=true;btn.textContent='⏳ En cours...';
+  showToast('🎟️ Carte à gratter lancée !',true);
+  setTimeout(function(){scratchOnCooldown=false;btn.disabled=false;btn.textContent='🎟️ Carte';},6500);
+};
+window.resetScratchBtn=function(){
+  scratchOnCooldown=false;
+  var btn=document.getElementById('modalScratchBtn');
+  btn.textContent='🎟️ LANCER LA CARTE À GRATTER !';btn.classList.remove('used');
+  document.getElementById('cooldownBarScratch').classList.remove('visible');
 };
 
 // ── FICHE CLIENT ───────────────────────────────────────────────
@@ -1174,6 +1261,7 @@ window.confirmerPaiement=function(){
   document.getElementById("mStatVentes").textContent=tickets.length;
   document.getElementById("mStatCA").textContent=fmt(totalCA);
   window.resetWheelBtn();
+  window.resetScratchBtn();
   document.getElementById("modalOverlay").classList.add("open");
   renderTickets();renderExcelPanel();renderStockPanel();
   sauvegarder();
@@ -1397,28 +1485,82 @@ window.doReset=function(){
   showToast("✅ Nouveau jour démarré !");
 };
 
-// ── MONNAIE ────────────────────────────────────────────────────
-
-
-
-
 // ── CODES PROMO ────────────────────────────────────────────────
-
-
-
-
-
-
-
-// ── OFFRE FLASH ─────────────────────────────────────────────────
-
-
-
-
-
-
-function stopOffreFlash(){if(window.stopOffreFlash)window.stopOffreFlash();}
-
+window.togglePromo=function(){document.getElementById("promoPanel").classList.toggle("open");renderPromoCodes();};
+function renderPromoCodes(){
+  var list=document.getElementById("ppCodesList");if(!list)return;
+  var codes=Object.keys(promoCodes);
+  if(!codes.length){list.innerHTML="<div style=\"text-align:center;color:var(--text3);font-size:12px;padding:10px\">Aucun code</div>";return;}
+  var h="";codes.forEach(function(code){var p=promoCodes[code];var isAct=activePromo&&activePromo.code===code;
+    var cls=isAct?"pp-code-item active":"pp-code-item";
+    h+="<div class=\""+cls+"\"><div style=\"flex:1\"><div class=\"pp-code-badge\">"+code+"</div><div class=\"pp-code-uses\">"+p.uses+" util.</div></div>";
+    h+="<div class=\"pp-code-pct\">-"+p.pct+"%</div><button class=\"pp-code-del\" onclick=\"deletePromoCode('"+code+"')\">X</button></div>";
+  });list.innerHTML=h;
+}
+window.addPromoCode=function(){
+  var code=document.getElementById("ppNewCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
+  var pct=parseInt(document.getElementById("ppNewPct").value)||0;
+  if(!code){showToast("Entrez un code");return;}if(pct<1||pct>99){showToast("Remise entre 1 et 99%");return;}
+  promoCodes[code]={pct:pct,uses:0};document.getElementById("ppNewCode").value="";document.getElementById("ppNewPct").value="";
+  renderPromoCodes();sauvegarder();showToast("Code "+code+" cree");
+};
+window.deletePromoCode=function(code){
+  if(activePromo&&activePromo.code===code){activePromo=null;updateTotals();}
+  delete promoCodes[code];renderPromoCodes();sauvegarder();
+};
+window.appliquerCode=function(){
+  var input=document.getElementById("promoCodeInput");var status=document.getElementById("promoStatus");
+  var code=input?input.value.trim().toUpperCase():"";
+  if(!code){activePromo=null;if(status){status.textContent="";status.className="promo-status";}updateTotals();return;}
+  if(promoCodes[code]){
+    activePromo={code:code,pct:promoCodes[code].pct};promoCodes[code].uses++;
+    if(status){status.textContent="OK -"+promoCodes[code].pct+"%";status.className="promo-status ok";}
+    renderPromoCodes();sauvegarder();updateTotals();showToast("Code "+code+" -"+promoCodes[code].pct+"% !");
+  }else{activePromo=null;if(status){status.textContent="Code inconnu";status.className="promo-status err";}updateTotals();}
+};
+// ── OFFRE FLASH ───────────────────────────────────────────────
+window.toggleFlash=function(){
+  var p=document.getElementById("flashPanel");p.classList.toggle("open");
+  if(p.classList.contains("open")&&flashActive){document.getElementById("flashCountdownBox").style.display="block";document.getElementById("flashLaunchBtn").disabled=true;}
+};
+window.setFlashPct=function(val,btn){document.getElementById("flashPct").value=val;document.querySelectorAll(".flash-preset").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");updateFlashPreview();};
+window.setFlashTime=function(val,btn){document.getElementById("flashMin").value=val;document.querySelectorAll(".flash-time").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");updateFlashPreview();};
+function updateFlashPreview(){
+  var pct=parseInt(document.getElementById("flashPct").value)||0,min=parseInt(document.getElementById("flashMin").value)||0;
+  var prev=document.getElementById("flashPreview");
+  if(pct>0&&min>0){prev.style.display="block";prev.innerHTML="<strong style='color:#E94560'>-"+pct+"%</strong> pendant <strong style='color:var(--amber)'>"+min+" min</strong>";}
+  else{prev.style.display="none";}
+}
+window.lancerOffreFlash=function(){
+  var pct=parseInt(document.getElementById("flashPct").value)||0,min=parseInt(document.getElementById("flashMin").value)||0;
+  if(pct<1||pct>99){showToast("Remise entre 1 et 99%");return;}if(min<1||min>60){showToast("Duree entre 1 et 60 min");return;}
+  var endTime=Date.now()+(min*60*1000);
+  set(ref(db,"flash/offer"),{pct:pct,endTime:endTime,active:true,startTime:Date.now()});
+  flashActive=true;document.getElementById("flashLaunchBtn").disabled=true;
+  document.getElementById("flashCountdownBox").style.display="block";
+  document.getElementById("flashActiveLabel").textContent="⚡ -"+pct+"% SUR TOUT LE STAND ⚡";
+  document.getElementById("btnFlash").classList.add("on");
+  if(flashTimer)clearInterval(flashTimer);
+  flashTimer=setInterval(function(){
+    var rem=endTime-Date.now();if(rem<=0){window.stopOffreFlash();return;}
+    var m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
+    var ts=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+    var cv=document.getElementById("flashCountdownVal");
+    if(cv){cv.textContent=ts;if(rem<30000){cv.style.color="#FF3333";cv.style.fontSize="52px";}else if(rem<60000){cv.style.color="#FF8C00";cv.style.fontSize="48px";}else{cv.style.color="#E94560";cv.style.fontSize="48px";}}
+    var btn=document.getElementById("btnFlash");
+    if(btn){btn.textContent="⚡ "+ts;if(rem<30000)btn.style.background="linear-gradient(135deg,#FF3333,#cc0000)";else if(rem<60000)btn.style.background="linear-gradient(135deg,#FF8C00,#cc7000)";else btn.style.background="linear-gradient(135deg,#E94560,#c42d4a)";}
+  },1000);
+  showToast("Offre flash -"+pct+"% lancee pour "+min+" min !");
+};
+window.stopOffreFlash=function(){
+  if(flashTimer){clearInterval(flashTimer);flashTimer=null;}flashActive=false;
+  try{set(ref(db,"flash/offer"),{active:false});}catch(e){}
+  var lb=document.getElementById("flashLaunchBtn");if(lb)lb.disabled=false;
+  var cb=document.getElementById("flashCountdownBox");if(cb)cb.style.display="none";
+  var cv=document.getElementById("flashCountdownVal");if(cv)cv.textContent="--:--";
+  var bf=document.getElementById("btnFlash");if(bf){bf.classList.remove("on");bf.textContent="⚡ Flash";bf.style.background="linear-gradient(135deg,#E94560,#c42d4a)";}
+  showToast("Offre flash terminee");
+};
 // ── ACTIVATION / DÉSACTIVATION PRODUITS ──────────────────────
 window.toggleProduct=function(id){
   if(disabledProducts[id])delete disabledProducts[id];
@@ -1444,9 +1586,6 @@ function showToast(msg,isWheel){
   el.textContent=msg;el.className="toast"+(isWheel?" wheel":"");el.classList.add("show");
   clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove("show");},1800);
 }
-
-// ── ATTACHER EVENTS BILLET ────────────────────────────────────
-
 
 // ── INIT ──────────────────────────────────────────────────────
 // Vider localStorage corrompu (clés string au lieu d'int)
@@ -1615,82 +1754,6 @@ function renderDons(){
     h2+="<button class='cp-del' onclick='deleteGainObjet("+ri+")'>✕</button></div>";
   });gl.innerHTML=h2;}}
 }
-// ── CODES PROMO ───────────────────────────────────────────────
-window.togglePromo=function(){document.getElementById("promoPanel").classList.toggle("open");renderPromoCodes();};
-function renderPromoCodes(){
-  var list=document.getElementById("ppCodesList");if(!list)return;
-  var codes=Object.keys(promoCodes);
-  if(!codes.length){list.innerHTML="<div style=\"text-align:center;color:var(--text3);font-size:12px;padding:10px\">Aucun code</div>";return;}
-  var h="";codes.forEach(function(code){var p=promoCodes[code];var isAct=activePromo&&activePromo.code===code;
-    var cls=isAct?"pp-code-item active":"pp-code-item";
-    h+="<div class=\""+cls+"\"><div style=\"flex:1\"><div class=\"pp-code-badge\">"+code+"</div><div class=\"pp-code-uses\">"+p.uses+" util.</div></div>";
-    h+="<div class=\"pp-code-pct\">-"+p.pct+"%</div><button class=\"pp-code-del\" onclick=\"deletePromoCode('"+code+"')\">X</button></div>";
-  });list.innerHTML=h;
-}
-window.addPromoCode=function(){
-  var code=document.getElementById("ppNewCode").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,"");
-  var pct=parseInt(document.getElementById("ppNewPct").value)||0;
-  if(!code){showToast("Entrez un code");return;}if(pct<1||pct>99){showToast("Remise entre 1 et 99%");return;}
-  promoCodes[code]={pct:pct,uses:0};document.getElementById("ppNewCode").value="";document.getElementById("ppNewPct").value="";
-  renderPromoCodes();sauvegarder();showToast("Code "+code+" cree");
-};
-window.deletePromoCode=function(code){
-  if(activePromo&&activePromo.code===code){activePromo=null;updateTotals();}
-  delete promoCodes[code];renderPromoCodes();sauvegarder();
-};
-window.appliquerCode=function(){
-  var input=document.getElementById("promoCodeInput");var status=document.getElementById("promoStatus");
-  var code=input?input.value.trim().toUpperCase():"";
-  if(!code){activePromo=null;if(status){status.textContent="";status.className="promo-status";}updateTotals();return;}
-  if(promoCodes[code]){
-    activePromo={code:code,pct:promoCodes[code].pct};promoCodes[code].uses++;
-    if(status){status.textContent="OK -"+promoCodes[code].pct+"%";status.className="promo-status ok";}
-    renderPromoCodes();sauvegarder();updateTotals();showToast("Code "+code+" -"+promoCodes[code].pct+"% !");
-  }else{activePromo=null;if(status){status.textContent="Code inconnu";status.className="promo-status err";}updateTotals();}
-};
-// ── OFFRE FLASH ───────────────────────────────────────────────
-window.toggleFlash=function(){
-  var p=document.getElementById("flashPanel");p.classList.toggle("open");
-  if(p.classList.contains("open")&&flashActive){document.getElementById("flashCountdownBox").style.display="block";document.getElementById("flashLaunchBtn").disabled=true;}
-};
-window.setFlashPct=function(val,btn){document.getElementById("flashPct").value=val;document.querySelectorAll(".flash-preset").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");updateFlashPreview();};
-window.setFlashTime=function(val,btn){document.getElementById("flashMin").value=val;document.querySelectorAll(".flash-time").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");updateFlashPreview();};
-function updateFlashPreview(){
-  var pct=parseInt(document.getElementById("flashPct").value)||0,min=parseInt(document.getElementById("flashMin").value)||0;
-  var prev=document.getElementById("flashPreview");
-  if(pct>0&&min>0){prev.style.display="block";prev.innerHTML="<strong style='color:#E94560'>-"+pct+"%</strong> pendant <strong style='color:var(--amber)'>"+min+" min</strong>";}
-  else{prev.style.display="none";}
-}
-window.lancerOffreFlash=function(){
-  var pct=parseInt(document.getElementById("flashPct").value)||0,min=parseInt(document.getElementById("flashMin").value)||0;
-  if(pct<1||pct>99){showToast("Remise entre 1 et 99%");return;}if(min<1||min>60){showToast("Duree entre 1 et 60 min");return;}
-  var endTime=Date.now()+(min*60*1000);
-  set(ref(db,"flash/offer"),{pct:pct,endTime:endTime,active:true,startTime:Date.now()});
-  flashActive=true;document.getElementById("flashLaunchBtn").disabled=true;
-  document.getElementById("flashCountdownBox").style.display="block";
-  document.getElementById("flashActiveLabel").textContent="⚡ -"+pct+"% SUR TOUT LE STAND ⚡";
-  document.getElementById("btnFlash").classList.add("on");
-  if(flashTimer)clearInterval(flashTimer);
-  flashTimer=setInterval(function(){
-    var rem=endTime-Date.now();if(rem<=0){window.stopOffreFlash();return;}
-    var m=Math.floor(rem/60000),s=Math.floor((rem%60000)/1000);
-    var ts=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
-    var cv=document.getElementById("flashCountdownVal");
-    if(cv){cv.textContent=ts;if(rem<30000){cv.style.color="#FF3333";cv.style.fontSize="52px";}else if(rem<60000){cv.style.color="#FF8C00";cv.style.fontSize="48px";}else{cv.style.color="#E94560";cv.style.fontSize="48px";}}
-    var btn=document.getElementById("btnFlash");
-    if(btn){btn.textContent="⚡ "+ts;if(rem<30000)btn.style.background="linear-gradient(135deg,#FF3333,#cc0000)";else if(rem<60000)btn.style.background="linear-gradient(135deg,#FF8C00,#cc7000)";else btn.style.background="linear-gradient(135deg,#E94560,#c42d4a)";}
-  },1000);
-  showToast("Offre flash -"+pct+"% lancee pour "+min+" min !");
-};
-window.stopOffreFlash=function(){
-  if(flashTimer){clearInterval(flashTimer);flashTimer=null;}flashActive=false;
-  try{set(ref(db,"flash/offer"),{active:false});}catch(e){}
-  var lb=document.getElementById("flashLaunchBtn");if(lb)lb.disabled=false;
-  var cb=document.getElementById("flashCountdownBox");if(cb)cb.style.display="none";
-  var cv=document.getElementById("flashCountdownVal");if(cv)cv.textContent="--:--";
-  var bf=document.getElementById("btnFlash");if(bf){bf.classList.remove("on");bf.textContent="⚡ Flash";bf.style.background="linear-gradient(135deg,#E94560,#c42d4a)";}
-  showToast("Offre flash terminee");
-};
 // ── MONNAIE ───────────────────────────────────────────────────
 function getTotal(){var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var disc=parseFloat(document.getElementById("discountInput").value)||0;return sub-sub*disc/100;}
 window.setBillet=function(montant,btn){document.getElementById("billetCustom").value=montant;document.querySelectorAll(".billet-btn").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");setTimeout(calcMonnaie,0);};
