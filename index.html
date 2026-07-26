@@ -46,6 +46,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 @keyframes scratchGlow{from{box-shadow:0 0 8px rgba(138,92,246,.3)}to{box-shadow:0 0 20px rgba(138,92,246,.6)}}
 .btn-scratch:active{transform:scale(.96)}
 .btn-scratch:disabled{background:#444;box-shadow:none;animation:none;cursor:not-allowed}
+.mode-switch{display:flex;background:var(--surface2);border:1px solid var(--border2);border-radius:99px;padding:3px;gap:2px}
+.mode-btn{background:transparent;border:none;border-radius:99px;color:var(--text2);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;padding:6px 12px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.mode-btn.active{background:linear-gradient(135deg,#E94560,#c42d4a);color:#fff}
+.mode-btn.active#modeBtnScratch{background:linear-gradient(135deg,#8A5CF6,#4C3A9C)}
+.mode-btn:active{transform:scale(.95)}
 .fb-indicator{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)}
 .fb-dot-small{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green)}
 .fb-dot-small.off{background:#e94560;box-shadow:0 0 4px #e94560}
@@ -364,8 +369,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <button class="btn-sm" onclick="toggleAutres()">📦 Autres</button>
     <button class="btn-sm" onclick="toggleDons()">🎁 Dons</button>
     <button class="btn-xl" onclick="toggleExcel()">📊 Excel Live</button>
-    <button class="btn-wheel" id="topWheelBtn" onclick="quickSpin()">🎡 Roue</button>
-    <button class="btn-scratch" id="topScratchBtn" onclick="quickScratch()">🎟️ Carte</button>
+    <div class="mode-switch">
+      <button class="mode-btn active" id="modeBtnWheel" onclick="setStandMode('wheel')">🎡 Roue</button>
+      <button class="mode-btn" id="modeBtnScratch" onclick="setStandMode('scratch')">🎟️ Carte</button>
+    </div>
+    <button class="btn-wheel" id="topLaunchBtn" onclick="quickLaunch()">▶️ Lancer</button>
     <button class="btn-sm" onclick="togglePromo()">🏷️ Promos</button>
     <button class="btn-flash" id="btnFlash" onclick="toggleFlash()">⚡ Flash</button>
     <button class="btn-reset" onclick="askReset()">↺ Nouveau jour</button>
@@ -406,10 +414,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="wheel-history-section" id="wheelHistorySection" style="display:none">
       <div class="wheel-history-title">🎡 Gains roue</div>
       <div class="wheel-history-list" id="wheelHistoryList"></div>
-    </div>
-    <div class="wheel-history-section" id="scratchHistorySection" style="display:none">
-      <div class="wheel-history-title">🎟️ Gains carte à gratter</div>
-      <div class="wheel-history-list" id="scratchHistoryList"></div>
     </div>
     <div class="promo-input-row">
       <div class="promo-input-inner">
@@ -599,12 +603,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       <div class="mstat"><div class="mstat-val" id="mStatVentes" style="color:var(--accent)">0</div><div class="mstat-lbl">Ventes du jour</div></div>
       <div class="mstat"><div class="mstat-val" id="mStatCA" style="color:var(--green)">0 €</div><div class="mstat-lbl">CA du jour</div></div>
     </div>
-    <button class="modal-btn-wheel" id="modalWheelBtn" onclick="launchWheelFromModal()">🎡 LANCER LA ROUE DES GAINS !</button>
+    <button class="modal-btn-wheel" id="modalLaunchBtn" onclick="launchFromModal()">🎉 LANCER LE JEU SUR LE STAND !</button>
     <div class="cooldown-bar" id="cooldownBar"><div class="cooldown-fill" id="cooldownFill"></div></div>
-    <div id="modalWheelResult"></div>
-    <button class="modal-btn-scratch" id="modalScratchBtn" onclick="launchScratchFromModal()">🎟️ LANCER LA CARTE À GRATTER !</button>
-    <div class="cooldown-bar" id="cooldownBarScratch"><div class="cooldown-fill scratch" id="cooldownFillScratch"></div></div>
-    <div id="modalScratchResult"></div>
+    <div id="modalGameResult"></div>
     <button class="modal-btn primary" onclick="closeModal()">Nouvelle commande</button>
     <button class="modal-btn success" onclick="downloadExcel()">⬇ Télécharger Excel</button>
   </div>
@@ -679,30 +680,62 @@ onValue(ref(db,'.info/connected'),(snap)=>{
   document.getElementById('fbLabelSmall').textContent=ok?'Firebase ✓':'Hors ligne';
 });
 
-window.triggerWheelFirebase=function(){set(ref(db,'wheel/trigger'),true);};
-window.triggerScratchFirebase=function(){set(ref(db,'scratch/trigger'),true);};
+window.triggerStandFirebase=function(){set(ref(db,'stand/trigger'),true);};
 
-// ── ROUE RÉSULTAT ─────────────────────────────────────────────
+// ── MODE DU JEU SUR LE STAND (roue ou carte à gratter) ──────────
+var standMode='wheel';
+window.setStandMode=function(m){
+  standMode=m;
+  set(ref(db,'stand/mode'),m);
+  document.getElementById('modeBtnWheel').classList.toggle('active',m==='wheel');
+  document.getElementById('modeBtnScratch').classList.toggle('active',m==='scratch');
+  var lb=document.getElementById('topLaunchBtn');
+  if(lb) lb.textContent = m==='wheel' ? '▶️ Lancer' : '▶️ Lancer';
+  showToast(m==='wheel' ? '🎡 Mode Roue sélectionné' : '🎟️ Mode Carte à gratter sélectionné');
+};
+// Récupère le mode actuellement actif côté stand (au lieu de l'écraser au rechargement)
+get(ref(db,'stand/mode')).then((snap)=>{
+  const v=snap.val();
+  if(v==='wheel'||v==='scratch'){
+    standMode=v;
+    document.getElementById('modeBtnWheel').classList.toggle('active',v==='wheel');
+    document.getElementById('modeBtnScratch').classList.toggle('active',v==='scratch');
+  } else {
+    set(ref(db,'stand/mode'),standMode);
+  }
+});
+
+// ── SUIVI DU PANIER POUR L'ANIMATION DU STAND ───────────────────
+var lastCartActiveSent=null;
+function updateStandCartActive(){
+  var active = cart.length>0;
+  if(active!==lastCartActiveSent){
+    lastCartActiveSent=active;
+    set(ref(db,'stand/cartActive'),active);
+  }
+}
+
+// ── RÉSULTAT DU JEU (roue ou carte, unifié) ─────────────────────
 var wheelHistory=[],lastKnownTs=null,wheelGains=[],clients=[],pendingClientGain=null;
-var scratchHistory=[],lastKnownScratchTs=null;
 
-get(ref(db,'wheel/lastResult')).then((snap)=>{
+get(ref(db,'stand/lastResult')).then((snap)=>{
   const existing=snap.val();
   if(existing&&existing.ts) lastKnownTs=existing.ts;
-  onValue(ref(db,'wheel/lastResult'),(snap)=>{
+  onValue(ref(db,'stand/lastResult'),(snap)=>{
     const result=snap.val();
     if(!result||!result.label) return;
     if(result.ts&&result.ts===lastKnownTs) return;
     lastKnownTs=result.ts;
     const now=new Date();
     const timeStr=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+    const titre = result.mode==='scratch' ? '🎟️ Résultat de la carte' : '🎡 Résultat de la roue';
     const item={label:result.label,emoji:result.emoji,sub:result.sub,time:timeStr,ts:result.ts};
     wheelHistory.unshift(item);
     if(wheelHistory.length>10) wheelHistory.pop();
     renderWheelHistory();
-    showWheelResultBanner(result,'🎡 RÉSULTAT DE LA ROUE');
-    const modalResult=document.getElementById('modalWheelResult');
-    if(modalResult) modalResult.innerHTML=buildResultHTML(result,'🎡 Résultat de la roue');
+    showWheelResultBanner(result,titre);
+    const modalResult=document.getElementById('modalGameResult');
+    if(modalResult) modalResult.innerHTML=buildResultHTML(result,titre);
     if(tickets.length>0&&result.type!=='lose'){
       tickets[0].wheelGain=result.label;
       tickets[0].wheelSub=result.sub;
@@ -713,38 +746,7 @@ get(ref(db,'wheel/lastResult')).then((snap)=>{
       pendingClientGain=result;
       setTimeout(function(){openClientModal(result);},500);
     }
-    sauvegarder();
-  });
-});
-
-// ── CARTE À GRATTER RÉSULTAT ────────────────────────────────────
-get(ref(db,'scratch/lastResult')).then((snap)=>{
-  const existing=snap.val();
-  if(existing&&existing.ts) lastKnownScratchTs=existing.ts;
-  onValue(ref(db,'scratch/lastResult'),(snap)=>{
-    const result=snap.val();
-    if(!result||!result.label) return;
-    if(result.ts&&result.ts===lastKnownScratchTs) return;
-    lastKnownScratchTs=result.ts;
-    const now=new Date();
-    const timeStr=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-    const item={label:result.label,emoji:result.emoji,sub:result.sub,time:timeStr,ts:result.ts};
-    scratchHistory.unshift(item);
-    if(scratchHistory.length>10) scratchHistory.pop();
-    renderScratchHistory();
-    showWheelResultBanner(result,'🎟️ RÉSULTAT DE LA CARTE');
-    const modalResult=document.getElementById('modalScratchResult');
-    if(modalResult) modalResult.innerHTML=buildResultHTML(result,'🎟️ Résultat de la carte');
-    if(tickets.length>0&&result.type!=='lose'){
-      tickets[0].wheelGain=result.label;
-      tickets[0].wheelSub=result.sub;
-      tickets[0].wheelEmoji=result.emoji;
-    }
-    wheelGains.unshift({ticket:tickets.length>0?'#'+('00'+tickets[0].num).slice(-3):'—',time:timeStr,label:result.label,sub:result.sub,emoji:result.emoji,type:result.type});
-    if(result.type!=='lose'){
-      pendingClientGain=result;
-      setTimeout(function(){openClientModal(result);},500);
-    }
+    window.resetLaunchBtn();
     sauvegarder();
   });
 });
@@ -770,66 +772,31 @@ function renderWheelHistory(){
   clearTimeout(window._wheelHistoryTimer);
   window._wheelHistoryTimer=setTimeout(function(){section.style.transition='opacity .5s';section.style.opacity='0';setTimeout(function(){section.style.display='none';section.style.opacity='1';section.style.transition='';},500);},8000);
 }
-function renderScratchHistory(){
-  const section=document.getElementById('scratchHistorySection');
-  const list=document.getElementById('scratchHistoryList');
-  if(!scratchHistory.length){section.style.display='none';return;}
-  section.style.display='block';
-  list.innerHTML=scratchHistory.map(function(item){return'<div class="wheel-history-item"><span class="wheel-history-item-emoji">'+item.emoji+'</span><span class="wheel-history-item-prize">'+item.label+' — '+item.sub+'</span><span class="wheel-history-item-time">'+item.time+'</span></div>';}).join('');
-  clearTimeout(window._scratchHistoryTimer);
-  window._scratchHistoryTimer=setTimeout(function(){section.style.transition='opacity .5s';section.style.opacity='0';setTimeout(function(){section.style.display='none';section.style.opacity='1';section.style.transition='';},500);},8000);
-}
 
-// ── WHEEL CONTROLS ─────────────────────────────────────────────
-var wheelOnCooldown=false;
-window.launchWheelFromModal=function(){
-  if(wheelOnCooldown)return;wheelOnCooldown=true;
-  window.triggerWheelFirebase();
-  var btn=document.getElementById('modalWheelBtn');
-  btn.textContent='✅ Roue lancée sur le grand écran !';btn.classList.add('used');
+// ── CONTRÔLES DU JEU (roue ou carte selon le mode sélectionné) ──
+var gameOnCooldown=false;
+window.launchFromModal=function(){
+  if(gameOnCooldown)return;gameOnCooldown=true;
+  window.triggerStandFirebase();
+  var btn=document.getElementById('modalLaunchBtn');
+  btn.textContent='✅ Jeu lancé sur le stand !';btn.classList.add('used');
   var bar=document.getElementById('cooldownBar'),fill=document.getElementById('cooldownFill');
   bar.classList.add('visible');fill.style.transition='none';fill.style.transform='scaleX(1)';
   setTimeout(function(){fill.style.transition='transform 6.5s linear';fill.style.transform='scaleX(0)';},50);
-  showToast('🎡 Roue lancée !',true);
+  showToast(standMode==='wheel' ? '🎡 Roue lancée !' : '🎟️ Carte à gratter lancée !',true);
 };
-window.quickSpin=function(){
-  if(wheelOnCooldown){showToast('⏳ Roue en cours...');return;}
-  wheelOnCooldown=true;window.triggerWheelFirebase();
-  var btn=document.getElementById('topWheelBtn');btn.disabled=true;btn.textContent='⏳ En cours...';
-  showToast('🎡 Roue lancée !',true);
-  setTimeout(function(){wheelOnCooldown=false;btn.disabled=false;btn.textContent='🎡 Roue';},6500);
+window.quickLaunch=function(){
+  if(gameOnCooldown){showToast('⏳ Jeu en cours...');return;}
+  gameOnCooldown=true;window.triggerStandFirebase();
+  var btn=document.getElementById('topLaunchBtn');btn.disabled=true;btn.textContent='⏳ En cours...';
+  showToast(standMode==='wheel' ? '🎡 Roue lancée !' : '🎟️ Carte à gratter lancée !',true);
+  setTimeout(function(){gameOnCooldown=false;btn.disabled=false;btn.textContent='▶️ Lancer';},6500);
 };
-window.resetWheelBtn=function(){
-  wheelOnCooldown=false;
-  var btn=document.getElementById('modalWheelBtn');
-  btn.textContent='🎡 LANCER LA ROUE DES GAINS !';btn.classList.remove('used');
+window.resetLaunchBtn=function(){
+  gameOnCooldown=false;
+  var btn=document.getElementById('modalLaunchBtn');
+  btn.textContent='🎉 LANCER LE JEU SUR LE STAND !';btn.classList.remove('used');
   document.getElementById('cooldownBar').classList.remove('visible');
-};
-
-// ── CARTE À GRATTER CONTROLS ────────────────────────────────────
-var scratchOnCooldown=false;
-window.launchScratchFromModal=function(){
-  if(scratchOnCooldown)return;scratchOnCooldown=true;
-  window.triggerScratchFirebase();
-  var btn=document.getElementById('modalScratchBtn');
-  btn.textContent='✅ Carte lancée sur le grand écran !';btn.classList.add('used');
-  var bar=document.getElementById('cooldownBarScratch'),fill=document.getElementById('cooldownFillScratch');
-  bar.classList.add('visible');fill.style.transition='none';fill.style.transform='scaleX(1)';
-  setTimeout(function(){fill.style.transition='transform 6.5s linear';fill.style.transform='scaleX(0)';},50);
-  showToast('🎟️ Carte à gratter lancée !',true);
-};
-window.quickScratch=function(){
-  if(scratchOnCooldown){showToast('⏳ Carte en cours...');return;}
-  scratchOnCooldown=true;window.triggerScratchFirebase();
-  var btn=document.getElementById('topScratchBtn');btn.disabled=true;btn.textContent='⏳ En cours...';
-  showToast('🎟️ Carte à gratter lancée !',true);
-  setTimeout(function(){scratchOnCooldown=false;btn.disabled=false;btn.textContent='🎟️ Carte';},6500);
-};
-window.resetScratchBtn=function(){
-  scratchOnCooldown=false;
-  var btn=document.getElementById('modalScratchBtn');
-  btn.textContent='🎟️ LANCER LA CARTE À GRATTER !';btn.classList.remove('used');
-  document.getElementById('cooldownBarScratch').classList.remove('visible');
 };
 
 // ── FICHE CLIENT ───────────────────────────────────────────────
@@ -1165,7 +1132,7 @@ window.addToCart=function(id){
   if(ex) inCart=ex.qty;
   if(stock<99&&inCart>=stock){showToast("⚠️ Stock insuffisant ("+stock+" dispo)");return;}
   if(ex){ex.qty++;}else{cart.push({id:prod.id,name:prod.label,price:prod.price,emoji:prod.emoji,cat:prod.cat,qty:1});}
-  showToast(prod.emoji+" "+prod.label+" ajouté");renderCart();updateTotals();
+  showToast(prod.emoji+" "+prod.label+" ajouté");renderCart();updateTotals();updateStandCartActive();
 };
 
 window.changeQty=function(id,delta){
@@ -1178,7 +1145,7 @@ window.changeQty=function(id,delta){
   }
   cart[idx].qty+=delta;
   if(cart[idx].qty<=0)cart.splice(idx,1);
-  renderCart();updateTotals();
+  renderCart();updateTotals();updateStandCartActive();
 };
 
 function renderCart(){
@@ -1260,8 +1227,7 @@ window.confirmerPaiement=function(){
   document.getElementById("modalLabel").textContent="Payé par "+ticket.mode;
   document.getElementById("mStatVentes").textContent=tickets.length;
   document.getElementById("mStatCA").textContent=fmt(totalCA);
-  window.resetWheelBtn();
-  window.resetScratchBtn();
+  window.resetLaunchBtn();
   document.getElementById("modalOverlay").classList.add("open");
   renderTickets();renderExcelPanel();renderStockPanel();
   sauvegarder();
@@ -1279,7 +1245,7 @@ window.closeModal=function(){
   var bc=document.getElementById("billetCustom");if(bc)bc.value="";
   var mr=document.getElementById("monnaieResult");if(mr){mr.textContent="";mr.style.background="";}
   document.querySelectorAll(".billet-btn").forEach(function(b){b.classList.remove("sel");});
-  renderCart();updateTotals();renderProducts();
+  renderCart();updateTotals();renderProducts();updateStandCartActive();
 };
 
 // ── STOCK ─────────────────────────────────────────────────────
@@ -1479,7 +1445,7 @@ window.doReset=function(){
   document.getElementById("discountInput").value="";
   ["btnCB","btnCash","btnSumup","btnVir"].forEach(function(id){var b=document.getElementById(id);if(b)b.classList.remove("selected");});
   try{localStorage.removeItem(SAVE_KEY);}catch(e){}
-  renderCart();updateTotals();renderTickets();renderExcelPanel();renderStockPanel();renderProducts();
+  renderCart();updateTotals();renderTickets();renderExcelPanel();renderStockPanel();renderProducts();updateStandCartActive();
   if(typeof renderCaisse==="function"){renderCaisse();renderAutres();renderDons();}
   closeReset();
   showToast("✅ Nouveau jour démarré !");
