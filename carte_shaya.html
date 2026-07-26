@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carte à Gratter – Grand Écran</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@400;700;900&display=swap');
+  :root{--bg:#0a0a14;--gold:#860680;--pink:#E94560;--purple:#533483;--blue:#0F3460;--white:#ffffff;--silver:#c0c0c0}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--white);height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+  .particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .particle{position:absolute;border-radius:50%;opacity:.15;animation:float linear infinite}
+  @keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(-100px) rotate(720deg);opacity:0}}
+  .main-layout{display:flex;align-items:center;justify-content:center;gap:60px;width:100%;padding:20px 60px;position:relative;z-index:1}
+  .left-panel,.right-panel{display:flex;flex-direction:column;align-items:center;gap:20px;min-width:220px;position:relative;z-index:2}
+  .brand-title{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:6px;color:var(--white);text-align:center;line-height:1;text-shadow:0 0 30px rgba(245,166,35,.5)}
+  .brand-sub{font-size:.85rem;color:var(--gold);letter-spacing:4px;text-transform:uppercase;text-align:center}
+  .card-section{display:flex;flex-direction:column;align-items:center;gap:44px;position:relative;z-index:2}
+  .card-wrapper{position:relative;width:480px;height:300px}
+  .card-glow{position:absolute;inset:-20px;border-radius:28px;background:radial-gradient(circle,transparent 55%,rgb(66,2,58) 70%,transparent 80%);animation:glowPulse 2s ease-in-out infinite;pointer-events:none}
+  @keyframes glowPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.03)}}
+  .card-ring{position:absolute;inset:-8px;border-radius:28px;border:4px solid var(--gold);box-shadow:0 0 20px rgba(245,35,175,.4),inset 0 0 20px rgba(245,166,35,.1)}
+  .card-frame{position:relative;width:100%;height:100%;border-radius:20px;overflow:hidden;background:#1a1230;box-shadow:0 0 30px rgba(233,69,96,.3)}
+  canvas#scratchCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #prizeLayer{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:linear-gradient(160deg,#26215C,#1A1730)}
+  #prizeEmoji{font-size:3.2rem}
+  #prizeLabel{font-family:'Bebas Neue',sans-serif;font-size:3rem;letter-spacing:3px;color:#fff}
+  #prizeSub{font-size:1rem;color:var(--silver);letter-spacing:1px}
+  .status-bar{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:6px;color:var(--silver);text-align:center;min-height:40px;transition:color .3s}
+  .status-bar.spinning{color:var(--gold);animation:statusPulse .5s ease-in-out infinite alternate}
+  .status-bar.won{color:#4ade80}
+  @keyframes statusPulse{from{opacity:.6}to{opacity:1}}
+  .win-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .5s;backdrop-filter:blur(6px)}
+  .win-overlay.visible{opacity:1;pointer-events:all}
+  .win-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:3px solid var(--gold);border-radius:28px;padding:60px 80px;text-align:center;box-shadow:0 0 80px rgba(245,166,35,.4);max-width:700px;animation:winCardIn .6s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes winCardIn{from{transform:scale(.3) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+  .win-emoji{font-size:5rem;margin-bottom:16px;animation:bounce .6s ease infinite alternate}
+  @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-15px)}}
+  .win-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:8px;color:var(--gold);margin-bottom:10px}
+  .win-prize{font-family:'Bebas Neue',sans-serif;font-size:5rem;color:var(--white);letter-spacing:4px;margin-bottom:20px;line-height:1}
+  .win-sub{font-size:1.1rem;color:var(--silver);letter-spacing:2px}
+  .confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
+  .waiting-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px 20px;text-align:center;backdrop-filter:blur(10px);width:100%}
+  .waiting-icon{font-size:3rem;margin-bottom:10px;animation:spin 8s linear infinite}
+  @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+  .waiting-text{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:3px;color:var(--silver);margin-bottom:6px}
+  .waiting-sub{font-size:.78rem;color:rgba(255,255,255,.3)}
+  .last-win-box{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:16px;padding:18px 20px;text-align:center;width:100%}
+  .last-win-box h4{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:3px;color:var(--gold);margin-bottom:8px}
+  .last-win-value{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;color:var(--white);letter-spacing:2px}
+  .stats-box{background:rgba(83,52,131,.15);border:1px solid rgba(83,52,131,.3);border-radius:16px;padding:18px 20px;text-align:center;width:100%}
+  .stats-box h4{font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:3px;color:var(--purple);margin-bottom:10px}
+  .stat-row{display:flex;justify-content:space-between;font-size:.82rem;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);color:var(--silver)}
+  .stat-row:last-child{border-bottom:none}
+  .stat-val{color:var(--white);font-weight:700}
+  .firebase-status{position:fixed;top:12px;right:16px;display:flex;align-items:center;gap:6px;font-size:.7rem;color:rgba(255,255,255,.3);z-index:50;letter-spacing:2px}
+  .fb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:fbPulse 2s ease-in-out infinite}
+  .fb-dot.off{background:#e94560;box-shadow:0 0 6px #e94560}
+  @keyframes fbPulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+<canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+
+<div class="firebase-status">
+  <div class="fb-dot" id="fbDot"></div>
+  <span id="fbLabel">CONNEXION...</span>
+</div>
+
+<div class="win-overlay" id="winOverlay">
+  <div class="win-card">
+    <div class="win-emoji" id="winEmoji">🎉</div>
+    <div class="win-title">FÉLICITATIONS !</div>
+    <div class="win-prize" id="winPrize">-10%</div>
+    <div class="win-sub" id="winSub">sur votre prochaine commande</div>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="left-panel">
+    <div>
+      <div class="brand-title">IMPRESSION 3D<br>&amp; SUBLIMATION</div>
+      <div class="brand-sub">Les projets de Shaya</div>
+    </div>
+    <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;width:100%;display:flex;flex-direction:column;align-items:center;gap:14px;backdrop-filter:blur(10px)">
+      <img src="images/logo.png" alt="Les projets de Shaya" style="width:140px;height:140px;object-fit:contain;border-radius:12px;filter:drop-shadow(0 0 16px rgba(245,166,35,.3))">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:4px;color:var(--gold);text-align:center">TENTEZ VOTRE CHANCE !</div>
+      <div style="font-size:.78rem;color:rgba(255,255,255,.35);text-align:center;line-height:1.5">1 achat = 1 carte à gratter<br>Gains exclusifs sur le stand</div>
+    </div>
+  </div>
+
+  <div class="card-section">
+    <div class="card-wrapper">
+      <div class="card-glow"></div>
+      <div class="card-ring"></div>
+      <div class="card-frame">
+        <div id="prizeLayer">
+          <div id="prizeEmoji">🎁</div>
+          <div id="prizeLabel">—</div>
+          <div id="prizeSub">Le lot apparaîtra ici</div>
+        </div>
+        <canvas id="scratchCanvas"></canvas>
+      </div>
+    </div>
+    <div class="status-bar" id="statusBar">LE MARCHÉ DU GEEK</div>
+  </div>
+
+  <div class="right-panel">
+    <div class="waiting-box">
+      <div class="waiting-icon">🎟️</div>
+      <div class="waiting-text">PRÊT À GRATTER</div>
+      <div class="waiting-sub">"Votre destin est entre nos mains !"</div>
+    </div>
+    <div class="last-win-box">
+      <h4>🏆 DERNIER GAIN</h4>
+      <div class="last-win-value" id="lastWin">—</div>
+    </div>
+    <div class="stats-box">
+      <h4>📊 SESSION</h4>
+      <div class="stat-row"><span>Cartes grattées</span><span class="stat-val" id="statTotal">0</span></div>
+      <div class="stat-row"><span>Réductions</span><span class="stat-val" id="statReductions">0</span></div>
+      <div class="stat-row"><span>Cadeaux</span><span class="stat-val" id="statGifts">0</span></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDji8NuTjQqD2YUaN-tfSe6t9BfWvWG7EQ",
+  authDomain: "roue-shaya.firebaseapp.com",
+  databaseURL: "https://roue-shaya-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "roue-shaya",
+  storageBucket: "roue-shaya.firebasestorage.app",
+  messagingSenderId: "1096623837864",
+  appId: "1:1096623837864:web:b9a425fdce29bfb08a289d"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Même liste de lots que la roue, pondération identique à titre de cohérence
+const PRIZES = [
+  {label:"Retente !",  sub:"Rejoue si perdu 🎲",         emoji:"🎲",type:"lose",     weight:10},
+  {label:"-5%",        sub:"sur votre commande",          emoji:"💰",type:"reduction",weight:4},
+  {label:"Pas de bol", sub:"Presque... la prochaine !",   emoji:"😬",type:"lose",     weight:10},
+  {label:"-5%",        sub:"sur votre commande",          emoji:"💰",type:"reduction",weight:4},
+  {label:"Dommage !",  sub:"Tente encore ta chance !",    emoji:"🙈",type:"lose",     weight:10},
+  {label:"CADEAU",     sub:"Porte-clé imprimé 3D",        emoji:"🎁",type:"gift",     weight:1},
+  {label:"-10%",       sub:"sur votre commande",          emoji:"🤑",type:"reduction",weight:1},
+  {label:"BONUS",      sub:"Rejouer si perdu",            emoji:"✨",type:"gift",     weight:3},
+  {label:"Oh non !",   sub:"La chance tourne... bientôt !",emoji:"😅",type:"lose",   weight:10},
+  {label:"-15%",       sub:"sur votre commande",          emoji:"🔥",type:"reduction",weight:1},
+  {label:"SURPRISE",   sub:"Cadeau mystère !",            emoji:"🎀",type:"gift",     weight:1},
+  {label:"-5%",        sub:"sur votre commande",          emoji:"💰",type:"reduction",weight:4},
+  {label:"Raté !",     sub:"Achète encore et retente !",  emoji:"😤",type:"lose",     weight:10},
+  {label:"DRAGON",     sub:"Petit dragon offert",         emoji:"🐉",type:"gift",     weight:1},
+];
+
+const LOSE_MESSAGES = [
+  { title:"PRESQUE !", sub:"La chance tourne... retente au prochain achat !" },
+  { title:"OH NON !", sub:"Tu étais si proche ! Un autre achat = une autre chance 🎯" },
+  { title:"DOMMAGE !", sub:"La roue ne ment pas... mais elle réessaie ! 😄" },
+  { title:"RATÉ !", sub:"Achète encore et la fortune sourira ! 🍀" },
+  { title:"PAS DE CHANCE !", sub:"Le destin te réserve quelque chose de mieux... bientôt !" },
+];
+
+let stats={total:0,reductions:0,gifts:0,loses:0}, isScratching=false;
+
+// Particles (identique à la roue)
+const pc=document.getElementById('particles');
+for(let i=0;i<25;i++){
+  const p=document.createElement('div'); p.className='particle';
+  const sz=Math.random()*6+2, cols=['#E94560','#F5A623','#533483','#0F3460','#4ade80'];
+  p.style.cssText=`width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*5)]};left:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s`;
+  pc.appendChild(p);
+}
+
+// ── Carte à gratter ──────────────────────────────────────────
+const canvas=document.getElementById('scratchCanvas'), sctx=canvas.getContext('2d');
+function sizeCanvas(){
+  const frame=document.querySelector('.card-frame');
+  canvas.width=frame.clientWidth;
+  canvas.height=frame.clientHeight;
+  drawScratchLayer();
+}
+window.addEventListener('resize', sizeCanvas);
+
+function drawScratchLayer(){
+  const g=sctx.createLinearGradient(0,0,canvas.width,canvas.height);
+  g.addColorStop(0,'#8A5CF6');
+  g.addColorStop(1,'#4C3A9C');
+  sctx.globalCompositeOperation='source-over';
+  sctx.fillStyle=g;
+  sctx.fillRect(0,0,canvas.width,canvas.height);
+
+  sctx.strokeStyle='rgba(255,255,255,.12)';
+  sctx.lineWidth=1;
+  for(let i=0;i<canvas.width;i+=16){
+    sctx.beginPath();sctx.moveTo(i,0);sctx.lineTo(i,canvas.height);sctx.stroke();
+  }
+
+  sctx.fillStyle='rgba(255,255,255,.85)';
+  sctx.font='700 22px "Bebas Neue",sans-serif';
+  sctx.textAlign='center';
+  sctx.fillText('GRATTEZ ICI', canvas.width/2, canvas.height/2);
+}
+
+function getWeightedPrize(){
+  const tot=PRIZES.reduce((s,p)=>s+p.weight,0);let r=Math.random()*tot;
+  for(let i=0;i<PRIZES.length;i++){r-=PRIZES[i].weight;if(r<=0)return i;}return 0;
+}
+
+// Grattage automatique animé (écran TV, pas de contact tactile)
+function autoScratch(onDone){
+  const cx=canvas.width/2, cy=canvas.height/2;
+  const maxR=Math.hypot(canvas.width,canvas.height)/2+40;
+  let r=0;
+  sctx.globalCompositeOperation='destination-out';
+  function step(){
+    r+=maxR*0.045;
+    sctx.beginPath();
+    sctx.arc(cx,cy,r,0,Math.PI*2);
+    sctx.fill();
+    if(r<maxR){
+      requestAnimationFrame(step);
+    } else {
+      sctx.clearRect(0,0,canvas.width,canvas.height);
+      sctx.globalCompositeOperation='source-over';
+      if(onDone) onDone();
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function playScratch(){
+  if(isScratching) return; isScratching=true;
+  var old=document.getElementById('permanentWin');
+  if(old) old.remove();
+
+  const sb=document.getElementById('statusBar');
+  sb.textContent='ON GRATTE...'; sb.className='status-bar spinning';
+
+  const idx=getWeightedPrize();
+  const prize=PRIZES[idx];
+
+  document.getElementById('prizeEmoji').textContent=prize.emoji;
+  document.getElementById('prizeLabel').textContent=prize.label;
+  document.getElementById('prizeSub').textContent=prize.sub;
+
+  sizeCanvas();
+
+  setTimeout(()=>{
+    autoScratch(()=>{
+      isScratching=false;
+      showWin(prize);
+      stats.total++; if(prize.type==='reduction')stats.reductions++; else stats.gifts++;
+      document.getElementById('statTotal').textContent=stats.total;
+      document.getElementById('statReductions').textContent=stats.reductions;
+      document.getElementById('statGifts').textContent=stats.gifts;
+
+      set(ref(db,'scratch/lastResult'), {
+        label: prize.label,
+        sub: prize.sub,
+        emoji: prize.emoji,
+        type: prize.type,
+        ts: Date.now()
+      });
+      set(ref(db,'scratch/trigger'),false);
+    });
+  }, 400);
+}
+
+function showWin(p){
+  const isLose = p.type === 'lose';
+  const loseMsg = LOSE_MESSAGES[Math.floor(Math.random()*LOSE_MESSAGES.length)];
+
+  document.getElementById('winEmoji').textContent = p.emoji;
+  document.getElementById('winPrize').textContent = isLose ? loseMsg.title : p.label;
+  document.getElementById('winSub').textContent   = isLose ? loseMsg.sub   : p.sub;
+
+  const card = document.querySelector('.win-card');
+  card.style.borderColor = isLose ? '#555' : '#F5A623';
+  card.style.boxShadow   = isLose ? '0 0 40px rgba(100,100,100,.3)' : '0 0 80px rgba(245,166,35,.4)';
+
+  const titleEl = document.querySelector('.win-title');
+  titleEl.textContent = isLose ? 'DOMMAGE !' : 'FÉLICITATIONS !';
+  titleEl.style.color = isLose ? '#888' : '#F5A623';
+
+  document.getElementById('winOverlay').classList.add('visible');
+  document.getElementById('statusBar').textContent = isLose ? '😬 ' + loseMsg.title : '🎉 GAGNÉ : ' + p.label;
+  document.getElementById('statusBar').className   = 'status-bar ' + (isLose ? '' : 'won');
+
+  if(!isLose) launchConfetti();
+
+  document.getElementById('lastWin').textContent = isLose ? '😬 Perdu' : p.label + ' ' + p.emoji;
+
+  showPermanentLastWin(p, isLose, isLose ? loseMsg.title : null);
+
+  setTimeout(()=>{
+    document.getElementById('winOverlay').classList.remove('visible');
+    document.getElementById('statusBar').textContent = isLose
+      ? 'RETENTE AU PROCHAIN ACHAT !'
+      : 'DERNIER GAIN : ' + p.emoji + ' ' + p.label;
+    document.getElementById('statusBar').className = 'status-bar ' + (isLose ? '' : 'won');
+    if(!isLose) stopConfetti();
+    // Réinitialise la carte pour le prochain client
+    document.getElementById('prizeEmoji').textContent='🎁';
+    document.getElementById('prizeLabel').textContent='—';
+    document.getElementById('prizeSub').textContent='Le lot apparaîtra ici';
+    sizeCanvas();
+  }, 5000);
+}
+
+function showPermanentLastWin(p, isLose, loseTitle){
+  var old = document.getElementById('permanentWin');
+  if(old) old.remove();
+
+  var div = document.createElement('div');
+  div.id = 'permanentWin';
+  div.style.cssText = [
+    'position:fixed','bottom:20px','left:50%',
+    'transform:translateX(-50%)',
+    'background:linear-gradient(135deg,#1a1a2e,#16213e)',
+    `border:2px solid ${isLose ? '#444' : '#F5A623'}`,
+    'border-radius:16px','padding:14px 32px',
+    'display:flex','align-items:center','gap:16px',
+    `box-shadow:0 4px 30px ${isLose ? 'rgba(80,80,80,.2)' : 'rgba(245,166,35,.35)'}`,
+    'z-index:50','animation:slideUpIn .5s cubic-bezier(.34,1.56,.64,1)',
+    'font-family:"Exo 2",sans-serif'
+  ].join(';');
+
+  const label = isLose ? (loseTitle || 'DOMMAGE !') : p.label;
+  const sub   = isLose ? 'Retente au prochain achat !' : p.sub;
+  const color = isLose ? '#888' : '#F5A623';
+
+  div.innerHTML = `
+    <div style="font-size:2rem">${p.emoji}</div>
+    <div>
+      <div style="font-size:10px;color:${color};letter-spacing:3px;font-weight:700;text-transform:uppercase;margin-bottom:2px">${isLose ? 'PAS DE CHANCE' : 'DERNIER GAIN'}</div>
+      <div style="font-size:1.6rem;font-weight:900;color:${isLose ? '#aaa' : '#fff'};letter-spacing:1px">${label}</div>
+      <div style="font-size:11px;color:#c0c0c0;margin-top:1px">${sub}</div>
+    </div>`;
+
+  if(!document.getElementById('permanentWinStyle')){
+    var style = document.createElement('style');
+    style.id = 'permanentWinStyle';
+    style.textContent = '@keyframes slideUpIn{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
+    document.head.appendChild(style);
+  }
+  document.body.appendChild(div);
+}
+
+// Confetti (identique à la roue)
+const cc=document.getElementById('confettiCanvas'), cx=cc.getContext('2d');
+let conf=[],canim=null;
+function launchConfetti(){
+  cc.width=window.innerWidth;cc.height=window.innerHeight;conf=[];
+  for(let i=0;i<200;i++) conf.push({x:Math.random()*cc.width,y:-20-Math.random()*200,w:Math.random()*12+6,h:Math.random()*6+3,color:['#E94560','#F5A623','#533483','#4ade80','#fff','#60a5fa'][Math.floor(Math.random()*6)],vx:(Math.random()-.5)*4,vy:Math.random()*4+2,rot:Math.random()*360,vrot:(Math.random()-.5)*10});
+  animC();
+}
+function animC(){
+  cx.clearRect(0,0,cc.width,cc.height);
+  conf.forEach(c=>{c.x+=c.vx;c.y+=c.vy;c.rot+=c.vrot;cx.save();cx.translate(c.x,c.y);cx.rotate(c.rot*Math.PI/180);cx.fillStyle=c.color;cx.fillRect(-c.w/2,-c.h/2,c.w,c.h);cx.restore();});
+  conf=conf.filter(c=>c.y<cc.height+50);
+  if(conf.length>0)canim=requestAnimationFrame(animC);
+}
+function stopConfetti(){if(canim)cancelAnimationFrame(canim);cx.clearRect(0,0,cc.width,cc.height);}
+
+// 🔥 FIREBASE — écoute le trigger en temps réel (déclenché depuis l'iPad à l'encaissement)
+onValue(ref(db,'scratch/trigger'),(snap)=>{
+  if(snap.val()===true && !isScratching) playScratch();
+});
+
+// Indicateur connexion
+onValue(ref(db,'.info/connected'),(snap)=>{
+  const ok=snap.val();
+  document.getElementById('fbDot').className='fb-dot'+(ok?'':' off');
+  document.getElementById('fbLabel').textContent=ok?'FIREBASE CONNECTÉ':'HORS LIGNE';
+});
+
+sizeCanvas();
+
+
+// ── OFFRE FLASH PREMIUM — identique à roue_Shaya.html ──────────
+let flashBannerTimer=null;
+
+(function injectFlashStyles(){
+  if(document.getElementById('flashStyle'))return;
+  const s=document.createElement('style');s.id='flashStyle';
+  s.textContent=`
+    @keyframes flashSlideUp{from{transform:translateY(120%);opacity:0}to{transform:translateY(0);opacity:1}}
+    @keyframes flashSlideDown2{from{transform:translateY(0);opacity:1}to{transform:translateY(120%);opacity:0}}
+    @keyframes flashSlideInTop{from{transform:translateY(-120%);opacity:0}to{transform:translateY(0);opacity:1}}
+    @keyframes flashSlideOutTop{from{transform:translateY(0);opacity:1}to{transform:translateY(-120%);opacity:0}}
+    @keyframes flashSlideInLeft{from{transform:translateX(-120%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes flashSlideOutLeft{from{transform:translateX(0);opacity:1}to{transform:translateX(-120%);opacity:0}}
+    @keyframes flashSlideInRight{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+    @keyframes flashSlideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
+    @keyframes flashTextGlow{0%,100%{text-shadow:0 0 20px rgba(255,215,0,.5)}50%{text-shadow:0 0 50px rgba(255,215,0,1),0 0 80px rgba(255,165,0,.8)}}
+    @keyframes flashBounce{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+    @keyframes flashScan{0%{left:-100%}100%{left:200%}}
+    #flashBottom{animation:flashSlideUp .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+    #flashBottom.hiding{animation:flashSlideDown2 .4s ease-in forwards;}
+    #flashTop{animation:flashSlideInTop .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+    #flashTop.hiding{animation:flashSlideOutTop .4s ease-in forwards;}
+    #flashLeft{animation:flashSlideInLeft .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+    #flashLeft.hiding{animation:flashSlideOutLeft .4s ease-in forwards;}
+    #flashRight{animation:flashSlideInRight .6s cubic-bezier(.34,1.56,.64,1) forwards;}
+    #flashRight.hiding{animation:flashSlideOutRight .4s ease-in forwards;}
+    .flash-pct-big{animation:flashTextGlow 1.5s ease-in-out infinite,flashBounce 2s ease-in-out infinite;}
+    .flash-bolt-anim{animation:flashBounce .8s ease-in-out infinite alternate;}
+    .flash-scan-line{animation:flashScan 2s linear infinite;}
+  `;
+  document.head.appendChild(s);
+})();
+
+onValue(ref(db,'flash/offer'),(snap)=>{
+  const data=snap.val();
+  if(!data||!data.active){hideAllFlashBanners();return;}
+  const remaining=data.endTime-Date.now();
+  if(remaining<=0){hideAllFlashBanners();return;}
+  showAllFlashBanners(data.pct,data.endTime);
+});
+
+function mkScanLine(){
+  const d=document.createElement('div');
+  d.className='flash-scan-line';
+  d.style.cssText='position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);pointer-events:none';
+  return d;
+}
+
+function showAllFlashBanners(pct,endTime){
+  ['flashBottom','flashTop','flashLeft','flashRight'].forEach(id=>{
+    const old=document.getElementById(id);if(old)old.remove();
+  });
+  if(flashBannerTimer){clearInterval(flashBannerTimer);flashBannerTimer=null;}
+
+  const BG='linear-gradient(135deg,#0d0005 0%,#2d0010 25%,#c42d4a 50%,#2d0010 75%,#0d0005 100%)';
+  const BORDER_B='3px solid #E94560';
+  const W=90;
+  const H_TOP=70;
+  const H_BOT=100;
+
+  const bottom=document.createElement('div');
+  bottom.id='flashBottom';
+  bottom.style.cssText=`position:fixed;bottom:0;left:${W}px;right:${W}px;height:${H_BOT}px;background:${BG};border-top:${BORDER_B};z-index:9999;display:flex;align-items:center;justify-content:space-between;padding:0 40px;gap:20px;overflow:hidden;box-shadow:0 -6px 50px rgba(233,69,96,.6)`;
+  bottom.appendChild(mkScanLine());
+  bottom.innerHTML+=`
+    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div class="flash-bolt-anim" style="font-size:2.8rem">⚡</div>
+      <div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:.65rem;letter-spacing:6px;color:rgba(255,255,255,.55)">OFFRE EXCLUSIVE</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:3px;color:#fff;line-height:1.1">OFFRE FLASH !</div>
+      </div>
+    </div>
+    <div style="text-align:center;flex:1">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:7px;color:rgba(255,255,255,.6)">REMISE EXCEPTIONNELLE</div>
+      <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:4rem;line-height:1;letter-spacing:4px;color:#FFD700">-${pct}%</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+      <div style="text-align:center;background:rgba(0,0,0,.45);border:2px solid rgba(255,215,0,.35);border-radius:12px;padding:6px 18px;min-width:110px">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:.55rem;letter-spacing:4px;color:rgba(255,255,255,.45);margin-bottom:2px">TEMPS RESTANT</div>
+        <div id="flashTimerBottom" style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:5px;color:#FFD700;line-height:1;transition:color .3s">--:--</div>
+      </div>
+      <div class="flash-bolt-anim" style="font-size:2.8rem;animation-delay:.3s">⚡</div>
+    </div>`;
+  document.body.appendChild(bottom);
+
+  const top=document.createElement('div');
+  top.id='flashTop';
+  top.style.cssText=`position:fixed;top:0;left:${W}px;right:${W}px;height:${H_TOP}px;background:${BG};border-bottom:${BORDER_B};z-index:9999;display:flex;align-items:center;justify-content:center;gap:28px;overflow:hidden;box-shadow:0 6px 50px rgba(233,69,96,.6)`;
+  top.appendChild(mkScanLine());
+  top.innerHTML+=`
+    <div class="flash-bolt-anim" style="font-size:2.2rem">⚡</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:8px;color:#fff">OFFRE FLASH</div>
+    <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:4px;color:#FFD700">-${pct}%</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:6px;color:rgba(255,255,255,.7)">SUR TOUT LE STAND !</div>
+    <div class="flash-bolt-anim" style="font-size:2.2rem;animation-delay:.3s">⚡</div>`;
+  document.body.appendChild(top);
+
+  const left=document.createElement('div');
+  left.id='flashLeft';
+  left.style.cssText=`position:fixed;top:0;left:0;bottom:0;width:${W}px;background:${BG};border-right:${BORDER_B};z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden;box-shadow:6px 0 50px rgba(233,69,96,.5)`;
+  left.appendChild(mkScanLine());
+  left.innerHTML+=`
+    <div class="flash-bolt-anim" style="font-size:2rem">⚡</div>
+    <div style="writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:6px;color:#fff;white-space:nowrap">OFFRE FLASH</div>
+    <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:#FFD700;letter-spacing:2px">-${pct}%</div>
+    <div style="writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:4px;color:rgba(255,255,255,.6)">SUR TOUT</div>
+    <div class="flash-bolt-anim" style="font-size:2rem;animation-delay:.4s">⚡</div>`;
+  document.body.appendChild(left);
+
+  const right=document.createElement('div');
+  right.id='flashRight';
+  right.style.cssText=`position:fixed;top:0;right:0;bottom:0;width:${W}px;background:${BG};border-left:${BORDER_B};z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;overflow:hidden;box-shadow:-6px 0 50px rgba(233,69,96,.5)`;
+  right.appendChild(mkScanLine());
+  right.innerHTML+=`
+    <div class="flash-bolt-anim" style="font-size:2rem">⚡</div>
+    <div style="writing-mode:vertical-rl;text-orientation:mixed;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:6px;color:#fff;white-space:nowrap">OFFRE FLASH</div>
+    <div class="flash-pct-big" style="font-family:'Bebas Neue',sans-serif;font-size:1.9rem;color:#FFD700;letter-spacing:2px">-${pct}%</div>
+    <div style="writing-mode:vertical-rl;text-orientation:mixed;font-family:'Bebas Neue',sans-serif;font-size:.7rem;letter-spacing:4px;color:rgba(255,255,255,.6)">SUR TOUT</div>
+    <div class="flash-bolt-anim" style="font-size:2rem;animation-delay:.4s">⚡</div>`;
+  document.body.appendChild(right);
+
+  flashBannerTimer=setInterval(()=>{
+    const rem=endTime-Date.now();
+    if(rem<=0){hideAllFlashBanners();return;}
+    const m=Math.floor(rem/60000);
+    const s=Math.floor((rem%60000)/1000);
+    const str=(m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+    const el=document.getElementById('flashTimerBottom');
+    if(el){
+      el.textContent=str;
+      if(rem<30000){el.style.color='#FF3333';}
+      else if(rem<60000){el.style.color='#FF8C00';}
+      else{el.style.color='#FFD700';}
+    }
+  },1000);
+}
+
+function hideAllFlashBanners(){
+  if(flashBannerTimer){clearInterval(flashBannerTimer);flashBannerTimer=null;}
+  ['flashBottom','flashTop','flashLeft','flashRight'].forEach(id=>{
+    const b=document.getElementById(id);
+    if(b){b.classList.add('hiding');setTimeout(()=>{if(b&&b.parentNode)b.remove();},450);}
+  });
+}
+</script>
+</body>
+</html>
