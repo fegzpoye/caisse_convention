@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Les projets de Shaya — Stand</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Exo+2:wght@400;500;700;900&display=swap');
+  :root{
+    --gold:#F5A623;--pink:#E94560;--purple:#8A5CF6;--purple2:#4C3A9C;
+    --bg:#0a0a14;--white:#ffffff;--silver:#c0c0c0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:'Exo 2',sans-serif;color:#fff}
+  #app{position:fixed;inset:0}
+
+  /* ── PARTICULES DE FOND (communes) ─────────────────────────── */
+  .particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .particle{position:absolute;border-radius:50%;opacity:.15;animation:float linear infinite}
+  @keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0}10%{opacity:.15}90%{opacity:.15}100%{transform:translateY(-100px) rotate(720deg);opacity:0}}
+
+  /* ── ÉCRAN 1 : VEILLE ──────────────────────────────────────── */
+  #idleScreen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;z-index:5;transition:background 1.2s ease;background:radial-gradient(circle at 50% 40%,#1a1730,#0a0a14 75%)}
+  #idleScreen.buildup-wheel{background:radial-gradient(circle at 50% 40%,#3a1420,#0a0a14 75%)}
+  #idleScreen.buildup-scratch{background:radial-gradient(circle at 50% 40%,#241a3a,#0a0a14 75%)}
+  .idle-logo-wrap{position:relative;width:260px;height:260px;display:flex;align-items:center;justify-content:center}
+  .idle-logo-ring{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(245,166,35,.25);animation:ringPulse 3s ease-in-out infinite}
+  .idle-logo-ring.r2{inset:-24px;animation-delay:.5s;border-color:rgba(245,166,35,.15)}
+  @keyframes ringPulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.08);opacity:1}}
+  .idle-logo{width:180px;height:180px;animation:logoBreathe 3.2s ease-in-out infinite;filter:drop-shadow(0 0 30px rgba(245,166,35,.35))}
+  @keyframes logoBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  .idle-title{font-family:'Bebas Neue',sans-serif;font-size:2.6rem;letter-spacing:8px;text-align:center;text-shadow:0 0 30px rgba(245,166,35,.4)}
+  .idle-sub{font-size:.95rem;letter-spacing:3px;color:var(--silver);text-transform:uppercase;opacity:.7;transition:opacity .6s}
+  .idle-status{font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:4px;color:var(--gold);opacity:0;transition:opacity .8s;text-align:center;min-height:24px}
+  #idleScreen.buildup .idle-status{opacity:1}
+  #idleScreen.buildup .idle-logo-wrap{animation:none}
+  #idleScreen.buildup .idle-logo{animation-duration:1.4s}
+  #idleScreen.buildup-wheel .idle-status{color:var(--pink)}
+  #idleScreen.buildup-scratch .idle-status{color:var(--purple)}
+
+  /* ── ÉCRAN 2 : ROUE ────────────────────────────────────────── */
+  #wheelScreen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:40px;z-index:10;background:radial-gradient(circle at 50% 35%,#1a1730,#0a0a14 80%)}
+  #wheelScreen.active{display:flex}
+  .wheel-wrapper{position:relative;width:min(80vw,520px);height:min(80vw,520px)}
+  .wheel-glow{position:absolute;inset:-20px;border-radius:50%;background:radial-gradient(circle,transparent 55%,rgba(233,69,96,.35) 70%,transparent 80%);animation:glowPulse 2s ease-in-out infinite;pointer-events:none}
+  @keyframes glowPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
+  .wheel-ring{position:absolute;inset:-8px;border-radius:50%;border:4px solid var(--gold);box-shadow:0 0 24px rgba(245,166,35,.5),inset 0 0 20px rgba(245,166,35,.12)}
+  canvas#wheelCanvas{width:100%;height:100%;border-radius:50%;display:block;filter:drop-shadow(0 0 30px rgba(233,69,96,.3))}
+  .wheel-pointer{position:absolute;top:-34px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:34px solid var(--gold);filter:drop-shadow(0 0 8px rgba(245,166,35,.8));z-index:10}
+  .wheel-hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:15%;height:15%;border-radius:50%;background:radial-gradient(circle,#fff 0%,var(--gold) 60%,#530636 100%);border:4px solid #fff;box-shadow:0 0 20px rgba(245,166,35,.8);z-index:10}
+  .game-status{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:6px;color:var(--silver);text-align:center;min-height:40px}
+
+  /* ── ÉCRAN 3 : CARTE À GRATTER ─────────────────────────────── */
+  #scratchScreen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:32px;z-index:10;background:radial-gradient(circle at 50% 35%,#241a3a,#0a0a14 80%)}
+  #scratchScreen.active{display:flex}
+  .scratch-wrapper{position:relative;width:min(84vw,560px);aspect-ratio:16/10}
+  .scratch-glow{position:absolute;inset:-20px;border-radius:32px;background:radial-gradient(circle,transparent 55%,rgba(138,92,246,.35) 70%,transparent 80%);animation:glowPulse 2s ease-in-out infinite;pointer-events:none}
+  .scratch-ring{position:absolute;inset:-8px;border-radius:32px;border:4px solid var(--purple);box-shadow:0 0 24px rgba(138,92,246,.5),inset 0 0 20px rgba(138,92,246,.12)}
+  .scratch-frame{position:relative;width:100%;height:100%;border-radius:24px;overflow:hidden;background:#1a1230;box-shadow:0 0 30px rgba(138,92,246,.3)}
+  #prizeLayer{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:linear-gradient(160deg,#26215C,#1A1730)}
+  #prizeEmoji{font-size:4rem}
+  #prizeLabel{font-family:'Bebas Neue',sans-serif;font-size:3.4rem;letter-spacing:3px;color:#fff}
+  #prizeSub{font-size:1.05rem;color:var(--silver);letter-spacing:1px}
+  canvas#scratchCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:pointer}
+  .scratch-hint{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:5px;color:var(--silver);text-align:center;opacity:.85}
+
+  /* ── OVERLAY RÉSULTAT (commun) ─────────────────────────────── */
+  .win-overlay{position:fixed;inset:0;background:rgba(0,0,0,.87);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity .5s;backdrop-filter:blur(6px)}
+  .win-overlay.visible{opacity:1;pointer-events:all}
+  .win-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:3px solid var(--gold);border-radius:28px;padding:50px 60px;text-align:center;box-shadow:0 0 80px rgba(245,166,35,.4);max-width:88vw;animation:winCardIn .6s cubic-bezier(.34,1.56,.64,1) both}
+  @keyframes winCardIn{from{transform:scale(.3) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+  .win-emoji{font-size:5rem;margin-bottom:14px;animation:bounce .6s ease infinite alternate}
+  @keyframes bounce{from{transform:translateY(0)}to{transform:translateY(-14px)}}
+  .win-title{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;letter-spacing:7px;color:var(--gold);margin-bottom:8px}
+  .win-prize{font-family:'Bebas Neue',sans-serif;font-size:4.4rem;color:#fff;letter-spacing:3px;margin-bottom:16px;line-height:1}
+  .win-sub{font-size:1.05rem;color:var(--silver);letter-spacing:1px}
+  .confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:99}
+  .firebase-status{position:fixed;top:14px;right:16px;display:flex;align-items:center;gap:6px;font-size:.7rem;color:rgba(255,255,255,.28);z-index:200;letter-spacing:2px}
+  .fb-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 6px #4ade80;animation:fbPulse 2s ease-in-out infinite}
+  .fb-dot.off{background:#e94560;box-shadow:0 0 6px #e94560}
+  @keyframes fbPulse{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body>
+
+<div class="particles" id="particles"></div>
+<canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+<div class="firebase-status"><div class="fb-dot" id="fbDot"></div><span id="fbLabel">CONNEXION...</span></div>
+
+<div id="app">
+
+  <!-- ÉCRAN VEILLE -->
+  <div id="idleScreen">
+    <div class="idle-logo-wrap">
+      <div class="idle-logo-ring"></div>
+      <div class="idle-logo-ring r2"></div>
+      <img class="idle-logo" src="images/logo.png" alt="Les projets de Shaya">
+    </div>
+    <div>
+      <div class="idle-title">LES PROJETS DE SHAYA</div>
+      <div class="idle-sub" style="margin-top:8px">Impression 3D &amp; Sublimation</div>
+    </div>
+    <div class="idle-status" id="idleStatus">Préparez-vous...</div>
+  </div>
+
+  <!-- ÉCRAN ROUE -->
+  <div id="wheelScreen">
+    <div class="wheel-wrapper">
+      <div class="wheel-glow"></div>
+      <div class="wheel-ring"></div>
+      <canvas id="wheelCanvas" width="600" height="600"></canvas>
+      <div class="wheel-pointer"></div>
+      <div class="wheel-hub"></div>
+    </div>
+    <div class="game-status" id="wheelStatus">LA ROUE TOURNE...</div>
+  </div>
+
+  <!-- ÉCRAN CARTE À GRATTER -->
+  <div id="scratchScreen">
+    <div class="scratch-wrapper">
+      <div class="scratch-glow"></div>
+      <div class="scratch-ring"></div>
+      <div class="scratch-frame">
+        <div id="prizeLayer">
+          <div id="prizeEmoji">🎁</div>
+          <div id="prizeLabel">—</div>
+          <div id="prizeSub"></div>
+        </div>
+        <canvas id="scratchCanvas"></canvas>
+      </div>
+    </div>
+    <div class="scratch-hint">GRATTEZ AVEC LE DOIGT</div>
+  </div>
+
+</div>
+
+<div class="win-overlay" id="winOverlay">
+  <div class="win-card">
+    <div class="win-emoji" id="winEmoji">🎉</div>
+    <div class="win-title" id="winTitle">FÉLICITATIONS !</div>
+    <div class="win-prize" id="winPrize">-10%</div>
+    <div class="win-sub" id="winSub">sur votre prochaine commande</div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDji8NuTjQqD2YUaN-tfSe6t9BfWvWG7EQ",
+  authDomain: "roue-shaya.firebaseapp.com",
+  databaseURL: "https://roue-shaya-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "roue-shaya",
+  storageBucket: "roue-shaya.firebasestorage.app",
+  messagingSenderId: "1096623837864",
+  appId: "1:1096623837864:web:b9a425fdce29bfb08a289d"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+onValue(ref(db,'.info/connected'),(snap)=>{
+  const ok=snap.val();
+  document.getElementById('fbDot').className='fb-dot'+(ok?'':' off');
+  document.getElementById('fbLabel').textContent=ok?'FIREBASE CONNECTÉ':'HORS LIGNE';
+});
+
+// ── Lots partagés (même logique que la roue existante) ─────────
+const PRIZES = [
+  {label:"Retente !",  sub:"Rejoue si perdu 🎲",         emoji:"🎲",type:"lose",     weight:10},
+  {label:"-5%",        sub:"sur votre commande",          emoji:"💰",type:"reduction",weight:4},
+  {label:"Pas de bol", sub:"Presque... la prochaine !",   emoji:"😬",type:"lose",     weight:10},
+  {label:"-5%",        sub:"sur votre commande",          emoji:"💰",type:"reduction",weight:4},
+  {label:"Dommage !",  sub:"Tente encore ta chance !",    emoji:"🙈",type:"lose",     weight:10},
+  {label:"CADEAU",     sub:"Porte-clé imprimé 3D",        emoji:"🎁",type:"gift",     weight:1},
+  {label:"-10%",       sub:"sur votre commande",          emoji:"🤑",type:"reduction",weight:1},
+  {label:"BONUS",      sub:"Rejouer si perdu",            emoji:"✨",type:"gift",     weight:3},
+  {label:"Oh non !",   sub:"La chance tourne... bientôt !",emoji:"😅",type:"lose",   weight:10},
+  {label:"-15%",       sub:"sur votre commande",          emoji:"🔥",type:"reduction",weight:1},
+  {label:"SURPRISE",   sub:"Cadeau mystère !",            emoji:"🎀",type:"gift",     weight:1},
+  {label:"-5%",        sub:"sur votre commande",          emoji:"💰",type:"reduction",weight:4},
+  {label:"Raté !",     sub:"Achète encore et retente !",  emoji:"😤",type:"lose",     weight:10},
+  {label:"DRAGON",     sub:"Petit dragon offert",         emoji:"🐉",type:"gift",     weight:1},
+];
+const WHEEL_COLORS=["#2a2a3a","#1a7a4a","#1e1e2e","#E94560","#252535","#533483","#F5A623","#0F3460","#1e2a1e","#8B0000","#533483","#1a7a4a","#2a1a1a","#8B0000"];
+const LOSE_MESSAGES = [
+  { title:"PRESQUE !", sub:"La chance tourne... retente au prochain achat !" },
+  { title:"OH NON !", sub:"Tu étais si proche ! Un autre achat = une autre chance 🎯" },
+  { title:"DOMMAGE !", sub:"La roue ne ment pas... mais elle réessaie ! 😄" },
+  { title:"RATÉ !", sub:"Achète encore et la fortune sourira ! 🍀" },
+  { title:"PAS DE CHANCE !", sub:"Le destin te réserve quelque chose de mieux... bientôt !" },
+];
+function getWeightedPrize(){
+  const tot=PRIZES.reduce((s,p)=>s+p.weight,0);let r=Math.random()*tot;
+  for(let i=0;i<PRIZES.length;i++){r-=PRIZES[i].weight;if(r<=0)return i;}return 0;
+}
+
+// ── Particules de fond ───────────────────────────────────────
+const pc=document.getElementById('particles');
+for(let i=0;i<22;i++){
+  const p=document.createElement('div'); p.className='particle';
+  const sz=Math.random()*6+2, cols=['#E94560','#F5A623','#8A5CF6','#0F3460','#4ade80'];
+  p.style.cssText=`width:${sz}px;height:${sz}px;background:${cols[Math.floor(Math.random()*5)]};left:${Math.random()*100}%;animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s`;
+  pc.appendChild(p);
+}
+
+// ── SONS SYNTHÉTISÉS (Web Audio API — aucun fichier requis) ───
+let audioCtx=null;
+function getCtx(){
+  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  return audioCtx;
+}
+// Débloque l'audio dès la première interaction tactile de la journée
+['touchstart','click'].forEach(evt=>document.addEventListener(evt,function unlock(){getCtx();document.removeEventListener(evt,unlock);},{once:true}));
+
+function tone(freq,start,dur,type,gainPeak){
+  const ctx=getCtx();
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
+  osc.type=type||'sine';
+  osc.frequency.setValueAtTime(freq,ctx.currentTime+start);
+  gain.gain.setValueAtTime(0,ctx.currentTime+start);
+  gain.gain.linearRampToValueAtTime(gainPeak||0.18,ctx.currentTime+start+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+start+dur);
+  osc.connect(gain);gain.connect(ctx.destination);
+  osc.start(ctx.currentTime+start);osc.stop(ctx.currentTime+start+dur+0.05);
+}
+function playTransitionSound(){
+  const ctx=getCtx();
+  const osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.type='sine';
+  osc.frequency.setValueAtTime(220,ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(880,ctx.currentTime+0.5);
+  gain.gain.setValueAtTime(0.0001,ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(0.16,ctx.currentTime+0.08);
+  gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.55);
+  osc.connect(gain);gain.connect(ctx.destination);
+  osc.start();osc.stop(ctx.currentTime+0.6);
+}
+function playWinSound(){
+  tone(523.25,0,0.28,'triangle',0.2);
+  tone(659.25,0.12,0.28,'triangle',0.2);
+  tone(783.99,0.24,0.32,'triangle',0.22);
+  tone(1046.5,0.38,0.5,'triangle',0.22);
+}
+function playLoseSound(){
+  tone(392,0,0.35,'sine',0.14);
+  tone(311.13,0.18,0.5,'sine',0.12);
+}
+
+// ── ÉTAT / MACHINE À ÉTATS ──────────────────────────────────────
+let mode='wheel';        // 'wheel' | 'scratch'
+let cartActive=false;
+let isPlaying=false;
+let currentPrizeIndex=null;
+
+const idleScreen=document.getElementById('idleScreen');
+const idleStatus=document.getElementById('idleStatus');
+const wheelScreen=document.getElementById('wheelScreen');
+const scratchScreen=document.getElementById('scratchScreen');
+
+function updateIdleVisual(){
+  idleScreen.classList.remove('buildup-wheel','buildup-scratch','buildup');
+  if(cartActive && !isPlaying){
+    idleScreen.classList.add('buildup', mode==='wheel'?'buildup-wheel':'buildup-scratch');
+    idleStatus.textContent = mode==='wheel' ? '🎡 La roue se prépare...' : '🎟️ La carte se prépare...';
+  } else {
+    idleStatus.textContent='Préparez-vous...';
+  }
+}
+
+onValue(ref(db,'stand/mode'),(snap)=>{
+  const v=snap.val();
+  if(v==='wheel'||v==='scratch'){mode=v;updateIdleVisual();}
+});
+onValue(ref(db,'stand/cartActive'),(snap)=>{
+  cartActive = snap.val()===true;
+  updateIdleVisual();
+});
+onValue(ref(db,'stand/trigger'),(snap)=>{
+  if(snap.val()===true && !isPlaying) startGame();
+});
+
+function showScreen(which){
+  idleScreen.style.display = which==='idle' ? 'flex' : 'none';
+  wheelScreen.classList.toggle('active', which==='wheel');
+  scratchScreen.classList.toggle('active', which==='scratch');
+}
+
+function startGame(){
+  isPlaying=true;
+  playTransitionSound();
+  currentPrizeIndex=getWeightedPrize();
+  setTimeout(()=>{
+    if(mode==='wheel'){ showScreen('wheel'); spinWheel(currentPrizeIndex); }
+    else { showScreen('scratch'); setupScratchCard(currentPrizeIndex); }
+  }, 350);
+}
+
+function finishGame(prize){
+  set(ref(db,'stand/lastResult'),{
+    label:prize.label, sub:prize.sub, emoji:prize.emoji, type:prize.type, mode:mode, ts:Date.now()
+  });
+  set(ref(db,'stand/trigger'),false);
+  showResult(prize);
+}
+
+function showResult(p){
+  const isLose = p.type==='lose';
+  const loseMsg = LOSE_MESSAGES[Math.floor(Math.random()*LOSE_MESSAGES.length)];
+  document.getElementById('winEmoji').textContent=p.emoji;
+  document.getElementById('winPrize').textContent = isLose ? loseMsg.title : p.label;
+  document.getElementById('winSub').textContent = isLose ? loseMsg.sub : p.sub;
+  const card=document.querySelector('.win-card');
+  card.style.borderColor = isLose ? '#555' : 'var(--gold)';
+  card.style.boxShadow = isLose ? '0 0 40px rgba(100,100,100,.3)' : '0 0 80px rgba(245,166,35,.4)';
+  const titleEl=document.getElementById('winTitle');
+  titleEl.textContent = isLose ? 'DOMMAGE !' : 'FÉLICITATIONS !';
+  titleEl.style.color = isLose ? '#888' : 'var(--gold)';
+
+  if(isLose) playLoseSound(); else { playWinSound(); launchConfetti(); }
+
+  document.getElementById('winOverlay').classList.add('visible');
+
+  setTimeout(()=>{
+    document.getElementById('winOverlay').classList.remove('visible');
+    stopConfetti();
+    isPlaying=false;
+    showScreen('idle');
+    updateIdleVisual();
+  }, 5000);
+}
+
+// ── ROUE ─────────────────────────────────────────────────────
+const wheelCanvas=document.getElementById('wheelCanvas'), wctx=wheelCanvas.getContext('2d');
+const WCX=wheelCanvas.width/2, WCY=wheelCanvas.height/2, WR=WCX-10;
+let wheelAngle=0;
+
+function drawWheel(angle){
+  wctx.clearRect(0,0,wheelCanvas.width,wheelCanvas.height);
+  const n=PRIZES.length, arc=(2*Math.PI)/n;
+  PRIZES.forEach((p,i)=>{
+    const s=angle+i*arc, e=s+arc;
+    wctx.beginPath();wctx.moveTo(WCX,WCY);wctx.arc(WCX,WCY,WR,s,e);wctx.closePath();
+    wctx.fillStyle=WHEEL_COLORS[i%WHEEL_COLORS.length];wctx.fill();
+    wctx.strokeStyle='rgba(255,255,255,.15)';wctx.lineWidth=2;wctx.stroke();
+    const mid=s+arc/2;
+    wctx.save();wctx.translate(WCX+Math.cos(mid)*(WR*.58),WCY+Math.sin(mid)*(WR*.58));wctx.rotate(mid+Math.PI/2);
+    wctx.font='22px serif';wctx.textAlign='center';wctx.textBaseline='middle';wctx.fillText(p.emoji,0,0);wctx.restore();
+    wctx.save();wctx.translate(WCX+Math.cos(mid)*(WR*.80),WCY+Math.sin(mid)*(WR*.80));wctx.rotate(mid+Math.PI/2);
+    wctx.font=`bold ${p.type==='lose'?15:17}px "Bebas Neue",sans-serif`;
+    wctx.textAlign='center';wctx.textBaseline='middle';
+    wctx.fillStyle= p.type==='lose' ? 'rgba(255,255,255,.4)' : '#fff';
+    wctx.shadowColor='rgba(0,0,0,.8)';wctx.shadowBlur=4;
+    wctx.fillText(p.label,0,0);wctx.restore();
+  });
+  wctx.beginPath();wctx.arc(WCX,WCY,WR,0,2*Math.PI);wctx.strokeStyle='rgba(255,255,255,.2)';wctx.lineWidth=3;wctx.stroke();
+}
+drawWheel(0);
+
+function spinWheel(idx){
+  document.getElementById('wheelStatus').textContent='LA ROUE TOURNE...';
+  const n=PRIZES.length, arc=(2*Math.PI)/n;
+  const target=-Math.PI/2-(idx*arc+arc/2);
+  const extra=(5+Math.floor(Math.random()*4))*2*Math.PI;
+  const total=extra+target-(wheelAngle%(2*Math.PI));
+  const dur=4500+Math.random()*1200, t0=performance.now(), a0=wheelAngle;
+  function ease(t){return 1-Math.pow(1-t,4);}
+  function anim(now){
+    const pr=Math.min((now-t0)/dur,1);
+    wheelAngle=a0+total*ease(pr); drawWheel(wheelAngle);
+    if(pr<1){requestAnimationFrame(anim);}
+    else{
+      wheelAngle=wheelAngle%(2*Math.PI);
+      document.getElementById('wheelStatus').textContent='🎉 '+PRIZES[idx].label;
+      finishGame(PRIZES[idx]);
+    }
+  }
+  requestAnimationFrame(anim);
+}
+
+// ── CARTE À GRATTER (grattage réel au doigt) ────────────────────
+const scratchCanvas=document.getElementById('scratchCanvas'), sctx=scratchCanvas.getContext('2d');
+let scratchRevealed=false, scratchDrawing=false;
+
+function sizeScratchCanvas(){
+  const frame=document.querySelector('.scratch-frame');
+  scratchCanvas.width=frame.clientWidth;
+  scratchCanvas.height=frame.clientHeight;
+  drawScratchLayer();
+}
+window.addEventListener('resize', ()=>{ if(scratchScreen.classList.contains('active')) sizeScratchCanvas(); });
+
+function drawScratchLayer(){
+  const g=sctx.createLinearGradient(0,0,scratchCanvas.width,scratchCanvas.height);
+  g.addColorStop(0,'#8A5CF6');
+  g.addColorStop(1,'#4C3A9C');
+  sctx.globalCompositeOperation='source-over';
+  sctx.fillStyle=g;
+  sctx.fillRect(0,0,scratchCanvas.width,scratchCanvas.height);
+
+  sctx.strokeStyle='rgba(255,255,255,.12)';
+  sctx.lineWidth=1;
+  for(let i=0;i<scratchCanvas.width;i+=18){
+    sctx.beginPath();sctx.moveTo(i,0);sctx.lineTo(i,scratchCanvas.height);sctx.stroke();
+  }
+
+  // Badge vectoriel simplifié (violet/noir), sans dépendance à une image encodée
+  const cx=scratchCanvas.width/2, cy=scratchCanvas.height/2-10;
+  const scale=Math.min(scratchCanvas.width,scratchCanvas.height)/230;
+  sctx.save();
+  sctx.globalAlpha=.22;
+  sctx.translate(cx,cy);sctx.scale(scale,scale);
+  sctx.fillStyle='#fff';
+  sctx.beginPath();
+  sctx.roundRect(-60,-64,120,120,14);
+  sctx.fill();
+  sctx.restore();
+
+  sctx.fillStyle='rgba(255,255,255,.9)';
+  sctx.font='700 26px "Bebas Neue",sans-serif';
+  sctx.textAlign='center';
+  sctx.fillText('GRATTEZ ICI', scratchCanvas.width/2, scratchCanvas.height-24);
+  scratchRevealed=false;
+  sctx.globalCompositeOperation='source-over';
+}
+
+function setupScratchCard(idx){
+  const prize=PRIZES[idx];
+  document.getElementById('prizeEmoji').textContent=prize.emoji;
+  document.getElementById('prizeLabel').textContent=prize.label;
+  document.getElementById('prizeSub').textContent=prize.sub;
+  sizeScratchCanvas();
+}
+
+function scratchAt(x,y){
+  sctx.globalCompositeOperation='destination-out';
+  sctx.beginPath();sctx.arc(x,y,34,0,Math.PI*2);sctx.fill();
+  checkScratchReveal();
+}
+function checkScratchReveal(){
+  if(scratchRevealed) return;
+  const data=sctx.getImageData(0,0,scratchCanvas.width,scratchCanvas.height).data;
+  let cleared=0,total=data.length/4;
+  for(let i=3;i<data.length;i+=4*10){ if(data[i]===0) cleared++; }
+  const ratio=cleared/(total/10);
+  if(ratio>0.55){
+    scratchRevealed=true;
+    sctx.clearRect(0,0,scratchCanvas.width,scratchCanvas.height);
+    finishGame(PRIZES[currentPrizeIndex]);
+  }
+}
+function getScratchPos(e){
+  const rect=scratchCanvas.getBoundingClientRect();
+  const cx=e.touches?e.touches[0].clientX:e.clientX;
+  const cy=e.touches?e.touches[0].clientY:e.clientY;
+  return {x:cx-rect.left,y:cy-rect.top};
+}
+scratchCanvas.addEventListener('mousedown',e=>{scratchDrawing=true;const p=getScratchPos(e);scratchAt(p.x,p.y);});
+scratchCanvas.addEventListener('mousemove',e=>{if(!scratchDrawing)return;const p=getScratchPos(e);scratchAt(p.x,p.y);});
+window.addEventListener('mouseup',()=>{scratchDrawing=false;});
+scratchCanvas.addEventListener('touchstart',e=>{scratchDrawing=true;const p=getScratchPos(e);scratchAt(p.x,p.y);},{passive:true});
+scratchCanvas.addEventListener('touchmove',e=>{if(!scratchDrawing)return;e.preventDefault();const p=getScratchPos(e);scratchAt(p.x,p.y);},{passive:false});
+scratchCanvas.addEventListener('touchend',()=>{scratchDrawing=false;});
+
+// ── CONFETTIS ───────────────────────────────────────────────────
+const cc=document.getElementById('confettiCanvas'), ccx=cc.getContext('2d');
+let conf=[],canim=null;
+function launchConfetti(){
+  cc.width=window.innerWidth;cc.height=window.innerHeight;conf=[];
+  for(let i=0;i<200;i++) conf.push({x:Math.random()*cc.width,y:-20-Math.random()*200,w:Math.random()*12+6,h:Math.random()*6+3,color:['#E94560','#F5A623','#8A5CF6','#4ade80','#fff','#60a5fa'][Math.floor(Math.random()*6)],vx:(Math.random()-.5)*4,vy:Math.random()*4+2,rot:Math.random()*360,vrot:(Math.random()-.5)*10});
+  animConfetti();
+}
+function animConfetti(){
+  ccx.clearRect(0,0,cc.width,cc.height);
+  conf.forEach(c=>{c.x+=c.vx;c.y+=c.vy;c.rot+=c.vrot;ccx.save();ccx.translate(c.x,c.y);ccx.rotate(c.rot*Math.PI/180);ccx.fillStyle=c.color;ccx.fillRect(-c.w/2,-c.h/2,c.w,c.h);ccx.restore();});
+  conf=conf.filter(c=>c.y<cc.height+50);
+  if(conf.length>0)canim=requestAnimationFrame(animConfetti);
+}
+function stopConfetti(){if(canim)cancelAnimationFrame(canim);ccx.clearRect(0,0,cc.width,cc.height);}
+
+showScreen('idle');
+updateIdleVisual();
+</script>
+</body>
+</html>
