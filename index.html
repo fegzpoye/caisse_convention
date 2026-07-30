@@ -903,6 +903,15 @@ var PRODUCTS=[
   {id:74, label:"Lettre love",                price:12,   cat:"Impression 3D", emoji:"💌",  type:"print3d"},
   {id:75, label:"Couple coeur",               price:15,   cat:"Impression 3D", emoji:"💑",  type:"print3d"},
   {id:76, label:"Vase",                       price:20,   cat:"Impression 3D", emoji:"🏺",  type:"print3d"},
+  // ────── 🏠 IMPRESSION 3D — Déco Maison ──────
+  {id:78, label:"Horloge",               price:25,   cat:"Impression 3D", emoji:"🕐",  type:"print3d"},
+  {id:79, label:"Jeu de la bouteille",   price:25,   cat:"Impression 3D", emoji:"🍾",  type:"print3d"},
+  {id:80, label:"Sous-verre",            price:20,   cat:"Impression 3D", emoji:"🔵",  type:"print3d"},
+  {id:81, label:"Plateau à bijoux",      price:17,   cat:"Impression 3D", emoji:"💍",  type:"print3d"},
+  {id:82, label:"Boite à bijoux",        price:15,   cat:"Impression 3D", emoji:"📦",  type:"print3d"},
+  {id:83, label:"Veilleuse dragon",      price:15,   cat:"Impression 3D", emoji:"🐉",  type:"print3d"},
+  {id:84, label:"Déco bohème",           price:25,   cat:"Impression 3D", emoji:"🌙",  type:"print3d"},
+  {id:85, label:"Boite de Tetris",       price:30,   cat:"Impression 3D", emoji:"🎮",  type:"print3d"},
   // ────── 🔑 IMPRESSION 3D — Porte-clés ──────
   {id:18, label:"Porte-clés",                 price:3.50, cat:"Impression 3D", emoji:"🔑",  type:"print3d"},
   // ────── 🧵 BRODERIE ──────
@@ -1008,6 +1017,14 @@ var STOCK_DEPART = {
   75:1,   // Couple coeur
   76:3,   // Vase
   // 🔑 Porte-clés
+  78:4,   // Horloge
+  79:4,   // Jeu de la bouteille
+  80:3,   // Sous-verre
+  81:3,   // Plateau à bijoux
+  82:2,   // Boite à bijoux
+  83:1,   // Veilleuse dragon
+  84:1,   // Déco bohème
+  85:1,   // Boite de Tetris
   18:221, // Porte-clés
   // 🧵 Broderie / Flex
   47:0,   // Serviette brodée
@@ -1025,7 +1042,7 @@ PRODUCTS.forEach(function(p){
 });
 
 // ── LOCALSTORAGE ───────────────────────────────────────────────
-var SAVE_KEY="shaya_caisse_v4";  // Incrémenté pour forcer reset propre
+var SAVE_KEY="shaya_caisse_v5";  // Incrémenté pour forcer reset propre
 
 function sauvegarder(){
   try{
