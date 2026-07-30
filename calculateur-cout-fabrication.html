@@ -29,6 +29,38 @@ header{padding:1.2rem 2rem;border-bottom:1px solid var(--border);background:var(
 .tab[data-t="broderie"].active{background:var(--pink);}
 .tab[data-t="flex"].active{background:var(--blue);}
 .tab[data-t="badge"].active{background:#fb923c;}
+.tab[data-t="accessoires"].active{background:#c084fc;color:#1a0a2e;}
+
+/* Accessoires */
+.acc-cat{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:600;margin:.9rem 0 .5rem;padding-bottom:.3rem;border-bottom:1px solid var(--border);}
+.acc-cat:first-child{margin-top:0;}
+.acc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.5rem;margin-bottom:.3rem;}
+.acc-item{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;display:flex;align-items:center;gap:.6rem;cursor:pointer;transition:all .15s;position:relative;}
+.acc-item:hover{border-color:var(--border2);}
+.acc-item.in-cart{border-color:#c084fc;background:rgba(192,132,252,.07);}
+.acc-icon{font-size:1.1rem;flex-shrink:0;width:22px;text-align:center;}
+.acc-info{flex:1;min-width:0;}
+.acc-name{font-size:.75rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.acc-price{font-family:'DM Mono',monospace;font-size:.68rem;color:var(--text2);}
+.acc-qty-ctrl{display:flex;align-items:center;gap:4px;margin-top:4px;}
+.acc-qty-ctrl button{width:18px;height:18px;border-radius:4px;border:1px solid var(--border2);background:var(--bg4);color:var(--text);font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+.acc-qty-ctrl input{width:32px;text-align:center;background:var(--bg4);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:'DM Mono',monospace;font-size:.7rem;padding:1px 2px;}
+.acc-check{color:#c084fc;font-size:.8rem;position:absolute;top:6px;right:8px;}
+.cart-summary{background:var(--bg3);border:1px solid #c084fc;border-radius:10px;padding:.85rem;margin-bottom:.85rem;}
+.cart-title{font-size:.72rem;font-weight:600;color:#c084fc;margin-bottom:.6rem;display:flex;align-items:center;gap:6px;}
+.cart-row{display:flex;justify-content:space-between;align-items:center;font-size:.73rem;padding:3px 0;border-bottom:1px solid var(--border);}
+.cart-row:last-child{border-bottom:none;}
+.cart-row .cr-name{color:var(--text2);flex:1;}
+.cart-row .cr-qty{font-family:'DM Mono',monospace;color:var(--text3);min-width:30px;text-align:center;}
+.cart-row .cr-prix{font-family:'DM Mono',monospace;color:var(--text);}
+.cart-row .cr-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:.75rem;padding:0 3px;}
+.cart-row .cr-del:hover{color:var(--red);}
+.cart-total{display:flex;justify-content:space-between;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border2);font-size:.78rem;font-weight:600;}
+.cart-total .ct-val{font-family:'DM Mono',monospace;color:#c084fc;}
+.acc-search{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--text);font-family:'Sora',sans-serif;font-size:.78rem;margin-bottom:.8rem;}
+.acc-search:focus{outline:none;border-color:var(--border2);}
+.acc-custom-block{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:.85rem;margin-top:.5rem;}
+.acc-custom-block .ctitle{font-size:.68rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;font-weight:600;margin-bottom:.6rem;}
 
 .main{max-width:1200px;margin:0 auto;padding:1.5rem 2rem;display:grid;grid-template-columns:1fr 320px;gap:1.5rem;align-items:start;}
 .sec{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:.85rem;}
@@ -168,6 +200,7 @@ header{padding:1.2rem 2rem;border-bottom:1px solid var(--border);background:var(
   <button class="tab" data-t="broderie"><span class="dot" style="background:var(--pink)"></span>Broderie</button>
   <button class="tab" data-t="flex"><span class="dot" style="background:var(--blue)"></span>Flex / Vinyle</button>
   <button class="tab" data-t="badge"><span class="dot" style="background:#fb923c"></span>Badge</button>
+  <button class="tab" data-t="accessoires"><span class="dot" style="background:#c084fc"></span>Accessoires</button>
 </div>
 </div>
 
@@ -610,6 +643,50 @@ header{padding:1.2rem 2rem;border-bottom:1px solid var(--border);background:var(
   </div></div>
 </div>
 
+
+<!-- ===== ACCESSOIRES ===== -->
+<div class="tsec" id="sec-accessoires">
+
+  <!-- Panier accessoires -->
+  <div class="cart-summary" id="acc-cart-block" style="display:none">
+    <div class="cart-title">🛒 Accessoires sélectionnés</div>
+    <div id="acc-cart-rows"></div>
+    <div class="cart-total">
+      <span>Total accessoires</span>
+      <span class="ct-val" id="acc-cart-total">0,00 €</span>
+    </div>
+  </div>
+
+  <div class="sec"><div class="sh"><span class="sn">🔍</span><span class="st">Recherche & Catalogue</span></div><div class="sb">
+    <input type="text" class="acc-search" id="acc-search" placeholder="Rechercher un accessoire..." oninput="filterAcc()">
+
+    <div id="acc-catalogue">
+      <!-- Généré par JS -->
+    </div>
+
+    <!-- Accessoire personnalisé -->
+    <div class="acc-custom-block" style="margin-top:.8rem">
+      <div class="ctitle">+ Ajouter un accessoire personnalisé</div>
+      <div class="fg3">
+        <div class="f"><label>Nom</label><input type="text" id="acc-custom-nom" placeholder="ex: Servo SG90"></div>
+        <div class="f"><label>Prix unitaire (€)</label><input type="number" id="acc-custom-prix" placeholder="0.00" step="0.01"></div>
+        <div class="f"><label>Quantité</label><input type="number" id="acc-custom-qty" value="1" min="1"></div>
+      </div>
+      <button class="btnadd" style="margin-top:.6rem" onclick="addCustomAcc()">Ajouter au panier</button>
+    </div>
+  </div></div>
+
+  <!-- Frais divers -->
+  <div class="sec"><div class="sh"><span class="sn">+</span><span class="st">Frais supplémentaires</span></div><div class="sb">
+    <div class="fg">
+      <div class="f"><label>Main-d'œuvre montage (min)</label><input type="number" id="acc-mo-min" value="30" oninput="calcAcc()"></div>
+      <div class="f"><label>Taux horaire (€/h)</label><input type="number" id="acc-taux" value="15" oninput="calcAcc()"></div>
+      <div class="f"><label>Emballage & frais (€)</label><input type="number" id="acc-embal" value="0.50" step="0.10" oninput="calcAcc()"></div>
+      <div class="f"><label>Risque d'échec / casse (%)</label><input type="number" id="acc-rate" value="2" oninput="calcAcc()"></div>
+    </div>
+  </div></div>
+
+</div>
 </div><!-- end lc -->
 
 <!-- PANEL RÉSUMÉ -->
@@ -1106,6 +1183,217 @@ function renderBrodFils(){
       <button class="fdel" onclick="brodFils.splice(${i},1);renderBrodFils();calcBrod()">✕</button>
     </div>`).join('');
 }
+
+
+// ============================================================
+// ACCESSOIRES
+// ============================================================
+const ACC_CATALOGUE = [
+  // ÉLECTRONIQUE & MICROCONTRÔLEURS
+  { id:'a1', cat:'Électronique', icon:'🔌', nom:'ESP32 DevKit v1', prix:4.50, unite:'€/u' },
+  { id:'a2', cat:'Électronique', icon:'🔌', nom:'ESP32-CAM', prix:6.80, unite:'€/u' },
+  { id:'a3', cat:'Électronique', icon:'🔌', nom:'Raspberry Pi Zero 2W', prix:18.00, unite:'€/u' },
+  { id:'a4', cat:'Électronique', icon:'🔲', nom:'Bouton on/off momentané 12mm', prix:0.30, unite:'€/u' },
+  { id:'a5', cat:'Électronique', icon:'🔲', nom:'Bouton on/off avec verrou', prix:0.80, unite:'€/u' },
+  { id:'a6', cat:'Électronique', icon:'💡', nom:'LED 5mm (lot 10)', prix:0.50, unite:'€/lot' },
+  { id:'a7', cat:'Électronique', icon:'💡', nom:'Anneau LED WS2812B 12 leds', prix:2.80, unite:'€/u' },
+  { id:'a8', cat:'Électronique', icon:'📡', nom:'Module relais 5V 1 canal', prix:1.20, unite:'€/u' },
+  { id:'a9', cat:'Électronique', icon:'📡', nom:'Module relais 5V 2 canaux', prix:1.80, unite:'€/u' },
+  { id:'a10', cat:'Électronique', icon:'🔋', nom:'Résistances assortiment (600u)', prix:3.50, unite:'€/lot' },
+  // CÂBLES & CONNECTEURS
+  { id:'b1', cat:'Câbles & Connecteurs', icon:'🔗', nom:'Câble USB-C 0.5m', prix:1.50, unite:'€/u' },
+  { id:'b2', cat:'Câbles & Connecteurs', icon:'🔗', nom:'Câble USB-C 1m', prix:2.20, unite:'€/u' },
+  { id:'b3', cat:'Câbles & Connecteurs', icon:'🔗', nom:'Câble USB-C 2m', prix:3.00, unite:'€/u' },
+  { id:'b4', cat:'Câbles & Connecteurs', icon:'🔌', nom:'Connecteur USB-C femelle (lot 5)', prix:1.80, unite:'€/lot' },
+  { id:'b5', cat:'Câbles & Connecteurs', icon:'🔌', nom:'Connecteur USB-C mâle SMD', prix:0.25, unite:'€/u' },
+  { id:'b6', cat:'Câbles & Connecteurs', icon:'🔌', nom:'Connecteur JST 2 pins (lot 10)', prix:1.50, unite:'€/lot' },
+  { id:'b7', cat:'Câbles & Connecteurs', icon:'🔌', nom:'Connecteur Dupont F/F 20cm (lot 10)', prix:0.50, unite:'€/lot' },
+  { id:'b8', cat:'Câbles & Connecteurs', icon:'🔌', nom:'Câble micro-USB 1m', prix:1.20, unite:'€/u' },
+  // ALIMENTATION & CHARGEURS
+  { id:'c1', cat:'Alimentation', icon:'⚡', nom:'Chargeur USB-C 5V 3A', prix:4.50, unite:'€/u' },
+  { id:'c2', cat:'Alimentation', icon:'⚡', nom:'Chargeur USB-C 20W PD', prix:7.00, unite:'€/u' },
+  { id:'c3', cat:'Alimentation', icon:'⚡', nom:'Chargeur USB double 5V 2A', prix:3.50, unite:'€/u' },
+  { id:'c4', cat:'Alimentation', icon:'🔋', nom:'Batterie LiPo 3.7V 1000mAh', prix:5.00, unite:'€/u' },
+  { id:'c5', cat:'Alimentation', icon:'🔋', nom:'Batterie LiPo 3.7V 2000mAh', prix:7.50, unite:'€/u' },
+  { id:'c6', cat:'Alimentation', icon:'⚡', nom:'Module chargeur LiPo TP4056', prix:0.50, unite:'€/u' },
+  { id:'c7', cat:'Alimentation', icon:'⚡', nom:'Alimentation 12V 2A', prix:6.00, unite:'€/u' },
+  // MÉCANIQUE & MOUVEMENT
+  { id:'d1', cat:'Mécanique', icon:'⚙️', nom:'Moteur horloge Quartz std', prix:1.80, unite:'€/u' },
+  { id:'d2', cat:'Mécanique', icon:'⚙️', nom:'Moteur horloge silencieux', prix:3.50, unite:'€/u' },
+  { id:'d3', cat:'Mécanique', icon:'⏱️', nom:'Aiguilles horloge noires 11cm', prix:1.20, unite:'€/jeu' },
+  { id:'d4', cat:'Mécanique', icon:'⏱️', nom:'Aiguilles horloge vintage 15cm', prix:2.50, unite:'€/jeu' },
+  { id:'d5', cat:'Mécanique', icon:'⚙️', nom:'Servo moteur SG90', prix:2.50, unite:'€/u' },
+  { id:'d6', cat:'Mécanique', icon:'⚙️', nom:'Servo moteur MG996R (métal)', prix:5.50, unite:'€/u' },
+  { id:'d7', cat:'Mécanique', icon:'⚙️', nom:'Moteur DC 3-6V', prix:1.50, unite:'€/u' },
+  { id:'d8', cat:'Mécanique', icon:'🔩', nom:'Inserts filetés M3 laiton (lot 20)', prix:2.50, unite:'€/lot' },
+  { id:'d9', cat:'Mécanique', icon:'🔩', nom:'Vis M3×8 inox (lot 20)', prix:1.20, unite:'€/lot' },
+  { id:'d10', cat:'Mécanique', icon:'🔩', nom:'Vis M3×16 inox (lot 20)', prix:1.50, unite:'€/lot' },
+  { id:'d11', cat:'Mécanique', icon:'🔩', nom:'Roulements 608ZZ (lot 10)', prix:3.50, unite:'€/lot' },
+  // ÉCLAIRAGE
+  { id:'e1', cat:'Éclairage', icon:'💡', nom:'Ampoule E27 6W LED', prix:2.50, unite:'€/u' },
+  { id:'e2', cat:'Éclairage', icon:'💡', nom:'Ampoule E14 5W LED', prix:2.00, unite:'€/u' },
+  { id:'e3', cat:'Éclairage', icon:'💡', nom:'Douille E27 avec câble 1m', prix:3.80, unite:'€/u' },
+  { id:'e4', cat:'Éclairage', icon:'💡', nom:'Douille E14 avec câble 1m', prix:3.50, unite:'€/u' },
+  { id:'e5', cat:'Éclairage', icon:'💡', nom:'Ampoule Edison filament E27', prix:4.00, unite:'€/u' },
+  { id:'e6', cat:'Éclairage', icon:'🌡️', nom:'Bandeau LED 5V 1m (60 leds)', prix:3.50, unite:'€/u' },
+  { id:'e7', cat:'Éclairage', icon:'🌡️', nom:'Bandeau LED 12V RGB 5m', prix:8.00, unite:'€/rouleau' },
+  // SUPPORTS & FIXATION
+  { id:'f1', cat:'Supports & Fixation', icon:'🖼️', nom:'Support HueForge / tableau', prix:0.00, unite:'(filament seul)' },
+  { id:'f2', cat:'Supports & Fixation', icon:'🧲', nom:'Aimant néodyme 10mm (lot 10)', prix:2.00, unite:'€/lot' },
+  { id:'f3', cat:'Supports & Fixation', icon:'🧲', nom:'Aimant néodyme 20mm (lot 5)', prix:2.50, unite:'€/lot' },
+  { id:'f4', cat:'Supports & Fixation', icon:'📌', nom:'Velcro adhésif 1m', prix:2.50, unite:'€/u' },
+  { id:'f5', cat:'Supports & Fixation', icon:'🔧', nom:'Colle cyanoacrylate (tube)', prix:1.50, unite:'€/u' },
+  { id:'f6', cat:'Supports & Fixation', icon:'🔧', nom:'Colle époxy bicomposant', prix:3.00, unite:'€/u' },
+  // CONSOMMABLES RÉSINE
+  { id:'g1', cat:'Résine — Consommables', icon:'🧴', nom:'IPA 99% isopropylique (1L)', prix:3.50, unite:'€/L' },
+  { id:'g2', cat:'Résine — Consommables', icon:'🧴', nom:'IPA 99% isopropylique (5L)', prix:15.00, unite:'€/bidon' },
+  { id:'g3', cat:'Résine — Consommables', icon:'🧤', nom:'Gants nitrile (boîte 100)', prix:5.00, unite:'€/boîte' },
+  { id:'g4', cat:'Résine — Consommables', icon:'😷', nom:'Masques FFP2 (lot 10)', prix:4.00, unite:'€/lot' },
+  { id:'g5', cat:'Résine — Consommables', icon:'📄', nom:'Film FEP de remplacement', prix:8.00, unite:'€/u' },
+  { id:'g6', cat:'Résine — Consommables', icon:'📄', nom:'Film ACF de remplacement', prix:12.00, unite:'€/u' },
+  { id:'g7', cat:'Résine — Consommables', icon:'🧹', nom:'Lingettes absorbantes (lot 50)', prix:3.00, unite:'€/lot' },
+  { id:'g8', cat:'Résine — Consommables', icon:'🔆', nom:'Rouleau papier absorbant', prix:1.50, unite:'€/u' },
+  { id:'g9', cat:'Résine — Consommables', icon:'🧼', nom:'Savon mains résine (spécial)', prix:4.00, unite:'€/u' },
+  // SCOTCH & ADHÉSIFS
+  { id:'h1', cat:'Scotch & Adhésifs', icon:'📦', nom:'Scotch Kapton 20mm (33m)', prix:4.50, unite:'€/rouleau' },
+  { id:'h2', cat:'Scotch & Adhésifs', icon:'📦', nom:'Scotch double-face fort', prix:3.00, unite:'€/rouleau' },
+  { id:'h3', cat:'Scotch & Adhésifs', icon:'📦', nom:'Scotch transparent 19mm', prix:1.20, unite:'€/rouleau' },
+  { id:'h4', cat:'Scotch & Adhésifs', icon:'📦', nom:'Ruban adhésif tissu', prix:2.50, unite:'€/rouleau' },
+  { id:'h5', cat:'Scotch & Adhésifs', icon:'📦', nom:'Film aluminium autocollant', prix:5.00, unite:'€/rouleau' },
+  { id:'h6', cat:'Scotch & Adhésifs', icon:'📦', nom:'Film aluminium réflecteur', prix:4.00, unite:'€/m²' },
+  // EMBALLAGE
+  { id:'i1', cat:'Emballage', icon:'📦', nom:'Boîte kraft 10×10×5cm', prix:0.25, unite:'€/u' },
+  { id:'i2', cat:'Emballage', icon:'📦', nom:'Boîte kraft 20×15×8cm', prix:0.45, unite:'€/u' },
+  { id:'i3', cat:'Emballage', icon:'📦', nom:'Sachets zip refermables A4', prix:0.08, unite:'€/u' },
+  { id:'i4', cat:'Emballage', icon:'📦', nom:'Papier de soie (lot 50)', prix:3.00, unite:'€/lot' },
+  { id:'i5', cat:'Emballage', icon:'📦', nom:'Bulle d'air 30cm (5m)', prix:4.00, unite:'€/rouleau' },
+];
+
+let accCart = []; // {id, nom, prix, qty, custom}
+
+function renderAccCatalogue(filter='') {
+  const cats = [...new Set(ACC_CATALOGUE.map(a => a.cat))];
+  const q = filter.toLowerCase();
+  let html = '';
+  cats.forEach(cat => {
+    const items = ACC_CATALOGUE.filter(a => a.cat === cat && (
+      !q || a.nom.toLowerCase().includes(q) || a.cat.toLowerCase().includes(q)
+    ));
+    if (!items.length) return;
+    html += `<div class="acc-cat">${cat}</div><div class="acc-grid">`;
+    items.forEach(a => {
+      const inCart = accCart.some(c => c.id === a.id);
+      html += `<div class="acc-item${inCart?' in-cart':''}" onclick="toggleAcc('${a.id}')" id="acc-item-${a.id}">
+        <div class="acc-icon">${a.icon}</div>
+        <div class="acc-info">
+          <div class="acc-name" title="${a.nom}">${a.nom}</div>
+          <div class="acc-price">${a.prix > 0 ? a.prix.toFixed(2)+' '+a.unite : a.unite}</div>
+        </div>
+        ${inCart ? '<div class="acc-check">✓</div>' : ''}
+      </div>`;
+    });
+    html += '</div>';
+  });
+  if (!html) html = '<div style="font-size:.78rem;color:var(--text3);padding:1rem;text-align:center">Aucun résultat pour "'+filter+'"</div>';
+  document.getElementById('acc-catalogue').innerHTML = html;
+}
+
+function filterAcc() {
+  renderAccCatalogue(document.getElementById('acc-search').value);
+}
+
+function toggleAcc(id) {
+  const acc = ACC_CATALOGUE.find(a => a.id === id);
+  if (!acc) return;
+  const idx = accCart.findIndex(c => c.id === id);
+  if (idx >= 0) {
+    accCart.splice(idx, 1);
+  } else {
+    accCart.push({ id: acc.id, nom: acc.nom, prix: acc.prix, qty: 1, custom: false });
+  }
+  renderAccCatalogue(document.getElementById('acc-search')?.value || '');
+  renderAccCart();
+  calcAcc();
+}
+
+function addCustomAcc() {
+  const nom = (document.getElementById('acc-custom-nom').value || '').trim();
+  const prix = parseFloat(document.getElementById('acc-custom-prix').value) || 0;
+  const qty = parseInt(document.getElementById('acc-custom-qty').value) || 1;
+  if (!nom) return;
+  const id = 'custom_' + Date.now();
+  accCart.push({ id, nom, prix, qty, custom: true });
+  document.getElementById('acc-custom-nom').value = '';
+  document.getElementById('acc-custom-prix').value = '';
+  document.getElementById('acc-custom-qty').value = 1;
+  renderAccCart();
+  calcAcc();
+}
+
+function updateAccQty(id, delta) {
+  const item = accCart.find(c => c.id === id);
+  if (!item) return;
+  item.qty = Math.max(1, (item.qty || 1) + delta);
+  renderAccCart();
+  renderAccCatalogue(document.getElementById('acc-search')?.value || '');
+  calcAcc();
+}
+
+function removeAccItem(id) {
+  accCart = accCart.filter(c => c.id !== id);
+  renderAccCatalogue(document.getElementById('acc-search')?.value || '');
+  renderAccCart();
+  calcAcc();
+}
+
+function renderAccCart() {
+  const block = document.getElementById('acc-cart-block');
+  const rows = document.getElementById('acc-cart-rows');
+  const totalEl = document.getElementById('acc-cart-total');
+  if (!accCart.length) { if(block) block.style.display = 'none'; return; }
+  if(block) block.style.display = 'block';
+  let total = 0;
+  rows.innerHTML = accCart.map(item => {
+    const subtotal = item.prix * (item.qty || 1);
+    total += subtotal;
+    return `<div class="cart-row">
+      <span class="cr-name">${item.nom}</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="cr-del" onclick="updateAccQty('${item.id}',-1)">−</button>
+        <span class="cr-qty">${item.qty||1}</span>
+        <button class="cr-del" onclick="updateAccQty('${item.id}',1)">+</button>
+      </div>
+      <span class="cr-prix">${subtotal.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>
+      <button class="cr-del" onclick="removeAccItem('${item.id}')">✕</button>
+    </div>`;
+  }).join('');
+  if(totalEl) totalEl.textContent = total.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' €';
+}
+
+function calcAcc() {
+  if (curTech !== 'accessoires') return;
+  const mat = accCart.reduce((s, a) => s + a.prix * (a.qty||1), 0);
+  const mo = (v('acc-mo-min') / 60) * v('acc-taux');
+  const embal = v('acc-embal');
+  const rate = (mat + mo + embal) * v('acc-rate') / 100;
+  updateSummary({ mat, elec: 0, amo: 0, maint: 0, mo, embal, rate, pieces: 1 });
+}
+
+// Patch triggerCalc pour accessoires
+const _origTrigger = triggerCalc;
+// On écrase directement
+triggerCalc = function() {
+  if(curTech==='fdm')calcFDM();
+  else if(curTech==='resine')calcResine();
+  else if(curTech==='sublimation')calcSub();
+  else if(curTech==='broderie')calcBrod();
+  else if(curTech==='flex')calcFlex();
+  else if(curTech==='badge')calcBadge();
+  else if(curTech==='accessoires')calcAcc();
+};
+
+// Init accessoires
+setTimeout(() => { renderAccCatalogue(); renderAccCart(); }, 100);
 
 // ============================================================
 // INIT
