@@ -1453,19 +1453,40 @@ window.toggleExcel=function(){document.getElementById("excelPanel").classList.to
 window.askReset=function(){document.getElementById("modalReset").classList.add("open");};
 window.closeReset=function(){document.getElementById("modalReset").classList.remove("open");};
 window.doReset=function(){
+  // Conserver le stock actuel avant de vider la journée
+  var stockSauvegarde={};
+  Object.keys(stockData).forEach(function(k){stockSauvegarde[k]=stockData[k];});
+  var disabledSauvegarde={};
+  Object.keys(disabledProducts).forEach(function(k){disabledSauvegarde[k]=disabledProducts[k];});
+  var promoSauvegarde={};
+  Object.keys(promoCodes).forEach(function(k){promoSauvegarde[k]=promoCodes[k];});
+
+  // Réinitialiser uniquement les données de vente
   tickets=[];totalCA=0;cart=[];payMode=null;wheelGains=[];clients=[];activePromo=null;
   fondCaisse=0;sortiesCaisse=[];autresVentes=[];donsTombola=[];gainsObjets=[];
+  salesData={};
+  PRODUCTS.forEach(function(p){salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};});
+
+  // Restaurer le stock, les désactivations et les codes promo
+  stockData=stockSauvegarde;
+  disabledProducts=disabledSauvegarde;
+  promoCodes=promoSauvegarde;
+
   if(typeof window.stopOffreFlash==="function")window.stopOffreFlash();
   document.getElementById("nbVentes").textContent="0";
   document.getElementById("caJour").textContent="0,00\u00a0€";
   document.getElementById("caTotal").textContent="0,00\u00a0€";
   document.getElementById("discountInput").value="";
   ["btnCB","btnCash","btnSumup","btnVir"].forEach(function(id){var b=document.getElementById(id);if(b)b.classList.remove("selected");});
-  try{localStorage.removeItem(SAVE_KEY);}catch(e){}
-  renderCart();updateTotals();renderTickets();renderExcelPanel();renderStockPanel();renderProducts();updateStandCartActive();
+
+  // Sauvegarder immédiatement avec le nouveau jour
+  sauvegarder();
+
+  renderCart();updateTotals();renderTickets();renderExcelPanel();renderStockPanel();renderProducts();
+  if(typeof updateStandCartActive==="function")updateStandCartActive();
   if(typeof renderCaisse==="function"){renderCaisse();renderAutres();renderDons();}
   closeReset();
-  showToast("✅ Nouveau jour démarré !");
+  showToast("✅ Nouveau jour — stock conservé !");
 };
 
 // ── CODES PROMO ────────────────────────────────────────────────
