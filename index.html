@@ -1249,6 +1249,10 @@ window.confirmerPaiement=function(){
   document.getElementById("modalOverlay").classList.add("open");
   renderTickets();renderExcelPanel();renderStockPanel();
   sauvegarder();
+  // Ouvrir tiroir si paiement espèces
+  if(ticket.mode==="Espèces"){
+    set(ref(db,"tiroir/trigger"),{trigger:true,ts:Date.now()});
+  }
   showToast("✅ Encaissé !");
 };
 
