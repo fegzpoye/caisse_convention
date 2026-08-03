@@ -1249,6 +1249,8 @@ window.confirmerPaiement=function(){
   document.getElementById("modalOverlay").classList.add("open");
   renderTickets();renderExcelPanel();renderStockPanel();
   sauvegarder();
+  // Envoyer notification Discord
+  sendDiscordVente(ticket);
   // Ouvrir tiroir si paiement espèces
   if(ticket.mode==="Espèces"){
     set(ref(db,"tiroir/trigger"),{trigger:true,ts:Date.now()});
@@ -1594,6 +1596,121 @@ window.triggerTiroir=function(){
   set(ref(db,"tiroir/trigger"),{trigger:true,ts:Date.now()});
   showToast("🗄️ Tiroir ouvert !");
 };
+
+// ── DISCORD WEBHOOK ──────────────────────────────────────────
+var DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1533982399174807673/K29qRnBByD3tcUz9f-oPIkQk_mppW89ahcWrtMkknws9O0uTbZE8kYzY7gA5z-OgiyDr";
+
+function sendDiscordVente(ticket){
+  try{
+    var isEspeces = ticket.mode==="Espèces";
+    var modeEmoji = isEspeces?"💵":"📱";
+    var modeLabel = isEspeces?"Espèces":"SumUp";
+    var modeColor = isEspeces?0x2ECC71:0x7C3F9E; // vert espèces, violet sumup
+    var caTotal   = tickets.reduce(function(s,t){return s+t.total;},0);
+    var nbVentes  = tickets.length;
+
+    // Barre de progression CA (sur 500€ objectif)
+    var objectif  = 500;
+    var pct       = Math.min(Math.round(caTotal/objectif*100),100);
+    var barFill   = Math.round(pct/10);
+    var bar       = "█".repeat(barFill)+"░".repeat(10-barFill)+" "+pct+"%";
+
+    // Liste articles joliment formatée
+    var items = ticket.items.map(function(i){
+      return i.emoji+" **"+i.name+"** × "+i.qty+" — `"+fmt(i.price*i.qty)+"`";
+    }).join("\n");
+    if(!items)items="—";
+
+    var embed = {
+      username:"🛒 Caisse Shaya",
+      avatar_url:"https://votrenom.github.io/caisse/images/logo.png",
+      embeds:[{
+        title: modeEmoji+" Nouvelle vente encaissée !",
+        description:"Une vente vient d'être enregistrée sur le stand **Les Projets de Shaya**",
+        color: modeColor,
+        fields:[
+          {
+            name:"🛍️ Articles vendus",
+            value:items,
+            inline:false
+          },
+          {
+            name:"💰 Montant",
+            value:"**`"+fmt(ticket.total)+"`**",
+            inline:true
+          },
+          {
+            name:modeEmoji+" Paiement",
+            value:"**"+modeLabel+"**",
+            inline:true
+          },
+          {
+            name:"🎫 Ticket",
+            value:"**#"+("000"+ticket.num).slice(-3)+"**",
+            inline:true
+          },
+          {
+            name:"📊 CA du jour",
+            value:"**`"+fmt(caTotal)+"`**",
+            inline:true
+          },
+          {
+            name:"🏪 Nb ventes",
+            value:"**"+nbVentes+" vente(s)**",
+            inline:true
+          },
+          {
+            name:"🕐 Heure",
+            value:"**"+ticket.time+"**",
+            inline:true
+          },
+          {
+            name:"🎯 Objectif "+fmt(objectif),
+            value:"`"+bar+"`",
+            inline:false
+          }
+        ],
+        thumbnail:{url:"https://votrenom.github.io/caisse/images/logo.png"},
+        footer:{
+          text:"Les Projets de Shaya • Convention",
+          icon_url:"https://votrenom.github.io/caisse/images/logo.png"
+        },
+        timestamp: new Date().toISOString()
+      }]
+    };
+
+    fetch(DISCORD_WEBHOOK,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(embed)
+    }).catch(function(e){console.warn("Discord webhook erreur:",e);});
+  }catch(e){console.warn("Discord erreur:",e);}
+}
+
+function sendDiscordStockBas(produit, stock){
+  try{
+    var embed = {
+      username:"⚠️ Alerte Stock Shaya",
+      embeds:[{
+        title:"⚠️ Stock bas — "+produit.emoji+" "+produit.label,
+        description:"Il ne reste que **"+stock+" unité(s)** en stock !",
+        color:0xFF6B35,
+        fields:[
+          {name:"📦 Stock restant",value:"**"+stock+" unité(s)**",inline:true},
+          {name:"💰 Prix unitaire",value:"**`"+fmt(produit.price)+"`**",inline:true},
+          {name:"🏷️ Catégorie",value:produit.cat,inline:true}
+        ],
+        footer:{text:"Les Projets de Shaya — Alerte Stock automatique"},
+        timestamp: new Date().toISOString()
+      }]
+    };
+    fetch(DISCORD_WEBHOOK,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(embed)
+    }).catch(function(e){});
+  }catch(e){}
+}
 
 var toastTimer;
 function showToast(msg,isWheel){
