@@ -259,6 +259,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .client-btns .save{background:var(--green);border:none;color:#fff}
 .client-btns button:active{transform:scale(.97)}
 .ticket-autre{border-left:2px solid var(--blue) !important}
+.objectif-bar-wrap{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border2);border-radius:99px;padding:4px 12px;min-width:160px}
+.objectif-bar-track{flex:1;height:6px;background:var(--surface3);border-radius:99px;overflow:hidden;min-width:80px}
+.objectif-bar-fill{height:100%;border-radius:99px;transition:width .5s ease;background:linear-gradient(90deg,#7C3F9E,#D4A843)}
+.objectif-bar-fill.done{background:linear-gradient(90deg,#2ecc71,#27ae60)}
+.objectif-bar-fill.halfway{background:linear-gradient(90deg,#e67e22,#D4A843)}
+.objectif-label{font-size:10px;font-family:'DM Mono',monospace;color:var(--text2);white-space:nowrap}
+::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:99px}
@@ -359,6 +366,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="event-badge"><div class="event-dot"></div><span>Convention/Marché</span></div>
   </div>
   <div class="topbar-right">
+    <div class="objectif-bar-wrap" title="Objectif CA">
+      <span style="font-size:11px">🎯</span>
+      <div class="objectif-bar-track">
+        <div class="objectif-bar-fill" id="objectifBarFill" style="width:0%"></div>
+      </div>
+      <span class="objectif-label" id="objectifBarLabel">0 / 0 €</span>
+    </div>
     <div class="stat-pill"><span>Ventes</span><strong id="nbVentes">0</strong></div>
     <div class="stat-pill"><span>CA</span><strong id="caJour">0,00 €</strong></div>
     <div class="stat-pill-solde"><span style="color:var(--text2);margin-right:4px">Solde</span><strong id="soldeCaisse">0,00 €</strong></div>
@@ -538,6 +552,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="cp-solde-box"><div class="cp-solde-lbl">Solde caisse</div><div class="cp-solde-val" id="cpSoldeVal">0,00 €</div><div class="cp-solde-detail" id="cpSoldeDetail">-</div></div>
     <div><div class="cp-section-title">Fond de caisse</div>
       <div class="cp-add-form"><div class="cp-input-row"><input class="cp-input" id="cpFond" type="text" inputmode="decimal" placeholder="Ex: 150"><span style="color:var(--text3);font-size:13px;flex-shrink:0">€</span><button class="cp-btn" onclick="setFondCaisse()">OK</button></div></div>
+    </div>
+    <div><div class="cp-section-title">🎯 Objectif CA</div>
+      <div class="cp-add-form">
+        <div class="cp-input-row"><input class="cp-input" id="cpObjectif" type="text" inputmode="decimal" placeholder="Ex: 500"><span style="color:var(--text3);font-size:13px;flex-shrink:0">€</span><button class="cp-btn" style="background:linear-gradient(135deg,#7C3F9E,#D4A843)" onclick="setObjectif()">OK</button></div>
+        <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:4px">Définissez votre objectif pour ce marché/convention</div>
+      </div>
+      <div class="cp-solde-box" id="objectifBox" style="display:none;margin-top:6px;background:rgba(124,63,158,.08);border-color:rgba(124,63,158,.3)">
+        <div class="cp-solde-lbl">Progression</div>
+        <div class="objectif-bar-track" style="margin:6px auto;max-width:200px;height:10px">
+          <div class="objectif-bar-fill" id="objectifBarFill2" style="width:0%"></div>
+        </div>
+        <div class="cp-solde-val" id="objectifPct" style="font-size:20px;color:var(--purple)">0%</div>
+        <div class="cp-solde-detail" id="objectifDetail">0 € / 0 €</div>
+      </div>
     </div>
     <div><div class="cp-section-title">Sortie de caisse</div>
       <div class="cp-add-form">
@@ -1050,7 +1078,7 @@ function sauvegarder(){
     localStorage.setItem(SAVE_KEY,JSON.stringify({
       tickets:tickets,totalCA:totalCA,salesData:salesData,
       stockData:stockData,wheelGains:wheelGains,clients:clients,
-      promoCodes:promoCodes,disabledProducts:disabledProducts,fondCaisse:fondCaisse,sortiesCaisse:sortiesCaisse,
+      promoCodes:promoCodes,disabledProducts:disabledProducts,fondCaisse:fondCaisse,objectifCA:objectifCA,sortiesCaisse:sortiesCaisse,
       autresVentes:autresVentes,donsTombola:donsTombola,gainsObjets:gainsObjets,
       date:new Date().toLocaleDateString("fr-FR")
     }));
@@ -1081,6 +1109,7 @@ function restaurer(){
     if(data.promoCodes)promoCodes=data.promoCodes;
     if(data.disabledProducts)disabledProducts=data.disabledProducts;
     if(data.fondCaisse!==undefined)fondCaisse=data.fondCaisse;
+    if(data.objectifCA!==undefined)objectifCA=data.objectifCA;
     if(data.sortiesCaisse)sortiesCaisse=data.sortiesCaisse;
     if(data.autresVentes)autresVentes=data.autresVentes;
     if(data.donsTombola)donsTombola=data.donsTombola;
@@ -1610,7 +1639,7 @@ function sendDiscordVente(ticket){
     var nbVentes  = tickets.length;
 
     // Barre de progression CA (sur 500€ objectif)
-    var objectif  = 500;
+    var objectif  = objectifCA > 0 ? objectifCA : 500;
     var pct       = Math.min(Math.round(caTotal/objectif*100),100);
     var barFill   = Math.round(pct/10);
     var bar       = "█".repeat(barFill)+"░".repeat(10-barFill)+" "+pct+"%";
@@ -1670,7 +1699,7 @@ function sendDiscordVente(ticket){
             inline:false
           }
         ],
-        thumbnail:{url:"https://votrenom.github.io/caisse/images/logo.png"},
+        thumbnail:{url:"https://fegzpoye.github.io/caisse/images/logo.png"},
         footer:{
           text:"Les Projets de Shaya • Convention",
           icon_url:"https://votrenom.github.io/caisse/images/logo.png"
@@ -1754,6 +1783,7 @@ function updateSoldeCaisse(){
   var sorTot=sortiesCaisse.reduce(function(s,v){return s+v.montant;},0);
   var solde=fondCaisse+caEsp+autTot-sorTot;
   var st=document.getElementById("soldeCaisse");if(st)st.textContent=fmt(solde);
+  updateObjectifBar();
   var sv=document.getElementById("cpSoldeVal");if(sv){sv.textContent=fmt(solde);sv.style.color=solde>=0?"var(--green)":"#e94560";}
   var sd=document.getElementById("cpSoldeDetail");if(sd)sd.textContent="Fond: "+fmt(fondCaisse)+" + Esp: "+fmt(caEsp)+" + Autres: "+fmt(autTot)+" - Sorties: "+fmt(sorTot);
 }
@@ -1762,6 +1792,48 @@ window.toggleCaisse=function(){document.getElementById("caissePanel").classList.
 window.toggleAutres=function(){document.getElementById("autresPanel").classList.toggle("open");renderAutres();};
 window.toggleDons=function(){document.getElementById("donsPanel").classList.toggle("open");renderDons();};
 // ── CAISSE ────────────────────────────────────────────────────
+window.setObjectif=function(){
+  var raw=(document.getElementById("cpObjectif").value||"").replace(",",".");
+  var val=parseFloat(raw)||0;
+  if(val<=0){showToast("Entrez un objectif valide");return;}
+  objectifCA=val;
+  document.getElementById("cpObjectif").value=val;
+  updateObjectifBar();
+  renderCaisse();
+  sauvegarder();
+  showToast("🎯 Objectif fixé à "+fmt(val)+" !");
+};
+
+function updateObjectifBar(){
+  var ca=totalCA;
+  var obj=objectifCA;
+  if(obj<=0){
+    document.getElementById("objectifBarFill").style.width="0%";
+    document.getElementById("objectifBarLabel").textContent="Pas d'objectif";
+    var box=document.getElementById("objectifBox");if(box)box.style.display="none";
+    return;
+  }
+  var pct=Math.min(Math.round(ca/obj*100),100);
+  var fill=document.getElementById("objectifBarFill");
+  var fill2=document.getElementById("objectifBarFill2");
+  var label=document.getElementById("objectifBarLabel");
+  var pctEl=document.getElementById("objectifPct");
+  var detail=document.getElementById("objectifDetail");
+  var box=document.getElementById("objectifBox");
+  if(fill){
+    fill.style.width=pct+"%";
+    fill.className="objectif-bar-fill"+(pct>=100?" done":pct>=50?" halfway":"");
+  }
+  if(fill2){
+    fill2.style.width=pct+"%";
+    fill2.className="objectif-bar-fill"+(pct>=100?" done":pct>=50?" halfway":"");
+  }
+  if(label)label.textContent=fmt(ca)+" / "+fmt(obj);
+  if(pctEl)pctEl.textContent=pct+"%";
+  if(detail)detail.textContent=fmt(ca)+" encaissé sur "+fmt(obj)+" d'objectif";
+  if(box)box.style.display=pct>0?"block":"none";
+}
+
 window.setFondCaisse=function(){
   var raw=(document.getElementById("cpFond").value||"").replace(",",".");var val=parseFloat(raw)||0;
   fondCaisse=val;document.getElementById("cpFond").value=val;updateSoldeCaisse();renderCaisse();sauvegarder();showToast("Fond: "+fmt(val));
@@ -1778,7 +1850,9 @@ window.addSortie=function(){
 window.deleteSortie=function(idx){sortiesCaisse.splice(idx,1);updateSoldeCaisse();renderCaisse();sauvegarder();};
 function renderCaisse(){
   var el=document.getElementById("cpFond");if(el&&!el.value)el.value=fondCaisse||"";
+  var eo=document.getElementById("cpObjectif");if(eo&&!eo.value&&objectifCA)eo.value=objectifCA;
   updateSoldeCaisse();
+  updateObjectifBar();
   var histo=document.getElementById("cpHistorique");if(!histo)return;
   if(!sortiesCaisse.length){histo.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:10px'>Aucune sortie</div>";return;}
   var h="";sortiesCaisse.slice().reverse().forEach(function(s,i){var ri=sortiesCaisse.length-1-i;
@@ -1903,6 +1977,7 @@ renderStockPanel();
 renderPromoCodes();
 renderCaisse();
 renderAutres();
+updateObjectifBar();
 renderDons();
 renderCart();
 updateTotals();
