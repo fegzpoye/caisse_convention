@@ -376,6 +376,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <button class="btn-wheel" id="topLaunchBtn" onclick="quickLaunch()">▶️ Lancer</button>
     <button class="btn-sm" onclick="togglePromo()">🏷️ Promos</button>
     <button class="btn-flash" id="btnFlash" onclick="toggleFlash()">⚡ Flash</button>
+    <button class="btn-sm" onclick="triggerTiroir()" title="Ouvrir le tiroir manuellement">🗄️ Tiroir</button>
     <button class="btn-reset" onclick="askReset()">↺ Nouveau jour</button>
   </div>
 </div>
@@ -1582,6 +1583,12 @@ window.disableAllProducts=function(){
   PRODUCTS.forEach(function(p){disabledProducts[p.id]=true;});
   renderStockPanel();renderProducts();sauvegarder();
   showToast("🚫 Tous les produits désactivés");
+};
+
+// ── TIROIR-CAISSE ─────────────────────────────────────────────
+window.triggerTiroir=function(){
+  set(ref(db,"tiroir/trigger"),{trigger:true,ts:Date.now()});
+  showToast("🗄️ Tiroir ouvert !");
 };
 
 var toastTimer;
