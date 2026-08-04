@@ -1918,7 +1918,7 @@ window.downloadReapPDF=function(){
       if(showSugg&&sugg>0){
         doc.setTextColor(VIOLET_L[0],VIOLET_L[1],VIOLET_L[2]);
         doc.setFont("helvetica","bold");
-        doc.text("→ "+sugg+" unités",margin+162,y+4);
+        doc.text(">> "+sugg+" unites",margin+162,y+4);
       }
       y+=8;
     });
@@ -1926,9 +1926,9 @@ window.downloadReapPDF=function(){
   }
 
   // ── SECTIONS ────────────────────────────────────────────────
-  drawTable("🔴 ÉPUISÉS — Priorité absolue",180,40,40,epuises,true);
-  drawTable("🟠 STOCK BAS — À surveiller",200,110,20,bas,true);
-  drawTable("🟢 EN STOCK — Pour information",30,130,70,ok,false);
+  drawTable(">> EPUISES — Priorite absolue",180,40,40,epuises,true);
+  drawTable(">> STOCK BAS — A surveiller",200,110,20,bas,true);
+  drawTable(">> EN STOCK — Pour information",30,130,70,ok,false);
 
   // ── FOOTER TOUTES PAGES ─────────────────────────────────────
   var pageCount=doc.internal.getNumberOfPages();
@@ -1947,7 +1947,7 @@ window.downloadReapPDF=function(){
 
   var filename="reappro_"+today.replace(/[/]/g,"-")+".pdf";
   doc.save(filename);
-  showToast("🖨️ PDF téléchargé !");
+  showToast("PDF telecharge !");
 };
 
 var toastTimer;
