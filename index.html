@@ -355,6 +355,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .btn-flash.on{animation:flashBtnGlow 1s ease-in-out infinite alternate}
 @keyframes flashBtnGlow{from{box-shadow:0 0 8px rgba(233,69,96,.4)}to{box-shadow:0 0 22px rgba(233,69,96,.8)}}
 </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -382,6 +383,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <button class="btn-sm" onclick="toggleCaisse()">💰 Caisse</button>
     <button class="btn-sm" onclick="toggleAutres()">📦 Autres</button>
     <button class="btn-sm" onclick="toggleDons()">🎁 Dons</button>
+    <button class="btn-sm" onclick="downloadReapPDF()">🖨️ Réappro</button>
     <button class="btn-xl" onclick="toggleExcel()">📊 Excel Live</button>
     <div class="mode-switch">
       <button class="mode-btn active" id="modeBtnWheel" onclick="setStandMode('wheel')">🎡 Roue</button>
@@ -479,6 +481,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
       <button class="sp-reset-btn" style="flex:1;color:var(--accent2)" onclick="disableAllProducts()">🚫 Tout désactiver</button>
     </div>
     <button class="sp-reset-btn" onclick="resetAllStock()">↺ Remettre tous les stocks à zéro</button>
+    <button class="sp-reset-btn" style="color:#7C3F9E;border-color:rgba(124,63,158,.4);font-weight:600" onclick="downloadReapPDF()">🖨️ PDF Réapprovisionnement</button>
   </div>
 </div>
 
@@ -1741,6 +1744,211 @@ function sendDiscordStockBas(produit, stock){
     }).catch(function(e){});
   }catch(e){}
 }
+
+
+// ── PDF RÉAPPROVISIONNEMENT ───────────────────────────────────
+window.downloadReapPDF=function(){
+  if(!window.jspdf){showToast("jsPDF non chargé, réessayez");return;}
+  var {jsPDF}=window.jspdf;
+  var doc=new jsPDF({orientation:"portrait",unit:"mm",format:"a4"});
+  var today=new Date().toLocaleDateString("fr-FR");
+  var pageW=210,margin=14,y=0;
+
+  // Palette DA Shaya
+  var VIOLET=[44,26,74];
+  var VIOLET_L=[124,63,158];
+  var GOLD=[212,168,67];
+  var WHITE=[255,255,255];
+  var LIGHT=[248,245,255];
+
+  // ── HEADER ──────────────────────────────────────────────────
+  // Fond dégradé simulé (rectangles)
+  doc.setFillColor(VIOLET[0],VIOLET[1],VIOLET[2]);
+  doc.rect(0,0,pageW,38,"F");
+  doc.setFillColor(VIOLET_L[0],VIOLET_L[1],VIOLET_L[2]);
+  doc.rect(0,30,pageW,8,"F");
+  // Bande gold
+  doc.setFillColor(GOLD[0],GOLD[1],GOLD[2]);
+  doc.rect(0,37,pageW,2,"F");
+
+  // Titre
+  doc.setTextColor(WHITE[0],WHITE[1],WHITE[2]);
+  doc.setFontSize(22);
+  doc.setFont("helvetica","bold");
+  doc.text("Les Projets de Shaya", margin, 16);
+  doc.setFontSize(11);
+  doc.setFont("helvetica","normal");
+  doc.setTextColor(GOLD[0],GOLD[1],GOLD[2]);
+  doc.text("Fiche de réapprovisionnement", margin, 25);
+  doc.setTextColor(200,180,220);
+  doc.setFontSize(9);
+  doc.text(today, pageW-margin, 16, {align:"right"});
+
+  y=48;
+
+  // ── RÉSUMÉ ──────────────────────────────────────────────────
+  var epuises=[],bas=[],ok=[];
+  PRODUCTS.forEach(function(p){
+    if(disabledProducts[p.id])return;
+    var s=stockData[p.id]!==undefined?stockData[p.id]:0;
+    if(s<=0)epuises.push(p);
+    else if(s<=3)bas.push(p);
+    else ok.push(p);
+  });
+
+  var totalVendu=Object.values(salesData).reduce(function(s,d){return s+(d.qty||0);},0);
+  var caJour=totalCA;
+
+  // Cartes résumé
+  var cardW=(pageW-margin*2-8)/3;
+  function drawCard(x,yw,label,val,col){
+    doc.setFillColor(col[0],col[1],col[2]);
+    doc.roundedRect(x,yw,cardW,22,3,3,"F");
+    doc.setFillColor(col[0]-15,col[1]-15,col[2]-15);
+    doc.roundedRect(x,yw,cardW,22,3,3,"S");
+    doc.setTextColor(WHITE[0],WHITE[1],WHITE[2]);
+    doc.setFontSize(20);
+    doc.setFont("helvetica","bold");
+    doc.text(val.toString(),x+cardW/2,yw+13,{align:"center"});
+    doc.setFontSize(7);
+    doc.setFont("helvetica","normal");
+    doc.setTextColor(WHITE[0],WHITE[1],WHITE[2]);
+    doc.text(label,x+cardW/2,yw+19,{align:"center"});
+  }
+  drawCard(margin,y,"ÉPUISÉS",epuises.length,[180,40,40]);
+  drawCard(margin+cardW+4,y,"STOCK BAS",bas.length,[190,100,20]);
+  drawCard(margin+cardW*2+8,y,"EN STOCK",ok.length,[30,130,70]);
+  y+=30;
+
+  // Ligne infos convention
+  doc.setFillColor(LIGHT[0],LIGHT[1],LIGHT[2]);
+  doc.roundedRect(margin,y,pageW-margin*2,12,2,2,"F");
+  doc.setTextColor(VIOLET[0],VIOLET[1],VIOLET[2]);
+  doc.setFontSize(8);
+  doc.setFont("helvetica","bold");
+  doc.text("CA du jour : "+fmt(caJour),margin+4,y+7);
+  doc.text("Articles vendus : "+totalVendu+" unités",margin+60,y+7);
+  doc.text("Objectif : "+(objectifCA>0?fmt(objectifCA):"Non défini"),margin+120,y+7);
+  y+=18;
+
+  // ── FONCTION TABLEAU ────────────────────────────────────────
+  function suggQty(p){
+    var vendu=salesData[p.id]?salesData[p.id].qty:0;
+    var stock=stockData[p.id]||0;
+    if(stock===0)return Math.max(Math.ceil(vendu*2),5);
+    if(stock<=3)return Math.max(10-stock,3);
+    return 0;
+  }
+
+  function drawTable(titre,couleurR,couleurG,couleurB,liste,showSugg){
+    if(!liste.length)return;
+    if(y>250){doc.addPage();y=20;}
+
+    // Titre section
+    doc.setFillColor(couleurR,couleurG,couleurB);
+    doc.roundedRect(margin,y,pageW-margin*2,9,2,2,"F");
+    doc.setTextColor(WHITE[0],WHITE[1],WHITE[2]);
+    doc.setFontSize(9);
+    doc.setFont("helvetica","bold");
+    doc.text(titre+" — "+liste.length+" article(s)",margin+4,y+6);
+    y+=13;
+
+    // Header colonnes
+    doc.setFillColor(VIOLET[0]+30,VIOLET[1]+30,VIOLET[2]+30);
+    doc.rect(margin,y,pageW-margin*2,7,"F");
+    doc.setTextColor(WHITE[0],WHITE[1],WHITE[2]);
+    doc.setFontSize(7.5);
+    doc.setFont("helvetica","bold");
+    doc.text("Article",margin+2,y+5);
+    doc.text("Catégorie",margin+76,y+5);
+    doc.text("Prix",margin+112,y+5);
+    doc.text("Stock",margin+128,y+5);
+    doc.text("Vendu",margin+146,y+5);
+    if(showSugg)doc.text("Suggestion",margin+162,y+5);
+    y+=9;
+
+    liste.forEach(function(p,i){
+      if(y>275){
+        doc.addPage();
+        y=20;
+        // Re-header
+        doc.setFillColor(VIOLET[0]+30,VIOLET[1]+30,VIOLET[2]+30);
+        doc.rect(margin,y,pageW-margin*2,7,"F");
+        doc.setTextColor(WHITE[0],WHITE[1],WHITE[2]);
+        doc.setFontSize(7.5);
+        doc.setFont("helvetica","bold");
+        doc.text("Article",margin+2,y+5);
+        doc.text("Catégorie",margin+76,y+5);
+        doc.text("Prix",margin+112,y+5);
+        doc.text("Stock",margin+128,y+5);
+        doc.text("Vendu",margin+146,y+5);
+        if(showSugg)doc.text("Suggestion",margin+162,y+5);
+        y+=9;
+      }
+
+      var stock=stockData[p.id]||0;
+      var vendu=salesData[p.id]?salesData[p.id].qty:0;
+      var sugg=suggQty(p);
+
+      // Alternance
+      if(i%2===0){
+        doc.setFillColor(LIGHT[0],LIGHT[1],LIGHT[2]);
+        doc.rect(margin,y-1,pageW-margin*2,8,"F");
+      }
+
+      doc.setTextColor(30,20,50);
+      doc.setFontSize(7.5);
+      doc.setFont("helvetica","normal");
+      // Nom article (tronqué si trop long)
+      var nom=p.label;
+      if(nom.length>30)nom=nom.substring(0,28)+"..";
+      doc.text(nom,margin+2,y+4);
+      doc.text(p.cat,margin+76,y+4,{maxWidth:32});
+      doc.text(fmt(p.price),margin+112,y+4);
+
+      // Stock coloré
+      if(stock===0){doc.setTextColor(200,40,40);doc.setFont("helvetica","bold");doc.text("ÉPUISÉ",margin+128,y+4);}
+      else if(stock<=3){doc.setTextColor(200,110,0);doc.setFont("helvetica","bold");doc.text(stock.toString(),margin+128,y+4);}
+      else{doc.setTextColor(30,140,70);doc.setFont("helvetica","normal");doc.text(stock.toString(),margin+128,y+4);}
+
+      doc.setTextColor(80,60,100);
+      doc.setFont("helvetica","normal");
+      doc.text(vendu>0?vendu.toString():"—",margin+146,y+4);
+
+      if(showSugg&&sugg>0){
+        doc.setTextColor(VIOLET_L[0],VIOLET_L[1],VIOLET_L[2]);
+        doc.setFont("helvetica","bold");
+        doc.text("→ "+sugg+" unités",margin+162,y+4);
+      }
+      y+=8;
+    });
+    y+=6;
+  }
+
+  // ── SECTIONS ────────────────────────────────────────────────
+  drawTable("🔴 ÉPUISÉS — Priorité absolue",180,40,40,epuises,true);
+  drawTable("🟠 STOCK BAS — À surveiller",200,110,20,bas,true);
+  drawTable("🟢 EN STOCK — Pour information",30,130,70,ok,false);
+
+  // ── FOOTER TOUTES PAGES ─────────────────────────────────────
+  var pageCount=doc.internal.getNumberOfPages();
+  for(var i=1;i<=pageCount;i++){
+    doc.setPage(i);
+    doc.setFillColor(VIOLET[0],VIOLET[1],VIOLET[2]);
+    doc.rect(0,287,pageW,10,"F");
+    doc.setFillColor(GOLD[0],GOLD[1],GOLD[2]);
+    doc.rect(0,287,pageW,1.5,"F");
+    doc.setTextColor(200,180,220);
+    doc.setFontSize(7);
+    doc.setFont("helvetica","normal");
+    doc.text("Les Projets de Shaya — Réapprovisionnement "+today,margin,293);
+    doc.text("Page "+i+" / "+pageCount,pageW-margin,293,{align:"right"});
+  }
+
+  var filename="reappro_"+today.replace(/[/]/g,"-")+".pdf";
+  doc.save(filename);
+  showToast("🖨️ PDF téléchargé !");
+};
 
 var toastTimer;
 function showToast(msg,isWheel){
