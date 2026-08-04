@@ -1257,6 +1257,7 @@ window.confirmerPaiement=function(){
   var now=new Date();
   var ticket={num:tickets.length+1,items:cart.map(function(i){return{id:i.id,name:i.name,cat:i.cat,price:i.price,qty:i.qty,emoji:i.emoji};}),total:total,mode:payMode==="Especes"?"Espèces":payMode,promoCode:activePromo?activePromo.code:null,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR"),disc:disc};
   tickets.unshift(ticket);totalCA+=total;
+  updateObjectifBar();
   cart.forEach(function(item){
     salesData[item.id].qty+=item.qty;
     salesData[item.id].ca+=item.price*item.qty;
@@ -1702,7 +1703,7 @@ function sendDiscordVente(ticket){
         thumbnail:{url:"https://fegzpoye.github.io/caisse/images/logo.png"},
         footer:{
           text:"Les Projets de Shaya • Convention",
-          icon_url:"https://votrenom.github.io/caisse/images/logo.png"
+          icon_url:"https://fegzpoye.github.io/caisse/images/logo.png"
         },
         timestamp: new Date().toISOString()
       }]
