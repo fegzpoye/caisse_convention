@@ -944,12 +944,21 @@ var PRODUCTS=[
   {id:83, label:"Veilleuse dragon",      price:15,   cat:"Impression 3D", emoji:"🐉",  type:"print3d"},
   {id:84, label:"Déco bohème",           price:25,   cat:"Impression 3D", emoji:"🌙",  type:"print3d"},
   {id:85, label:"Boite de Tetris",       price:30,   cat:"Impression 3D", emoji:"🎮",  type:"print3d"},
+  // ────── 🐴 IMPRESSION 3D — Cheval ──────
+  {id:86, label:"Plaque murale chevaux",  price:15,   cat:"Impression 3D", emoji:"🐴",  type:"print3d"},
+  {id:87, label:"Petit buste cheval",     price:13,   cat:"Impression 3D", emoji:"🐴",  type:"print3d"},
+  {id:88, label:"Porte crayon cheval",    price:18,   cat:"Impression 3D", emoji:"✏️",  type:"print3d"},
+  {id:89, label:"Botte cowboy",           price:18,   cat:"Impression 3D", emoji:"🥾",  type:"print3d"},
+  {id:90, label:"Love cheval",            price:15,   cat:"Impression 3D", emoji:"❤️",  type:"print3d"},
   // ────── 🔑 IMPRESSION 3D — Porte-clés ──────
   {id:18, label:"Porte-clés",                 price:3.50, cat:"Impression 3D", emoji:"🔑",  type:"print3d"},
   // ────── 🧵 BRODERIE ──────
   {id:47, label:"Serviette brodée",           price:10,   cat:"Broderie",      emoji:"🧵",  type:"brod"},
   // ────── 🧴 FLEX ──────
   {id:48, label:"Gobelet flex",               price:10,   cat:"Flex",          emoji:"🥤",  type:"flex"},
+  // ────── 🐴 FLEX — Cheval ──────
+  {id:91, label:"Fer a cheval",           price:13,   cat:"Flex",          emoji:"🧲",  type:"flex"},
+  {id:92, label:"Pinces a sacs",          price:10,   cat:"Flex",          emoji:"🪄",  type:"flex"},
   // ────── 🎁 PACKS ──────
   {id:23, label:"Pack Souvenir",              price:28,   cat:"Pack",          emoji:"🎁",  type:"pack", desc:"Mug + Porte-clés"},
   {id:24, label:"Pack Duo",                   price:35,   cat:"Pack",          emoji:"🎀",  type:"pack", desc:"T-shirt + Mug"},
@@ -1057,6 +1066,13 @@ var STOCK_DEPART = {
   83:1,   // Veilleuse dragon
   84:1,   // Déco bohème
   85:1,   // Boite de Tetris
+  86:1,   // Plaque murale chevaux
+  87:1,   // Petit buste cheval
+  88:1,   // Porte crayon cheval
+  89:1,   // Botte cowboy
+  90:1,   // Love cheval
+  91:1,   // Fer a cheval flex
+  92:1,   // Pinces a sacs flex
   18:221, // Porte-clés
   // 🧵 Broderie / Flex
   47:0,   // Serviette brodée
@@ -1074,7 +1090,7 @@ PRODUCTS.forEach(function(p){
 });
 
 // ── LOCALSTORAGE ───────────────────────────────────────────────
-var SAVE_KEY="shaya_caisse_v5";  // Incrémenté pour forcer reset propre
+var SAVE_KEY="shaya_caisse_v6";  // Incrémenté pour forcer reset propre
 
 function sauvegarder(){
   try{
