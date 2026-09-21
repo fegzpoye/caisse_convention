@@ -2104,30 +2104,15 @@ window.addAutreVente=function(){
   var label=document.getElementById("autreLabel").value.trim();
   var raw=(document.getElementById("autreMontant").value||"").replace(",",".");var montant=parseFloat(raw)||0;
   if(!label){showToast("Entrez une description");return;}if(montant<=0){showToast("Entrez un montant");return;}
-  var now=new Date();
-  // Créer un vrai ticket visible dans les commandes
-  var ticket={
-    num:tickets.length+1,
-    items:[{id:0,name:label,cat:"Autre",price:montant,qty:1,emoji:"📦"}],
-    total:montant,
-    mode:payMode||"Espèces",
-    promoCode:null,
-    time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
-    date:now.toLocaleDateString("fr-FR"),
-    disc:0,
-    isAutre:true
-  };
-  tickets.unshift(ticket);
-  autresVentes.push({label:label,montant:montant,time:ticket.time,date:ticket.date});
-  totalCA+=montant;
-  document.getElementById("nbVentes").textContent=tickets.length;
-  document.getElementById("caJour").textContent=fmt(totalCA);
-  document.getElementById("caTotal").textContent=fmt(totalCA);
-  document.getElementById("autreLabel").value="";document.getElementById("autreMontant").value="";
-  // Mettre à jour les modes de paiement dans salesData (cat Autre)
-  renderTickets();renderExcelPanel();
-  updateSoldeCaisse();renderAutres();sauvegarder();
-  showToast("📦 "+label+" — "+fmt(montant)+" ajouté !");
+  // Ajouter au panier comme article normal
+  cart.push({id:"autre_"+Date.now(),name:label,cat:"Autre",price:montant,qty:1,emoji:"📦",isAutre:true});
+  autresVentes.push({label:label,montant:montant,time:new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:new Date().toLocaleDateString("fr-FR")});
+  document.getElementById("autreLabel").value="";
+  document.getElementById("autreMontant").value="";
+  // Fermer panel Autres et afficher panier
+  toggleAutres();
+  renderCart();updateTotals();renderAutres();sauvegarder();
+  showToast("📦 "+label+" ajouté au panier !");
 };
 window.deleteAutreVente=function(idx){
   var v=autresVentes[idx];
