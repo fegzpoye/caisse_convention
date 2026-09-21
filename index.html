@@ -1291,11 +1291,21 @@ window.confirmerPaiement=function(){
   tickets.unshift(ticket);totalCA+=total;
   updateObjectifBar();
   cart.forEach(function(item){
-    salesData[item.id].qty+=item.qty;
-    salesData[item.id].ca+=item.price*item.qty;
-    // Décompter stock
-    if(stockData[item.id]!==undefined&&stockData[item.id]<99){
+    // Gérer les articles "autre" qui ont un id string
+    if(salesData[item.id]){
+      salesData[item.id].qty+=item.qty;
+      salesData[item.id].ca+=item.price*item.qty;
+    } else {
+      // Article hors catalogue (autre vente)
+      salesData[item.id]={name:item.name,cat:item.cat||"Autre",emoji:item.emoji||"📦",price:item.price,qty:item.qty,ca:item.price*item.qty};
+    }
+    // Décompter stock (seulement articles catalogue)
+    if(typeof item.id==="number"&&stockData[item.id]!==undefined&&stockData[item.id]<9999){
       stockData[item.id]=Math.max(0,stockData[item.id]-item.qty);
+      if(stockData[item.id]<=3&&stockData[item.id]>0){
+        var prodBas=PRODUCTS.find(function(p){return p.id===item.id;});
+        if(prodBas)sendDiscordStockBas(prodBas,stockData[item.id]);
+      }
     }
   });
   document.getElementById("nbVentes").textContent=tickets.length;
