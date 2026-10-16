@@ -1200,6 +1200,17 @@ window.addToCart=function(id){
   showToast(prod.emoji+" "+prod.label+" ajouté");renderCart();updateTotals();updateStandCartActive();
 };
 
+window.changeQtyById=function(id,delta){
+  var idx=cart.findIndex(function(i){return i.id==id;});
+  if(idx===-1)return;
+  if(delta>0){
+    var stock=stockData[id]!==undefined?stockData[id]:99;
+    if(stock<99&&cart[idx].qty>=stock){showToast("⚠️ Stock insuffisant");return;}
+  }
+  cart[idx].qty+=delta;
+  if(cart[idx].qty<=0)cart.splice(idx,1);
+  renderCart();updateTotals();updateStandCartActive();
+};
 window.changeQty=function(id,delta){
   var idx=cart.findIndex(function(i){return i.id===id;});
   if(idx===-1)return;
@@ -1219,10 +1230,11 @@ function renderCart(){
   document.getElementById("cartCount").textContent=count;
   if(!cart.length){container.innerHTML="<div class='empty-cart'><div style='font-size:30px;opacity:.35'>🛒</div><span>Panier vide</span><span style='font-size:11px;color:var(--text3)'>Touchez un article</span></div>";return;}
   var html="";
-  cart.forEach(function(item){
+  cart.forEach(function(item,idx){
+    var sid=JSON.stringify(item.id);
     html+="<div class='cart-item'><div style='font-size:18px'>"+item.emoji+"</div>";
     html+="<div class='cart-item-info'><div class='cart-item-name'>"+item.name+"</div><div class='cart-item-sub'>"+fmt(item.price)+" / unité</div></div>";
-    html+="<div class='qty-ctrl'><button class='qty-btn' onclick='changeQty("+item.id+",-1)'>−</button><span class='qty-num'>"+item.qty+"</span><button class='qty-btn' onclick='changeQty("+item.id+",1)'>+</button></div>";
+    html+="<div class='qty-ctrl'><button class='qty-btn' onclick='changeQtyById("+sid+",-1)'>−</button><span class='qty-num'>"+item.qty+"</span><button class='qty-btn' onclick='changeQtyById("+sid+",1)'>+</button></div>";
     html+="<div class='cart-item-price'>"+fmt(item.price*item.qty)+"</div></div>";
   });
   container.innerHTML=html;
