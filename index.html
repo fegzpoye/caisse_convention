@@ -54,6 +54,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 .fb-indicator{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3)}
 .fb-dot-small{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green)}
 .fb-dot-small.off{background:#e94560;box-shadow:0 0 4px #e94560}
+/* Synchronisation SHAYA MANAGER */
+.sync-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--text3);margin-right:5px;vertical-align:middle}
+.sync-dot.ok{background:var(--green);box-shadow:0 0 4px var(--green)}
+.sync-dot.attente{background:var(--amber);box-shadow:0 0 4px var(--amber)}
+.sync-dot.erreur{background:#e94560;box-shadow:0 0 4px #e94560}
+#btnSync{position:relative}
+#syncCompte{position:absolute;top:-6px;right:-6px;min-width:14px;padding:0 4px;border-radius:7px;background:var(--amber);color:#1a1a1a;font-size:9px;font-weight:700;line-height:14px;text-align:center;pointer-events:none}
+#syncCompte:empty{display:none}
+.tk-sync{font-size:10px;margin-left:6px;color:var(--text3)}
+.tk-sync.attente{color:var(--amber)}
+.tk-sync.erreur{color:#e94560}
+.sync-select{width:100%;text-align:left;font-family:'DM Sans',sans-serif;font-weight:400;font-size:12px}
 .wheel-result-box{width:100%;background:rgba(233,69,96,.07);border:1px solid rgba(233,69,96,.25);border-radius:var(--r-sm);padding:10px 14px;display:flex;align-items:center;gap:12px;animation:resultIn .4s cubic-bezier(.34,1.56,.64,1)}
 @keyframes resultIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
 .wheel-result-emoji{font-size:2rem;flex-shrink:0}
@@ -378,6 +390,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
     <div class="stat-pill"><span>CA</span><strong id="caJour">0,00 €</strong></div>
     <div class="stat-pill-solde"><span style="color:var(--text2);margin-right:4px">Solde</span><strong id="soldeCaisse">0,00 €</strong></div>
     <div class="fb-indicator"><div class="fb-dot-small" id="fbDotSmall"></div><span id="fbLabelSmall">...</span></div>
+    <button class="btn-sm" id="btnSync" onclick="toggleSync()" title="Synchronisation avec SHAYA MANAGER" aria-label="Synchronisation avec SHAYA MANAGER" style="padding:6px 8px"><span class="sync-dot" id="syncDot"></span>🔄<span id="syncCompte"></span></button>
     <button class="btn-sm" onclick="toggleTickets()">Tickets</button>
     <button class="btn-sm" onclick="toggleStock()">📦 Stock</button>
     <button class="btn-sm" onclick="toggleCaisse()">💰 Caisse</button>
@@ -549,6 +562,33 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);hei
 </div>
 
 <!-- Panel Caisse -->
+<div class="caisse-panel" id="syncPanel">
+  <div class="cp-header"><h3>🔄 SHAYA MANAGER</h3><button class="btn-sm" onclick="toggleSync()">✕</button></div>
+  <div class="cp-body">
+    <div class="cp-solde-box"><div class="cp-solde-lbl">Synchronisation</div><div class="cp-solde-val" id="syncEtatVal" style="font-size:17px">Non configurée</div><div class="cp-solde-detail" id="syncEtatDetail">-</div></div>
+    <div><div class="cp-section-title">Événement du jour</div>
+      <select class="cp-input sync-select" id="syncEvenement" onchange="choisirEvenement(this.value)"><option value="">— Aucun (caisse hors événement) —</option></select>
+      <div class="cp-solde-detail" id="syncEvenementInfo" style="margin-top:4px;text-align:left"></div>
+    </div>
+    <button class="cp-btn" style="width:100%" onclick="synchroniserMaintenant()">Synchroniser maintenant</button>
+    <div class="cp-solde-detail" id="syncRecues" style="text-align:left"></div>
+    <div id="syncBloqueesBloc" style="display:none"><div class="cp-section-title" style="color:#e94560">À vérifier</div><div id="syncBloquees"></div>
+      <button class="btn-sm" style="margin-top:6px" onclick="reessayerBloquees()">Réessayer</button></div>
+    <div><div class="cp-section-title">Catalogue et appareil</div>
+      <div class="cp-solde-detail" id="syncCatalogue" style="text-align:left"></div>
+      <div class="cp-solde-detail" id="syncStockage" style="text-align:left;margin-top:4px"></div>
+    </div>
+    <div><div class="cp-section-title">Connexion de cet appareil</div>
+      <div class="cp-add-form">
+        <input class="cp-input sync-select" id="syncUrl" type="url" placeholder="Adresse de l'API (https://…/api/caisse/v1)" autocomplete="off">
+        <input class="cp-input sync-select" id="syncJeton" type="password" placeholder="Jeton de l'appareil (shc_…)" autocomplete="off">
+        <div class="cp-input-row"><button class="cp-btn" onclick="enregistrerConnexion()">Enregistrer et tester</button><button class="btn-sm" onclick="oublierConnexion()">Oublier le jeton</button></div>
+      </div>
+      <div class="cp-solde-detail" id="syncConnexionInfo" style="margin-top:4px;text-align:left"></div>
+    </div>
+  </div>
+</div>
+
 <div class="caisse-panel" id="caissePanel">
   <div class="cp-header"><h3>💰 Caisse</h3><button class="btn-sm" onclick="toggleCaisse()">✕</button></div>
   <div class="cp-body">
@@ -1088,8 +1128,152 @@ PRODUCTS.forEach(function(p){
   stockData[p.id] = STOCK_DEPART[p.id] !== undefined ? STOCK_DEPART[p.id] : 9999;
 });
 
+// ── CATALOGUE DE SHAYA MANAGER (catalogue principal) ──────────────────────────────────────────
+// Un produit relié dans SHAYA MANAGER remplace le produit de même numéro (désignation, prix,
+// catégorie, icône, référence, famille) ; un produit retiré dans SHAYA MANAGER est masqué ici ; un
+// article créé dans SHAYA MANAGER pour la caisse s'ajoute. Les produits pas encore reliés restent
+// affichés tels quels. Le dernier catalogue reçu est gardé sur l'appareil : mêmes prix hors ligne.
+var PRODUITS_CAISSE=PRODUCTS.slice();               // produits intégrés à la page
+var CATALOGUE_CLE="shaya_caisse_catalogue";         // {produits, miseAJour, recuLe}
+var catalogueShaya=null;
+function typeAffichage(cat){return cat==="Sublimation"?"sublim":cat==="Broderie"?"brod":cat==="Flex"?"flex":cat==="Pack"?"pack":"print3d";}
+function lireCatalogueLocal(){try{var c=JSON.parse(localStorage.getItem(CATALOGUE_CLE)||"null");return c&&Array.isArray(c.produits)?c:null;}catch(e){return null;}}
+function appliquerCatalogue(cat){
+  catalogueShaya=cat||null;
+  var liste=PRODUITS_CAISSE.map(function(p){return Object.assign({},p);});
+  if(cat)cat.produits.forEach(function(s){
+    if(!s||typeof s.numero!=="number"||!isFinite(s.numero))return;
+    var i=liste.findIndex(function(p){return p.id===s.numero;});
+    if(!s.actif){if(i>=0)liste.splice(i,1);return;}
+    var avant=i>=0?liste[i]:null;
+    var p={id:s.numero,label:String(s.nom||""),price:Number(s.prix)||0,cat:s.categorie||"Autre",emoji:s.emoji||(avant&&avant.emoji)||"📦",type:typeAffichage(s.categorie),
+      reference:s.reference||null,famille:s.famille||null};
+    if(s.description)p.desc=String(s.description);else if(avant&&avant.desc)p.desc=avant.desc;
+    if(i>=0)liste[i]=p;else liste.push(p);
+  });
+  PRODUCTS=liste;
+  PRODUCTS.forEach(function(p){
+    if(!salesData[p.id])salesData[p.id]={name:p.label,cat:p.cat,emoji:p.emoji,price:p.price,qty:0,ca:0};
+    if(stockData[p.id]===undefined)stockData[p.id]=STOCK_DEPART[p.id]!==undefined?STOCK_DEPART[p.id]:9999;
+  });
+}
+
 // ── LOCALSTORAGE ───────────────────────────────────────────────
 var SAVE_KEY="shaya_caisse_v8";  // Incrémenté pour forcer reset propre
+
+// ── CONSERVATION DES VENTES (SHAYA) ──────────────────────────────
+// Chaque vente reçoit un identifiant unique et permanent et l'heure réelle d'encaissement.
+// Avant toute remise à zéro (« Nouveau jour » ou changement de date), la journée est archivée sur
+// l'appareil (IndexedDB « shaya-caisse »), sans les coordonnées des gagnants : rien n'est perdu.
+var ARCHIVE_PREFIXE="shaya_caisse_journee_";   // copie immédiate, transférée ensuite dans IndexedDB
+var ARCHIVES_JOURS=120;                         // durée de conservation des journées archivées
+function nouvelIdentifiant(){
+  if(window.crypto&&crypto.randomUUID)return crypto.randomUUID();
+  var b=new Uint8Array(16);crypto.getRandomValues(b);b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;
+  var h=Array.prototype.map.call(b,function(x){return("0"+x.toString(16)).slice(-2);}).join("");
+  return h.slice(0,8)+"-"+h.slice(8,12)+"-"+h.slice(12,16)+"-"+h.slice(16,20)+"-"+h.slice(20);
+}
+function arrondi(n){return Math.round((n+Number.EPSILON)*100)/100;}
+// Totaux du panier : remise manuelle + code promo (100 % au plus), arrondis au centime. Utilisé par
+// l'affichage, la monnaie à rendre et l'encaissement : le ticket enregistre exactement ce qui est payé.
+function calculerTotaux(){
+  var sub=arrondi(cart.reduce(function(s,i){return s+i.price*i.qty;},0));
+  var disc=parseFloat(document.getElementById("discountInput").value)||0;
+  var promoPct=activePromo?activePromo.pct:0;
+  var totalPct=Math.min(100,Math.max(0,disc+promoPct));
+  var remise=arrondi(sub*totalPct/100);
+  return {sub:sub,disc:disc,promoPct:promoPct,totalPct:totalPct,remise:remise,total:arrondi(sub-remise)};
+}
+// Remise répartie sur les lignes (statistiques) : la somme des lignes nettes égale le total payé.
+function repartirRemise(lignes,totalPct,total){
+  var res=lignes.map(function(i){
+    var brut=arrondi(i.price*i.qty);
+    var l={id:i.id,name:i.name,cat:i.cat,price:i.price,qty:i.qty,emoji:i.emoji,isAutre:!!i.isAutre,totalBrut:brut,totalNet:arrondi(brut*(1-totalPct/100))};
+    // Instantané du produit vendu (catalogue de SHAYA MANAGER) : référence et famille au moment de la vente.
+    if(i.reference)l.reference=i.reference;
+    if(i.famille)l.famille=i.famille;
+    return l;
+  });
+  var ecart=arrondi(total-res.reduce(function(s,l){return s+l.totalNet;},0));
+  if(ecart!==0&&res.length){var p=res.reduce(function(a,l){return l.totalNet>a.totalNet?l:a;},res[0]);p.totalNet=arrondi(p.totalNet+ecart);}
+  return res;
+}
+function ticketsEncaisses(){return tickets.filter(function(t){return t.statut!=="annule";});}
+function caEncaisse(){return arrondi(ticketsEncaisses().reduce(function(s,t){return s+t.total;},0));}
+// Données d'une journée à archiver (les coordonnées des gagnants ne sont jamais archivées).
+function donneesJournee(d){
+  return {date:d.date,tickets:d.tickets||[],salesData:d.salesData||{},autresVentes:d.autresVentes||[],sortiesCaisse:d.sortiesCaisse||[],
+    fondCaisse:d.fondCaisse||0,donsTombola:d.donsTombola||[],gainsObjets:d.gainsObjets||[],wheelGains:d.wheelGains||[]};
+}
+function journeeNonVide(j){return (j.tickets.length||j.autresVentes.length||j.sortiesCaisse.length||j.donsTombola.length||j.gainsObjets.length)>0;}
+// Copie synchrone dans localStorage (immédiate, survit à une fermeture), puis transfert dans IndexedDB.
+function archiverDonnees(d,motif){
+  var j=donneesJournee(d);
+  if(!journeeNonVide(j))return true;
+  j.motif=motif;j.archiveeLe=new Date().toISOString();j.cle=(j.date||"").split("/").reverse().join("-")+"_"+Date.now();
+  try{localStorage.setItem(ARCHIVE_PREFIXE+j.cle,JSON.stringify(j));}
+  catch(e){
+    // Mémoire locale pleine : écriture directe dans IndexedDB (ou échec signalé si indisponible).
+    if(!window.indexedDB)return false;
+    ouvrirBaseCaisse().then(function(db){return ecrireArchive(db,j);}).catch(function(){});
+    return true;
+  }
+  migrerArchivesEnAttente();
+  return true;
+}
+function ecrireArchive(db,j){
+  return new Promise(function(ok,ko){
+    var tx=db.transaction("journees","readwrite");tx.objectStore("journees").put(j);
+    tx.oncomplete=function(){ok();};tx.onerror=function(){ko(tx.error);};
+  });
+}
+var baseCaisse=null;
+function ouvrirBaseCaisse(){
+  if(baseCaisse)return baseCaisse;
+  baseCaisse=new Promise(function(ok,ko){
+    if(!window.indexedDB){ko(new Error("IndexedDB indisponible"));return;}
+    var r=indexedDB.open("shaya-caisse",1);
+    r.onupgradeneeded=function(){
+      var db=r.result;
+      if(!db.objectStoreNames.contains("journees"))db.createObjectStore("journees",{keyPath:"cle"});
+      if(!db.objectStoreNames.contains("file"))db.createObjectStore("file",{keyPath:"cle"});
+      if(!db.objectStoreNames.contains("reglages"))db.createObjectStore("reglages",{keyPath:"cle"});
+    };
+    r.onsuccess=function(){var db=r.result;db.onversionchange=function(){db.close();baseCaisse=null;};ok(db);};
+    r.onerror=function(){ko(r.error);};
+  });
+  baseCaisse.catch(function(){baseCaisse=null;});
+  return baseCaisse;
+}
+window.ouvrirBaseCaisse=ouvrirBaseCaisse;
+function migrerArchivesEnAttente(){
+  var cles=[];
+  for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf(ARCHIVE_PREFIXE)===0)cles.push(k);}
+  if(!cles.length)return Promise.resolve();
+  return ouvrirBaseCaisse().then(function(db){
+    return Promise.all(cles.map(function(k){
+      return new Promise(function(ok){
+        var j;try{j=JSON.parse(localStorage.getItem(k));}catch(e){ok();return;}
+        // Copie locale retirée seulement une fois l'archive écrite dans IndexedDB.
+        ecrireArchive(db,j).then(function(){localStorage.removeItem(k);ok();},function(){ok();});
+      });
+    })).then(function(){return purgerArchives(db);});
+  }).catch(function(){});
+}
+function purgerArchives(db){
+  var limite=Date.now()-ARCHIVES_JOURS*86400000;
+  return new Promise(function(ok){
+    var tx=db.transaction("journees","readwrite");var st=tx.objectStore("journees");
+    st.openCursor().onsuccess=function(e){var c=e.target.result;if(!c)return;if(Date.parse(c.value.archiveeLe)<limite)c.delete();c.continue();};
+    tx.oncomplete=ok;tx.onerror=ok;
+  });
+}
+function listerArchives(){
+  return ouvrirBaseCaisse().then(function(db){return new Promise(function(ok){
+    var req=db.transaction("journees").objectStore("journees").getAll();
+    req.onsuccess=function(){ok(req.result||[]);};req.onerror=function(){ok([]);};
+  });}).catch(function(){return [];});
+}
 
 function sauvegarder(){
   try{
@@ -1106,6 +1290,8 @@ function sauvegarder(){
 }
 window.sauvegarder=sauvegarder;
 
+var archiveImpossible=null;   // date d'une journée restée ouverte faute d'archivage possible
+var identifiantsAjoutes=false; // ventes de l'ancienne version : identifiants à enregistrer tout de suite
 function restaurer(){
   try{
     var raw=localStorage.getItem(SAVE_KEY);
@@ -1113,15 +1299,26 @@ function restaurer(){
     var data=JSON.parse(raw);
     var today=new Date().toLocaleDateString("fr-FR");
     if(data.date!==today){
-      // Nouveau jour — on garde uniquement le stock
-      if(data.stockData){for(var id in data.stockData){stockData[parseInt(id)]=data.stockData[id];}}
-      localStorage.removeItem(SAVE_KEY);
-      return false;
+      // Nouveau jour calendaire : la journée précédente est d'abord archivée sur l'appareil (SHAYA).
+      // Stock, produits masqués et codes promo sont conservés, comme avec le bouton « Nouveau jour ».
+      if(archiverDonnees(data,"changement-de-date")){
+        if(data.stockData){for(var id in data.stockData){stockData[parseInt(id)]=data.stockData[id];}}
+        if(data.disabledProducts)disabledProducts=data.disabledProducts;
+        if(data.promoCodes)promoCodes=data.promoCodes;
+        localStorage.removeItem(SAVE_KEY);
+        return false;
+      }
+      // Archivage impossible : la journée précédente reste ouverte (rien n'est perdu), à exporter
+      // en Excel puis à clôturer avec « Nouveau jour ».
+      archiveImpossible=data.date;
     }
     tickets=data.tickets||[];
-    // Recalculer totalCA depuis les tickets pour éviter tout cumul incorrect
-    totalCA=tickets.reduce(function(s,t){return s+t.total;},0);
-    if(data.salesData){for(var sid in data.salesData){salesData[parseInt(sid)]=data.salesData[sid];}}
+    // Tickets antérieurs à la correction : identifiant attribué (jamais modifié ensuite).
+    tickets.forEach(function(t){if(!t.uid){t.uid=nouvelIdentifiant();identifiantsAjoutes=true;}if(!t.statut)t.statut="encaisse";});
+    // Recalculer totalCA depuis les tickets encaissés (les tickets annulés sont conservés, non comptés)
+    totalCA=caEncaisse();
+    // Clés « autre_… » conservées telles quelles (parseInt les réduisait à « NaN ») — SHAYA
+    if(data.salesData){for(var sid in data.salesData){salesData[isNaN(parseInt(sid))?sid:parseInt(sid)]=data.salesData[sid];}}
     if(data.stockData){for(var sid2 in data.stockData){stockData[parseInt(sid2)]=data.stockData[sid2];}}
     if(data.promoCodes){promoCodes=data.promoCodes;}
     if(data.promoCodes)promoCodes=data.promoCodes;
@@ -1196,7 +1393,7 @@ window.addToCart=function(id){
   var ex=cart.find(function(i){return i.id===id;});
   if(ex) inCart=ex.qty;
   if(stock<99&&inCart>=stock){showToast("⚠️ Stock insuffisant ("+stock+" dispo)");return;}
-  if(ex){ex.qty++;}else{cart.push({id:prod.id,name:prod.label,price:prod.price,emoji:prod.emoji,cat:prod.cat,qty:1});}
+  if(ex){ex.qty++;}else{cart.push({id:prod.id,name:prod.label,price:prod.price,emoji:prod.emoji,cat:prod.cat,qty:1,reference:prod.reference||null,famille:prod.famille||null});}
   showToast(prod.emoji+" "+prod.label+" ajouté");renderCart();updateTotals();updateStandCartActive();
 };
 
@@ -1241,11 +1438,9 @@ function renderCart(){
 }
 
 function updateTotals(){
-  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
-  var disc=parseFloat(document.getElementById("discountInput").value)||0;
-  var totalDisc=disc+(activePromo?activePromo.pct:0);
-  if(totalDisc>100)totalDisc=100;
-  var discAmt=sub*totalDisc/100,total=sub-discAmt;
+  // Même calcul que l'encaissement : remise manuelle + code promo, arrondi au centime (SHAYA).
+  var t0=calculerTotaux();
+  var sub=t0.sub,totalDisc=t0.totalPct,discAmt=t0.remise,total=t0.total;
   document.getElementById("subTotal").textContent=fmt(sub);
   document.getElementById("totalTTC").textContent=fmt(total);
   document.getElementById("payBtnAmt").textContent=fmt(total);
@@ -1281,21 +1476,27 @@ window.selectMode=function(mode){
 
 window.confirmerPaiement=function(){
   if(!cart.length||!payMode)return;
-  var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);
-  var disc=parseFloat(document.getElementById("discountInput").value)||0;
-  var total=sub-sub*disc/100;
+  // Montant enregistré = montant réellement encaissé (remise manuelle ET code promo) — SHAYA.
+  var t0=calculerTotaux();
+  var total=t0.total;
   var now=new Date();
-  var ticket={num:tickets.length+1,items:cart.map(function(i){return{id:i.id,name:i.name,cat:i.cat,price:i.price,qty:i.qty,emoji:i.emoji};}),total:total,mode:payMode==="Especes"?"Espèces":payMode,promoCode:activePromo?activePromo.code:null,time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR"),disc:disc};
-  tickets.unshift(ticket);totalCA+=total;
+  var ticket={num:tickets.length+1,uid:nouvelIdentifiant(),encaisseLe:now.toISOString(),statut:"encaisse",evenementId:evenementCourant(),
+    items:repartirRemise(cart,t0.totalPct,total),sousTotal:t0.sub,remise:t0.remise,total:total,
+    mode:payMode==="Especes"?"Espèces":payMode,promoCode:activePromo?activePromo.code:null,promoPct:t0.promoPct,
+    time:now.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:now.toLocaleDateString("fr-FR"),disc:t0.disc};
+  tickets.unshift(ticket);totalCA=arrondi(totalCA+total);
+  // « Autres ventes » : inscrites à l'encaissement (et non à l'ajout au panier), avec le moyen de paiement.
+  ticket.items.forEach(function(l){if(l.isAutre)autresVentes.push({label:l.name,montant:l.totalNet,qty:l.qty,prixUnitaire:l.price,
+    time:ticket.time,date:ticket.date,ticketUid:ticket.uid,ticketNum:ticket.num,mode:ticket.mode,annule:false});});
   updateObjectifBar();
-  cart.forEach(function(item){
-    // Gérer les articles "autre" qui ont un id string
+  ticket.items.forEach(function(item){
+    // Gérer les articles "autre" qui ont un id string ; chiffre d'affaires net de remise (SHAYA)
     if(salesData[item.id]){
       salesData[item.id].qty+=item.qty;
-      salesData[item.id].ca+=item.price*item.qty;
+      salesData[item.id].ca=arrondi(salesData[item.id].ca+item.totalNet);
     } else {
       // Article hors catalogue (autre vente)
-      salesData[item.id]={name:item.name,cat:item.cat||"Autre",emoji:item.emoji||"📦",price:item.price,qty:item.qty,ca:item.price*item.qty};
+      salesData[item.id]={name:item.name,cat:item.cat||"Autre",emoji:item.emoji||"📦",price:item.price,qty:item.qty,ca:item.totalNet};
     }
     // Décompter stock (seulement articles catalogue)
     if(typeof item.id==="number"&&stockData[item.id]!==undefined&&stockData[item.id]<9999){
@@ -1306,19 +1507,21 @@ window.confirmerPaiement=function(){
       }
     }
   });
-  document.getElementById("nbVentes").textContent=tickets.length;
+  document.getElementById("nbVentes").textContent=ticketsEncaisses().length;
   document.getElementById("caJour").textContent=fmt(totalCA);
   document.getElementById("caTotal").textContent=fmt(totalCA);
   var icons={CB:"💳","Espèces":"💵",SumUp:"📱",Virement:"🏦"};
   document.getElementById("modalIcon").textContent=icons[ticket.mode]||"✅";
   document.getElementById("modalAmount").textContent=fmt(total);
   document.getElementById("modalLabel").textContent="Payé par "+ticket.mode;
-  document.getElementById("mStatVentes").textContent=tickets.length;
+  document.getElementById("mStatVentes").textContent=ticketsEncaisses().length;
   document.getElementById("mStatCA").textContent=fmt(totalCA);
   window.resetLaunchBtn();
   document.getElementById("modalOverlay").classList.add("open");
   renderTickets();renderExcelPanel();renderStockPanel();
   sauvegarder();
+  // Transmission à SHAYA MANAGER : file d'envoi durable, envoi immédiat si la connexion le permet.
+  mettreEnFileVente(ticket);
   // Envoyer notification Discord
   sendDiscordVente(ticket);
   // Ouvrir tiroir si paiement espèces
@@ -1389,11 +1592,11 @@ window.resetAllStock=function(){
 function renderExcelPanel(){
   var body=document.getElementById("epBody");
   var hasData=Object.values(salesData).some(function(s){return s.qty>0;});
-  if(!hasData){body.innerHTML="<div style='padding:20px;text-align:center;color:var(--text3);font-size:13px'>Aucune vente pour le moment</div>";return;}
+  if(!hasData){body.innerHTML="<div style='padding:20px;text-align:center;color:var(--text3);font-size:13px'>Aucune vente pour le moment</div>";afficherArchives(body);return;}
   var tSub=0,t3D=0,tPack=0,qSub=0,q3D=0,qPack=0;
   Object.values(salesData).forEach(function(s){if(s.cat==="Sublimation"){tSub+=s.ca;qSub+=s.qty;}else if(s.cat==="Pack"){tPack+=s.ca;qPack+=s.qty;}else{t3D+=s.ca;q3D+=s.qty;}});
   var sold=Object.values(salesData).filter(function(s){return s.qty>0;}).sort(function(a,b){return b.qty-a.qty;});
-  var modeCA={};tickets.forEach(function(t){modeCA[t.mode]=(modeCA[t.mode]||0)+t.total;});
+  var modeCA={};ticketsEncaisses().forEach(function(t){modeCA[t.mode]=(modeCA[t.mode]||0)+t.total;});
   var html="<div class='ep-section'><div class='ep-section-title'>CA par catégorie</div><div class='ep-kpi-grid'>";
   html+="<div class='ep-kpi'><div class='ep-kpi-val' style='color:var(--accent)'>"+fmt(tSub)+"</div><div class='ep-kpi-lbl'>Sublimation ("+qSub+" art.)</div></div>";
   html+="<div class='ep-kpi'><div class='ep-kpi-val' style='color:#7c6af7'>"+fmt(t3D)+"</div><div class='ep-kpi-lbl'>Impression 3D ("+q3D+" art.)</div></div>";
@@ -1405,17 +1608,42 @@ function renderExcelPanel(){
   Object.entries(modeCA).forEach(function(e){html+="<tr><td>"+e[0]+"</td><td class='num'>"+fmt(e[1])+"</td></tr>";});
   html+="</tbody></table></div><button class='ep-dl-btn' onclick='downloadExcel()'>⬇ Télécharger Excel complet</button>";
   body.innerHTML=html;
+  afficherArchives(body);
 }
+// Journées archivées sur l'appareil (SHAYA) : export Excel d'une journée passée.
+function afficherArchives(body){
+  listerArchives().then(function(liste){
+    if(!liste.length)return;
+    liste.sort(function(a,b){return a.cle<b.cle?1:-1;});
+    var h="<div class='ep-section'><div class='ep-section-title'>Journées archivées sur cet appareil</div><table class='ep-table'><tbody>";
+    liste.forEach(function(j){
+      var enc=(j.tickets||[]).filter(function(t){return t.statut!=="annule";});
+      var ca=enc.reduce(function(s,t){return s+t.total;},0);
+      h+="<tr><td>"+j.date+"<br><span style='font-size:10px;color:var(--text3)'>"+enc.length+" vente(s) · "+(j.motif==="nouveau-jour"?"Nouveau jour":"changement de date")+"</span></td><td class='num'>"+fmt(ca)+"</td><td class='num'><button class='btn-sm' onclick='exporterArchive(\""+j.cle+"\")'>⬇ Excel</button></td></tr>";
+    });
+    var div=document.createElement("div");div.innerHTML=h+"</tbody></table></div>";body.appendChild(div);
+  });
+}
+window.exporterArchive=function(cle){
+  listerArchives().then(function(liste){
+    var j=liste.find(function(x){return x.cle===cle;});if(!j)return;
+    // État de la journée archivée chargé le temps de l'export, puis état courant rétabli.
+    var sauve={tickets:tickets,salesData:salesData,autresVentes:autresVentes,sortiesCaisse:sortiesCaisse,fondCaisse:fondCaisse,donsTombola:donsTombola,gainsObjets:gainsObjets,wheelGains:wheelGains,clients:clients};
+    tickets=j.tickets;salesData=j.salesData;autresVentes=j.autresVentes;sortiesCaisse=j.sortiesCaisse;fondCaisse=j.fondCaisse;donsTombola=j.donsTombola;gainsObjets=j.gainsObjets;wheelGains=j.wheelGains;clients=[];
+    try{window.downloadExcel(j.date);}
+    finally{tickets=sauve.tickets;salesData=sauve.salesData;autresVentes=sauve.autresVentes;sortiesCaisse=sauve.sortiesCaisse;fondCaisse=sauve.fondCaisse;donsTombola=sauve.donsTombola;gainsObjets=sauve.gainsObjets;wheelGains=sauve.wheelGains;clients=sauve.clients;}
+  });
+};
 
-window.downloadExcel=function(){
+window.downloadExcel=function(dateForcee){
   if(!tickets.length){showToast("Aucune vente à exporter");return;}
   var wb=XLSX.utils.book_new();
-  var today=new Date().toLocaleDateString("fr-FR");
+  var today=typeof dateForcee==="string"?dateForcee:new Date().toLocaleDateString("fr-FR");
   var dd=today.split("/");var dateFile=dd[0]+"-"+dd[1]+"-"+dd[2];
-  var modeCA={};tickets.forEach(function(t){modeCA[t.mode]=(modeCA[t.mode]||0)+t.total;});
+  var modeCA={};ticketsEncaisses().forEach(function(t){modeCA[t.mode]=(modeCA[t.mode]||0)+t.total;});
   var totalCA2=Object.values(salesData).reduce(function(s,d){return s+d.ca;},0);
-  var aoa1=[["DETAIL DES VENTES TTC — "+today,"","","","","","","","",""],["Les projets de Shaya — Micro-entreprise franchise TVA","","","","","","","","",""],[], ["N° Ticket","Date","Heure","Produit","Categorie","Quantite","Prix TTC unit.","Total TTC","Mode paiement","Gain roue"]];
-  tickets.slice().reverse().forEach(function(t){t.items.forEach(function(item){aoa1.push(["#"+("00"+t.num).slice(-3),t.date,t.time,item.name,item.cat,item.qty,parseFloat(item.price.toFixed(2)),parseFloat((item.price*item.qty).toFixed(2)),t.mode,t.wheelGain?t.wheelEmoji+" "+t.wheelGain:"—"]);});aoa1.push(["","","","","","Sous-total","",parseFloat(t.total.toFixed(2)),"",""]);});
+  var aoa1=[["DETAIL DES VENTES TTC — "+today,"","","","","","","","",""],["Les projets de Shaya — Micro-entreprise franchise TVA","","","","","","","","",""],[], ["N° Ticket","Date","Heure","Produit","Categorie","Quantite","Prix TTC unit.","Total TTC","Mode paiement","Gain roue","Référence SHAYA"]];
+  tickets.slice().reverse().forEach(function(t){var an=t.statut==="annule";t.items.forEach(function(item){aoa1.push(["#"+("00"+t.num).slice(-3),t.date,t.time,item.name,item.cat,item.qty,parseFloat(item.price.toFixed(2)),parseFloat((item.price*item.qty).toFixed(2)),an?"ANNULÉ — "+(t.motifAnnulation||""):t.mode,t.wheelGain?t.wheelEmoji+" "+t.wheelGain:"—",t.reference||""]);});aoa1.push(["","","","","",an?"Annulé (non compté)":(t.remise>0?"Sous-total après remise":"Sous-total"),"",an?0:parseFloat(t.total.toFixed(2)),"",""]);});
   aoa1.push([]);aoa1.push(["","","","","","","TOTAL TTC","",parseFloat(totalCA2.toFixed(2))]);
   var ws1=XLSX.utils.aoa_to_sheet(aoa1);ws1["!cols"]=[12,11,8,24,15,12,16,14,14,16].map(function(w){return{wch:w};});
   XLSX.utils.book_append_sheet(wb,ws1,"Details ventes");
@@ -1431,8 +1659,10 @@ window.downloadExcel=function(){
   if(caPack>0)aoa3.push(["Packs",parseFloat(caPack.toFixed(2))]);
   aoa3.push([]);aoa3.push(["Par mode de paiement","CA TTC"]);
   Object.entries(modeCA).forEach(function(e){aoa3.push([e[0],parseFloat(e[1].toFixed(2))]);});
-  aoa3.push([]);aoa3.push(["Transactions",tickets.length]);aoa3.push(["Articles vendus",qTot]);
-  if(tickets.length>0)aoa3.push(["Panier moyen",parseFloat((totalCA2/tickets.length).toFixed(2))]);
+  var _nbEnc=ticketsEncaisses().length;
+  aoa3.push([]);aoa3.push(["Transactions",_nbEnc]);aoa3.push(["Articles vendus",qTot]);
+  if(_nbEnc>0)aoa3.push(["Panier moyen",parseFloat((totalCA2/_nbEnc).toFixed(2))]);
+  if(tickets.length>_nbEnc)aoa3.push(["Tickets annulés (non comptés)",tickets.length-_nbEnc]);
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(aoa3),"Bilan journee");
   var aoa4=[["ROUE DES GAINS — "+today,"","","",""],["Les projets de Shaya","","","",""],[], ["Ticket","Heure","Gain","Détail","Type"]];
   if(wheelGains.length){wheelGains.slice().reverse().forEach(function(g){aoa4.push([g.ticket,g.time,g.emoji+" "+g.label,g.sub,g.type==="lose"?"Perdu":"Gain"]);});var nbG=wheelGains.filter(function(g){return g.type!=="lose";}).length;var nbP=wheelGains.filter(function(g){return g.type==="lose";}).length;aoa4.push([]);aoa4.push(["Total tours",wheelGains.length,"Gains",nbG,"Perdus",nbP]);}
@@ -1473,17 +1703,18 @@ window.downloadExcel=function(){
   XLSX.utils.book_append_sheet(wb, ws_stock, "Stock restant");
 
   // Caisse
-  var _caEsp=0;tickets.forEach(function(t){if(t.mode==="Espèces")_caEsp+=t.total;});
-  var _autTot=autresVentes.reduce(function(s,v){return s+v.montant;},0);
+  // Solde = fond + espèces réellement encaissées − sorties (les « autres ventes » sont déjà dans les tickets).
+  var _caEsp=0;ticketsEncaisses().forEach(function(t){if(t.mode==="Espèces")_caEsp+=t.total;});
+  var _autTot=autresVentes.reduce(function(s,v){return s+(v.annule?0:v.montant);},0);
   var _sorTot=sortiesCaisse.reduce(function(s,v){return s+v.montant;},0);
-  var _solde=fondCaisse+_caEsp+_autTot-_sorTot;
-  var _aoaC=[["CAISSE — "+today,"",""],["Les projets de Shaya","",""],[], ["Fond de caisse",parseFloat(fondCaisse.toFixed(2)),""],["CA Especes",parseFloat(_caEsp.toFixed(2)),""],["Autres ventes",parseFloat(_autTot.toFixed(2)),""],["Sorties",parseFloat((-_sorTot).toFixed(2)),""],["SOLDE FINAL",parseFloat(_solde.toFixed(2)),""],[]];
+  var _solde=fondCaisse+_caEsp-_sorTot;
+  var _aoaC=[["CAISSE — "+today,"",""],["Les projets de Shaya","",""],[], ["Fond de caisse",parseFloat(fondCaisse.toFixed(2)),""],["CA Especes (tickets)",parseFloat(_caEsp.toFixed(2)),""],["dont autres ventes, tous moyens (pour information)",parseFloat(_autTot.toFixed(2)),""],["Sorties",parseFloat((-_sorTot).toFixed(2)),""],["SOLDE FINAL",parseFloat(_solde.toFixed(2)),""],[]];
   if(sortiesCaisse.length){_aoaC.push(["Heure","Motif","Montant"]);sortiesCaisse.forEach(function(s){_aoaC.push([s.time,s.label,parseFloat((-s.montant).toFixed(2))]);});}
   var _wsC=XLSX.utils.aoa_to_sheet(_aoaC);_wsC["!cols"]=[{wch:10},{wch:30},{wch:14}];
   XLSX.utils.book_append_sheet(wb,_wsC,"Caisse");
   // Autres ventes
   var _aoaA=[["AUTRES VENTES — "+today,"",""],["Les projets de Shaya","",""],[], ["Heure","Description","Montant"]];
-  if(autresVentes.length){autresVentes.forEach(function(v){_aoaA.push([v.time,v.label,parseFloat(v.montant.toFixed(2))]);});_aoaA.push([]);_aoaA.push(["","TOTAL",parseFloat(_autTot.toFixed(2))]);}
+  if(autresVentes.length){autresVentes.forEach(function(v){_aoaA.push([v.time,v.label+(v.annule?" (ANNULÉE — non comptée)":(v.mode?" — "+v.mode:"")),v.annule?0:parseFloat(v.montant.toFixed(2))]);});_aoaA.push([]);_aoaA.push(["","TOTAL",parseFloat(_autTot.toFixed(2))]);}
   else{_aoaA.push(["Aucune","",""]);}
   var _wsA=XLSX.utils.aoa_to_sheet(_aoaA);_wsA["!cols"]=[{wch:8},{wch:32},{wch:14}];
   XLSX.utils.book_append_sheet(wb,_wsA,"Autres ventes");
@@ -1512,24 +1743,61 @@ function renderTickets(){
   if(!tickets.length){body.innerHTML="<div style='padding:20px;text-align:center;color:var(--text3);font-size:13px'>Aucun ticket</div>";return;}
   var html="";
   tickets.forEach(function(t){
+    if(t.statut==="annule"){
+      html+="<div class='ticket-item' style='opacity:.55'><div class='ticket-item-top'><span class='ticket-num'>#"+("00"+t.num).slice(-3)+" · "+t.time+"</span><span class='ticket-total' style='text-decoration:line-through'>"+fmt(t.total)+"</span></div>";
+      html+="<div class='ticket-meta'>"+t.items.map(function(i){return i.qty+"× "+i.name;}).join(", ")+"<br><span style='font-size:10px;color:#e94560'>Annulé : "+(t.motifAnnulation||"")+"</span></div><span class='ticket-mode' style='background:rgba(233,69,96,.15);color:#e94560'>Annulé</span>"+etiquetteSynchro(t)+"</div>";
+      return;
+    }
     var mc=(t.mode==="CB"||t.mode==="SumUp")?"cb":t.mode==="Virement"?"vir":"cash";
     var items=t.items.map(function(i){return i.qty+"× "+i.name;}).join(", ");
     var gainBadge=t.wheelGain?"<br><span style='font-size:10px;color:var(--amber)'>🎡 "+t.wheelEmoji+" "+t.wheelGain+"</span>":"";
     // Badge spécial pour les ventes hors catalogue
     var autreBadge=t.isAutre?"<span class='ticket-mode' style='background:rgba(74,158,255,.15);color:var(--blue)'>📦 Autre</span>":"<span class='ticket-mode "+mc+"'>"+t.mode+"</span>";
     html+="<div class='ticket-item"+(t.isAutre?" ticket-autre":"")+"'>";
-    html+="<div class='ticket-item-top'><span class='ticket-num'>#"+("00"+t.num).slice(-3)+" · "+t.time+"</span><span class='ticket-total'>"+fmt(t.total)+"</span></div>";
+    html+="<div class='ticket-item-top'><span class='ticket-num'>#"+("00"+t.num).slice(-3)+" · "+t.time+(t.reference?" · "+t.reference:"")+"</span><span class='ticket-total'>"+fmt(t.total)+"</span></div>";
     html+="<div class='ticket-meta'>"+items+gainBadge+"</div>";
-    html+=autreBadge+"</div>";
+    html+=autreBadge+" <button class='btn-sm' style='font-size:10px;padding:2px 6px' onclick='annulerTicket(\""+t.uid+"\")' title='Annuler cette vente (conservée et signalée comme annulée)'>Annuler</button>"+etiquetteSynchro(t)+"</div>";
   });
   body.innerHTML=html;
 }
+// Annulation traçable (SHAYA) : le ticket reste dans l'historique avec la date, l'heure et le motif ;
+// il n'est plus compté. Le stock des articles du catalogue est rétabli. Aucune renumérotation.
+window.annulerTicket=function(uid){
+  var t=tickets.find(function(x){return x.uid===uid;});
+  if(!t){showToast("Ticket introuvable");return;}
+  if(t.statut==="annule"){showToast("Vente déjà annulée");return;}
+  var motif=window.prompt("Annuler le ticket #"+("00"+t.num).slice(-3)+" ("+fmt(t.total)+", "+t.mode+") ?\nIl restera dans l'historique, marqué « annulé ».\n\nMotif de l'annulation (obligatoire) :");
+  if(motif===null)return;
+  motif=motif.trim();
+  if(!motif){showToast("Annulation abandonnée : motif obligatoire");return;}
+  t.statut="annule";t.annuleLe=new Date().toISOString();t.motifAnnulation=motif.slice(0,200);
+  t.items.forEach(function(l){
+    var net=l.totalNet!==undefined?l.totalNet:l.price*l.qty;
+    if(salesData[l.id]){salesData[l.id].qty-=l.qty;salesData[l.id].ca=arrondi(salesData[l.id].ca-net);}
+    if(typeof l.id==="number"&&stockData[l.id]!==undefined&&stockData[l.id]<9999)stockData[l.id]+=l.qty;
+  });
+  autresVentes.forEach(function(v){if(v.ticketUid===uid)v.annule=true;});
+  totalCA=caEncaisse();
+  document.getElementById("nbVentes").textContent=ticketsEncaisses().length;
+  document.getElementById("caJour").textContent=fmt(totalCA);document.getElementById("caTotal").textContent=fmt(totalCA);
+  updateObjectifBar();renderTickets();renderExcelPanel();renderStockPanel();renderProducts();
+  updateSoldeCaisse();renderAutres();sauvegarder();
+  mettreEnFileAnnulation(t);
+  showToast("Vente #"+("00"+t.num).slice(-3)+" annulée (conservée dans l'historique)");
+};
 
 window.toggleTickets=function(){document.getElementById("ticketPanel").classList.toggle("open");};
 window.toggleExcel=function(){document.getElementById("excelPanel").classList.toggle("open");renderExcelPanel();};
 window.askReset=function(){document.getElementById("modalReset").classList.add("open");};
 window.closeReset=function(){document.getElementById("modalReset").classList.remove("open");};
 window.doReset=function(){
+  // Archiver la journée sur l'appareil avant de la vider (SHAYA) : aucune vente n'est perdue.
+  if(!archiverDonnees({date:new Date().toLocaleDateString("fr-FR"),tickets:tickets,salesData:salesData,autresVentes:autresVentes,sortiesCaisse:sortiesCaisse,
+      fondCaisse:fondCaisse,donsTombola:donsTombola,gainsObjets:gainsObjets,wheelGains:wheelGains},"nouveau-jour")
+    &&!window.confirm("La journée n'a pas pu être archivée sur cet appareil.\nAvez-vous exporté la journée en Excel ?\n\nOK : remettre à zéro quand même — Annuler : revenir à la caisse")){
+    closeReset();
+    return;
+  }
   // Conserver le stock actuel avant de vider la journée
   var stockSauvegarde={};
   Object.keys(stockData).forEach(function(k){stockSauvegarde[k]=stockData[k];});
@@ -1668,16 +1936,19 @@ window.triggerTiroir=function(){
 };
 
 // ── DISCORD WEBHOOK ──────────────────────────────────────────
-var DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1533982399174807673/K29qRnBByD3tcUz9f-oPIkQk_mppW89ahcWrtMkknws9O0uTbZE8kYzY7gA5z-OgiyDr";
+// Notifications Discord : envoyées par SHAYA MANAGER quand la vente lui parvient (adresse du webhook
+// gardée côté serveur). L'ancienne adresse, publique dans cette page, a été retirée.
+var DISCORD_WEBHOOK = "";
 
 function sendDiscordVente(ticket){
+  if(!DISCORD_WEBHOOK)return;   // notification envoyée par SHAYA MANAGER à la réception de la vente
   try{
     var isEspeces = ticket.mode==="Espèces";
     var modeEmoji = isEspeces?"💵":"📱";
     var modeLabel = isEspeces?"Espèces":"SumUp";
     var modeColor = isEspeces?0x2ECC71:0x7C3F9E; // vert espèces, violet sumup
-    var caTotal   = tickets.reduce(function(s,t){return s+t.total;},0);
-    var nbVentes  = tickets.length;
+    var caTotal   = caEncaisse();
+    var nbVentes  = ticketsEncaisses().length;
 
     // Barre de progression CA (sur 500€ objectif)
     var objectif  = objectifCA > 0 ? objectifCA : 500;
@@ -1758,6 +2029,7 @@ function sendDiscordVente(ticket){
 }
 
 function sendDiscordStockBas(produit, stock){
+  if(!DISCORD_WEBHOOK){mettreEnFileAlerte(produit,stock);return;}   // relayée par SHAYA MANAGER
   try{
     var embed = {
       username:"⚠️ Alerte Stock Shaya",
@@ -1994,6 +2266,395 @@ function showToast(msg,isWheel){
   clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove("show");},1800);
 }
 
+// ── SYNCHRONISATION SHAYA MANAGER ───────────────────────────────
+// File d'envoi durable (IndexedDB « file ») : chaque vente encaissée y est inscrite avec son contenu
+// figé, puis n'en sort qu'une fois confirmée par SHAYA MANAGER (« enregistrée » ou « déjà
+// enregistrée ») : un renvoi est sans risque, le serveur reconnaît l'identifiant de la vente.
+// Une erreur ne retire jamais rien de la file ; les cas refusés restent affichés « à vérifier ».
+// Ni les coordonnées des gagnants, ni le fond de caisse, ni les sorties ne sont transmis.
+var SYNC_LOT=50,SYNC_INTERVALLE=30000,SYNC_DELAI_MAX=300000;
+var EVENEMENT_CLE="shaya_caisse_evenement";   // {date, id, nom} : événement choisi pour la journée
+var syncConnexion=null,syncEnCours=false,syncDelai=0,syncProchain=0,syncTimer=null;
+var syncRelancer=false;   // « Synchroniser maintenant » demandé pendant un envoi : relancé dès sa fin
+var DERNIER_ECHANGE_CLE="shaya_caisse_dernier_echange";
+var syncEtat={dernier:(function(){try{var d=localStorage.getItem(DERNIER_ECHANGE_CLE);return d?new Date(d):null;}catch(e){return null;}})(),erreur:null,bloquant:false,attente:0,bloquees:[]};
+
+function dateLocale(d){d=d||new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+function evenementDuJour(){
+  try{var e=JSON.parse(localStorage.getItem(EVENEMENT_CLE)||"null");return e&&e.date===dateLocale()?e:null;}catch(x){return null;}
+}
+function evenementCourant(){var e=evenementDuJour();return e?e.id:null;}
+
+function magasin(nom,mode,action){
+  return ouvrirBaseCaisse().then(function(db){return new Promise(function(ok,ko){
+    var tx=db.transaction(nom,mode),req=action(tx.objectStore(nom));
+    tx.oncomplete=function(){ok(req?req.result:undefined);};tx.onerror=function(){ko(tx.error);};tx.onabort=function(){ko(tx.error);};
+  });});
+}
+function lireReglage(cle){return magasin("reglages","readonly",function(st){return st.get(cle);}).then(function(r){return r?r.valeur:null;});}
+function ecrireReglage(cle,valeur){return magasin("reglages","readwrite",function(st){return st.put({cle:cle,valeur:valeur});});}
+function supprimerReglage(cle){return magasin("reglages","readwrite",function(st){return st.delete(cle);});}
+function fileLister(){return magasin("file","readonly",function(st){return st.getAll();}).then(function(l){return (l||[]).sort(function(a,b){return a.ordre<b.ordre?-1:a.ordre>b.ordre?1:0;});});}
+// Ajout sans écraser : le contenu inscrit à l'encaissement reste celui qui est transmis.
+function fileAjouter(entree){
+  return magasin("file","readwrite",function(st){
+    var r=st.get(entree.cle);r.onsuccess=function(){if(!r.result)st.add(entree);};return null;
+  });
+}
+function fileRemplacer(entree){return magasin("file","readwrite",function(st){return st.put(entree);});}
+function fileRetirer(cles){return magasin("file","readwrite",function(st){cles.forEach(function(c){st.delete(c);});return null;});}
+
+function donneesVente(t){
+  return {id:t.uid,numero:t.num,encaisseLe:t.encaisseLe,evenementId:t.evenementId||null,moyen:t.mode,
+    remisePct:t.disc||0,promoCode:t.promoCode||null,promoPct:t.promoPct||0,sousTotal:t.sousTotal,total:t.total,
+    lignes:t.items.map(function(l){var x={ref:String(l.id),nom:l.name,categorie:l.cat||null,prixUnitaire:l.price,quantite:l.qty,autre:!!l.isAutre,totalNet:l.totalNet};
+      if(l.reference)x.reference=l.reference;if(l.famille)x.famille=l.famille;return x;})};
+}
+// Les tickets antérieurs à la mise à jour (sans heure d'encaissement) ne sont pas transmis : ils
+// figurent dans l'export Excel de la journée.
+function transmissible(t){return !!(t&&t.uid&&t.encaisseLe&&t.sousTotal!==undefined);}
+function mettreEnFileVente(t){
+  if(!transmissible(t))return Promise.resolve();
+  return fileAjouter({cle:"vente:"+t.uid,type:"vente",ordre:t.encaisseLe,donnees:donneesVente(t),statut:"attente",ajouteeLe:new Date().toISOString()})
+    .then(function(){majIndicateur();planifierSynchro(800);}).catch(function(){showToast("⚠️ File d'envoi indisponible : la vente reste dans la caisse");});
+}
+function mettreEnFileAnnulation(t){
+  if(!transmissible(t))return Promise.resolve();
+  return fileAjouter({cle:"annulation:"+t.uid,type:"annulation",ordre:t.annuleLe,donnees:{id:t.uid,annuleLe:t.annuleLe,motif:t.motifAnnulation},statut:"attente",ajouteeLe:new Date().toISOString()})
+    .then(function(){majIndicateur();planifierSynchro(800);}).catch(function(){});
+}
+// Rattachement, à l'événement choisi, des ventes du jour encaissées sans événement (désignées une à une).
+function mettreEnFileJournee(date,evenementId,ventes){
+  if(!evenementId||!ventes||!ventes.length)return Promise.resolve();
+  return fileAjouter({cle:"journee:"+date+":"+nouvelIdentifiant(),type:"journee",ordre:new Date().toISOString(),donnees:{date:date,evenementId:evenementId,ventes:ventes},statut:"attente",ajouteeLe:new Date().toISOString()})
+    .then(function(){majIndicateur();planifierSynchro(800);});
+}
+function mettreEnFileAlerte(produit,stock){
+  if(!syncConnexion)return Promise.resolve();
+  var id=nouvelIdentifiant();
+  return fileAjouter({cle:"alerte:"+id,type:"alerte",ordre:new Date().toISOString(),
+    donnees:{id:id,type:"stock_bas",produit:(produit.emoji?produit.emoji+" ":"")+produit.label,stock:stock,prix:produit.price,categorie:produit.cat||null},statut:"attente",ajouteeLe:new Date().toISOString()})
+    .then(function(){majIndicateur();planifierSynchro(800);}).catch(function(){});
+}
+// Au démarrage : toute vente (ou annulation) de la journée pas encore confirmée est remise en file.
+function reconcilierFile(){
+  return Promise.all(tickets.map(function(t){
+    var p=t.synchro==="ok"?Promise.resolve():mettreEnFileVente(t);
+    return p.then(function(){if(t.statut==="annule"&&t.annulationSynchro!=="ok")return mettreEnFileAnnulation(t);});
+  }));
+}
+
+function marquerTicket(uid,champ,valeur,anomalies){
+  var t=tickets.find(function(x){return x.uid===uid;});
+  if(!t)return false;
+  t[champ]=valeur;if(anomalies&&anomalies.length)t.anomaliesSynchro=anomalies.map(function(a){return a.message;});
+  return true;
+}
+function etiquetteSynchro(t){
+  if(!syncConnexion||!transmissible(t))return "";
+  if(t.synchro==="ok"&&(t.statut!=="annule"||t.annulationSynchro==="ok"))return "<span class='tk-sync' title='Transmise à SHAYA MANAGER'>✓ transmise</span>";
+  if(t.synchro==="bloquee")return "<span class='tk-sync erreur' title='"+(t.messageSynchro||"")+"'>⚠ à vérifier</span>";
+  return "<span class='tk-sync attente' title='En attente de transmission'>⏳ en attente</span>";
+}
+
+function appelApi(methode,chemin,corps){
+  var c=syncConnexion;
+  var ctrl=window.AbortController?new AbortController():null;
+  var minuteur=ctrl?setTimeout(function(){ctrl.abort();},20000):null;
+  return fetch(c.url.replace(/\/+$/,"")+chemin,{method:methode,cache:"no-store",credentials:"omit",signal:ctrl?ctrl.signal:undefined,
+    headers:{"Authorization":"Bearer "+c.jeton,"Content-Type":"application/json"},body:corps?JSON.stringify(corps):undefined})
+    .then(function(r){
+      if(minuteur)clearTimeout(minuteur);
+      return r.json().catch(function(){return {};}).then(function(j){return {statut:r.status,corps:j};});
+    },function(e){if(minuteur)clearTimeout(minuteur);throw e;});
+}
+// Réponse en erreur : bloquante (jeton, origine : rien ne sert de réessayer) ou passagère.
+function erreurHttp(rep){
+  var msg=(rep.corps&&rep.corps.erreur)||("Erreur "+rep.statut);
+  var e=new Error(msg);e.bloquant=rep.statut===401||rep.statut===403;return e;
+}
+
+function envoyerVentes(entrees){
+  if(!entrees.length)return Promise.resolve();
+  var lot=entrees.slice(0,SYNC_LOT);
+  return appelApi("POST","/ventes",{ventes:lot.map(function(e){return e.donnees;}),contexte:{objectifJour:objectifCA>0?objectifCA:undefined}}).then(function(rep){
+    if(rep.statut!==200)throw erreurHttp(rep);
+    var retirer=[],bloquer=[],modifie=false;
+    (rep.corps.resultats||[]).forEach(function(r,i){
+      var e=lot[i];if(!e||r.id!==e.donnees.id)return;
+      if(r.statut==="enregistree"||r.statut==="deja_enregistree"){retirer.push(e.cle);modifie=marquerTicket(e.donnees.id,"synchro","ok",r.anomalies)||modifie;
+        if(r.reference)marquerTicket(e.donnees.id,"reference",r.reference);}
+      else{e.statut="bloquee";e.message=r.message||r.statut;bloquer.push(e);modifie=marquerTicket(e.donnees.id,"synchro","bloquee")||modifie;marquerTicket(e.donnees.id,"messageSynchro",e.message);}
+    });
+    if(modifie)sauvegarder();
+    return fileRetirer(retirer).then(function(){return Promise.all(bloquer.map(fileRemplacer));})
+      .then(function(){return envoyerVentes(entrees.slice(SYNC_LOT));});
+  });
+}
+function envoyerAnnulations(entrees){
+  if(!entrees.length)return Promise.resolve();
+  var lot=entrees.slice(0,SYNC_LOT);
+  return appelApi("POST","/annulations",{annulations:lot.map(function(e){return e.donnees;})}).then(function(rep){
+    if(rep.statut!==200)throw erreurHttp(rep);
+    var retirer=[],bloquer=[],modifie=false;
+    (rep.corps.resultats||[]).forEach(function(r,i){
+      var e=lot[i];if(!e||r.id!==e.donnees.id)return;
+      if(r.statut==="annulee"||r.statut==="deja_annulee"){
+        retirer.push(e.cle);modifie=marquerTicket(e.donnees.id,"annulationSynchro","ok")||modifie;
+        if(r.apresValidation)showToast("⚠️ Vente annulée après validation de sa journée : à corriger dans SHAYA MANAGER");
+      }else if(r.statut!=="vente_inconnue"){e.statut="bloquee";e.message=r.message||r.statut;bloquer.push(e);}
+      // « vente_inconnue » : la vente n'est pas encore arrivée, l'annulation reste en attente.
+    });
+    if(modifie)sauvegarder();
+    return fileRetirer(retirer).then(function(){return Promise.all(bloquer.map(fileRemplacer));})
+      .then(function(){return envoyerAnnulations(entrees.slice(SYNC_LOT));});
+  });
+}
+function envoyerJournees(entrees){
+  return entrees.reduce(function(p,e){return p.then(function(){
+    return appelApi("POST","/journees",e.donnees).then(function(rep){
+      if(rep.statut===200){
+        if(rep.corps.verrouillees)showToast("⚠️ "+rep.corps.verrouillees+" vente(s) d'une journée déjà validée gardent leur événement");
+        else if(rep.corps.conservees)showToast("ℹ️ "+rep.corps.conservees+" vente(s) déjà rattachée(s) à un autre événement : inchangée(s)");
+        return fileRetirer([e.cle]);
+      }
+      if(rep.statut===404||rep.statut===422){e.statut="bloquee";e.message=(rep.corps&&rep.corps.erreur)||"Refusé";return fileRemplacer(e);}
+      throw erreurHttp(rep);
+    });
+  });},Promise.resolve());
+}
+
+function envoyerAlertes(entrees){
+  // Une alerte de plus de 24 h n'a plus d'intérêt : retirée sans envoi.
+  var limite=Date.now()-86400000;
+  var perimees=entrees.filter(function(e){return Date.parse(e.ajouteeLe)<limite;}).map(function(e){return e.cle;});
+  var lot=entrees.filter(function(e){return Date.parse(e.ajouteeLe)>=limite;}).slice(0,20);
+  return fileRetirer(perimees).then(function(){
+    if(!lot.length)return;
+    return appelApi("POST","/alertes",{alertes:lot.map(function(e){return e.donnees;})}).then(function(rep){
+      if(rep.statut!==200)throw erreurHttp(rep);
+      return fileRetirer(lot.map(function(e){return e.cle;}));
+    });
+  });
+}
+
+function synchroniser(){
+  if(syncEnCours||!syncConnexion)return Promise.resolve();
+  if(navigator.onLine===false){syncEtat.erreur="Hors ligne";majIndicateur();return Promise.resolve();}
+  syncEnCours=true;
+  var executer=function(){
+    return fileLister().then(function(liste){
+      var actives=liste.filter(function(e){return e.statut!=="bloquee";});
+      var parType=function(t){return actives.filter(function(e){return e.type===t;});};
+      // Ordre : ventes, puis annulations, puis événement de la journée (qui s'applique aux ventes reçues).
+      return envoyerVentes(parType("vente")).then(function(){return envoyerAnnulations(parType("annulation"));})
+        .then(function(){return envoyerJournees(parType("journee"));})
+        .then(function(){return envoyerAlertes(parType("alerte"));});
+    }).then(function(){
+      syncEtat.dernier=new Date();syncEtat.erreur=null;syncEtat.bloquant=false;syncDelai=0;syncProchain=0;
+      try{localStorage.setItem(DERNIER_ECHANGE_CLE,syncEtat.dernier.toISOString());}catch(e){}
+    },function(e){
+      syncEtat.erreur=e&&e.name==="AbortError"?"Délai dépassé":(e&&e.message)||"Réseau indisponible";
+      syncEtat.bloquant=!!(e&&e.bloquant);
+      syncDelai=Math.min(Math.max(syncDelai*2,5000),SYNC_DELAI_MAX);syncProchain=Date.now()+syncDelai;
+    });
+  };
+  // Un seul envoi à la fois, même avec plusieurs onglets ouverts.
+  var p=navigator.locks?navigator.locks.request("shaya-caisse-synchro",executer):executer();
+  return p.then(function(){syncEnCours=false;renderTickets();return majIndicateur();},function(){syncEnCours=false;return majIndicateur();})
+    .then(function(){if(syncRelancer){syncRelancer=false;synchroManuelle();}});
+}
+function planifierSynchro(delai){
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(function(){if(!syncEtat.bloquant&&Date.now()>=syncProchain)synchroniser();},delai||0);
+}
+window.synchroniserMaintenant=function(){
+  if(!syncConnexion){showToast("Configurez d'abord la connexion à SHAYA MANAGER");return;}
+  showToast("Synchronisation…");
+  synchroManuelle();
+};
+// Demande manuelle : sans attendre le délai entre deux essais ; pendant un envoi en cours, elle est
+// relancée dès la fin de cet envoi (jamais ignorée, jamais deux envois en même temps).
+function synchroManuelle(){
+  syncEtat.bloquant=false;syncProchain=0;syncDelai=0;
+  if(syncEnCours){syncRelancer=true;return;}
+  synchroniser().then(function(){chargerEvenements();chargerCatalogue();chargerEtatServeur();});
+}
+
+function majIndicateur(){
+  return fileLister().catch(function(){return [];}).then(function(liste){
+    var attente=liste.filter(function(e){return e.statut!=="bloquee";}).length,bloquees=liste.filter(function(e){return e.statut==="bloquee";});
+    syncEtat.attente=attente;syncEtat.bloquees=bloquees;
+    var dot=document.getElementById("syncDot"),cpt=document.getElementById("syncCompte");
+    var val=document.getElementById("syncEtatVal"),det=document.getElementById("syncEtatDetail");
+    var classe="",texte="Non configurée",detail="Saisissez l'adresse de l'API et le jeton de cet appareil.";
+    if(syncConnexion){
+      if(bloquees.length||syncEtat.bloquant){classe="erreur";texte=syncEtat.bloquant?syncEtat.erreur:bloquees.length+" à vérifier";}
+      else if(attente){classe="attente";texte=attente+" en attente";}
+      else{classe="ok";texte="Synchronisé";}
+      detail=(syncEtat.erreur&&!syncEtat.bloquant?syncEtat.erreur+" — nouvel essai automatique. ":"")+
+        (syncEtat.dernier?"Dernier échange réussi : "+dateHeure(syncEtat.dernier.toISOString()):"Aucun échange pour l'instant");
+      if(attente&&!syncEtat.bloquant)detail+=" · les ventes restent sur cet appareil jusqu'à leur confirmation";
+    }
+    if(dot)dot.className="sync-dot "+classe;
+    // Pastille posée sur le bouton : la barre du haut garde exactement sa mise en page.
+    if(cpt){cpt.textContent=attente||bloquees.length?String(attente+bloquees.length):"";cpt.style.background=classe==="erreur"?"#e94560":"var(--amber)";}
+    if(val){val.textContent=texte;val.style.color=classe==="erreur"?"#e94560":classe==="attente"?"var(--amber)":classe==="ok"?"var(--green)":"var(--text2)";}
+    if(det)det.textContent=detail;
+    var bloc=document.getElementById("syncBloqueesBloc"),lst=document.getElementById("syncBloquees");
+    if(bloc&&lst){
+      bloc.style.display=bloquees.length?"block":"none";
+      lst.innerHTML=bloquees.map(function(e){
+        var lib=e.type==="vente"?"Vente #"+("00"+(e.donnees.numero||"?")).slice(-3)+" · "+fmt(e.donnees.total):e.type==="annulation"?"Annulation de vente":e.type==="alerte"?"Alerte de stock":"Événement du "+e.donnees.date;
+        return "<div class='cp-item'><div class='cp-item-info'><div class='cp-item-label'>"+lib+"</div><div class='cp-item-time' style='color:#e94560'>"+(e.message||"")+"</div></div></div>";
+      }).join("")+"<div class='cp-solde-detail' style='text-align:left'>Conservées sur cet appareil et dans l'export Excel : à signaler pour correction dans SHAYA MANAGER.</div>";
+    }
+  });
+}
+
+window.toggleSync=function(){
+  var p=document.getElementById("syncPanel");p.classList.toggle("open");
+  if(p.classList.contains("open")){majIndicateur();chargerEvenements();afficherConnexion();chargerCatalogue();majInfoCatalogue();majInfoStockage();chargerEtatServeur();}
+};
+
+// Catalogue de SHAYA MANAGER : demandé à la connexion, à l'ouverture du panneau et après chaque
+// synchronisation ; gardé sur l'appareil (prix identiques hors ligne).
+function chargerCatalogue(){
+  if(!syncConnexion||navigator.onLine===false)return Promise.resolve();
+  return appelApi("GET","/produits").then(function(rep){
+    if(rep.statut!==200||!rep.corps||!Array.isArray(rep.corps.produits))return;
+    var avant=JSON.stringify(catalogueShaya&&catalogueShaya.produits);
+    var cat={produits:rep.corps.produits,miseAJour:rep.corps.miseAJour||null,recuLe:new Date().toISOString()};
+    try{localStorage.setItem(CATALOGUE_CLE,JSON.stringify(cat));}catch(e){}
+    if(avant!==JSON.stringify(cat.produits)){appliquerCatalogue(cat);renderProducts();renderStockPanel();}
+    else catalogueShaya=cat;
+    majInfoCatalogue();
+  },function(){});
+}
+function dateHeure(iso){var d=new Date(iso);return isNaN(d)?"":d.toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"})+" à "+d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});}
+function majInfoCatalogue(){
+  var el=document.getElementById("syncCatalogue");if(!el)return;
+  if(!catalogueShaya){el.textContent="Produits de la caisse (aucun catalogue reçu de SHAYA MANAGER pour l'instant).";return;}
+  var actifs=catalogueShaya.produits.filter(function(p){return p.actif;}).length;
+  el.textContent=actifs+" produit(s) reçu(s) de SHAYA MANAGER, le "+dateHeure(catalogueShaya.recuLe)+" ; les autres produits viennent de la caisse.";
+}
+// Stockage de l'appareil : durable ou non (Safari peut effacer les données d'un site non installé).
+var etatStockage={idb:null,durable:null};
+function majInfoStockage(){
+  var el=document.getElementById("syncStockage");if(!el)return;
+  var t=etatStockage.idb===false?"⚠️ Stockage de l'appareil indisponible (navigation privée ?) : n'encaissez pas avec ce navigateur."
+    :etatStockage.durable===true?"Stockage de l'appareil : durable."
+    :"Stockage non garanti par le navigateur : installez la caisse sur l'écran d'accueil (Safari › Partager › Sur l'écran d'accueil) et synchronisez chaque jour.";
+  el.textContent=t;el.style.color=etatStockage.idb===false?"#e94560":"";
+}
+function chargerEtatServeur(){
+  var el=document.getElementById("syncRecues");if(!el||!syncConnexion||navigator.onLine===false)return;
+  appelApi("GET","/etat").then(function(rep){if(rep.statut===200)el.textContent="SHAYA MANAGER a reçu "+rep.corps.ventesRecuesAujourdhui+" vente(s) de cet appareil aujourd'hui.";},function(){});
+}
+// Éléments « à vérifier » remis en attente (après correction dans SHAYA MANAGER, par exemple).
+window.reessayerBloquees=function(){
+  fileLister().then(function(l){return Promise.all(l.filter(function(e){return e.statut==="bloquee";}).map(function(e){e.statut="attente";delete e.message;return fileRemplacer(e);}));})
+    .then(function(){syncEtat.bloquant=false;syncProchain=0;syncDelai=0;return synchroniser();}).then(majIndicateur);
+};
+function afficherConnexion(){
+  var u=document.getElementById("syncUrl"),j=document.getElementById("syncJeton"),info=document.getElementById("syncConnexionInfo");
+  if(u&&syncConnexion&&!u.value)u.value=syncConnexion.url;
+  if(j){j.value="";j.placeholder=syncConnexion?"Jeton enregistré ("+syncConnexion.jeton.slice(0,10)+"…)":"Jeton de l'appareil (shc_…)";}
+  if(info)info.textContent=syncConnexion?"Appareil : "+(syncConnexion.appareil||"?"):"";
+}
+window.enregistrerConnexion=function(){
+  var url=(document.getElementById("syncUrl").value||"").trim().replace(/\/+$/,"");
+  var jeton=(document.getElementById("syncJeton").value||"").trim()||(syncConnexion&&syncConnexion.jeton)||"";
+  if(!/^https:\/\/|^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?\//.test(url+"/")){showToast("Adresse de l'API invalide (https://…)");return;}
+  if(!/^shc_[A-Za-z0-9_-]{43}$/.test(jeton)){showToast("Jeton invalide : il commence par shc_");return;}
+  var precedente=syncConnexion;syncConnexion={url:url,jeton:jeton};
+  appelApi("GET","/etat").then(function(rep){
+    if(rep.statut!==200)throw erreurHttp(rep);
+    syncConnexion.appareil=rep.corps.appareil;
+    return ecrireReglage("connexion",syncConnexion).then(function(){
+      syncEtat.bloquant=false;syncEtat.erreur=null;syncDelai=0;syncProchain=0;
+      afficherConnexion();showToast("✅ Connecté : "+rep.corps.appareil);
+      return reconcilierFile().then(synchroniser).then(chargerEvenements).then(chargerCatalogue);
+    });
+  }).catch(function(e){
+    syncConnexion=precedente;showToast("❌ Connexion refusée : "+((e&&e.message)||"réseau indisponible"));
+  });
+};
+window.oublierConnexion=function(){
+  if(!window.confirm("Oublier le jeton de cet appareil ?\nLes ventes en attente restent dans la file et partiront après une nouvelle connexion."))return;
+  supprimerReglage("connexion").then(function(){syncConnexion=null;afficherConnexion();majIndicateur();renderTickets();showToast("Jeton oublié");});
+};
+
+var EVENEMENTS_CLE="shaya_caisse_evenements";   // dernière liste reçue, pour un choix hors ligne
+function evenementsLocaux(){try{var l=JSON.parse(localStorage.getItem(EVENEMENTS_CLE)||"[]");return Array.isArray(l)?l:[];}catch(e){return [];}}
+function chargerEvenements(){
+  var sel=document.getElementById("syncEvenement"),info=document.getElementById("syncEvenementInfo");
+  var courant=evenementDuJour();
+  var remplir=function(liste){
+    if(!sel)return;
+    var aujourdHui=dateLocale();
+    var h="<option value=''>— Aucun (caisse hors événement) —</option>";
+    liste.forEach(function(e){
+      var enCours=e.debut<=aujourdHui&&(e.fin||e.debut)>=aujourdHui;
+      h+="<option value='"+e.id+"'>"+(enCours?"● ":"")+e.nom.replace(/</g,"&lt;")+" ("+e.debut.split("-").reverse().join("/")+")</option>";
+    });
+    if(courant&&!liste.some(function(e){return e.id===courant.id;}))h+="<option value='"+courant.id+"'>"+courant.nom.replace(/</g,"&lt;")+"</option>";
+    sel.innerHTML=h;sel.value=courant?courant.id:"";
+    if(info)info.textContent=courant?"Les prochaines ventes sont rattachées à cet événement. Une vente déjà encaissée garde le sien (correction dans SHAYA MANAGER).":"Aucun événement choisi : les prochaines ventes sont des ventes hors événement (POS).";
+  };
+  if(!syncConnexion||navigator.onLine===false){remplir(evenementsLocaux());return;}
+  appelApi("GET","/evenements").then(function(rep){
+    if(rep.statut===200){var l=rep.corps.evenements||[];try{localStorage.setItem(EVENEMENTS_CLE,JSON.stringify(l));}catch(e){}remplir(l);}
+    else remplir(evenementsLocaux());
+  },function(){remplir(evenementsLocaux());});
+}
+// Jamais rétroactif : l'événement choisi vaut pour les ventes suivantes. Les ventes du jour encaissées
+// sans événement peuvent y être rattachées, sur confirmation ; une vente déjà rattachée à un
+// événement le garde (toute autre correction se fait dans SHAYA MANAGER, où elle est tracée).
+window.choisirEvenement=function(id){
+  var sel=document.getElementById("syncEvenement");
+  var opt=sel?sel.options[sel.selectedIndex]:null;
+  var nom=opt?opt.textContent.replace(/^● /,""):"";
+  var date=dateLocale();
+  if(id){localStorage.setItem(EVENEMENT_CLE,JSON.stringify({date:date,id:id,nom:nom}));}
+  else localStorage.removeItem(EVENEMENT_CLE);
+  var sans=id?tickets.filter(function(t){return t.encaisseLe&&dateLocale(new Date(t.encaisseLe))===date&&!t.evenementId;}):[];
+  if(sans.length&&window.confirm(sans.length+" vente(s) encaissée(s) aujourd'hui sans événement.\nLes rattacher à « "+nom+" » ?\n\nLes ventes déjà rattachées à un événement le gardent.")){
+    sans.forEach(function(t){t.evenementId=id;});
+    sauvegarder();
+    mettreEnFileJournee(date,id,sans.filter(transmissible).map(function(t){return t.uid;}));
+  }
+  chargerEvenements();
+  showToast(id?"Événement des prochaines ventes : "+nom:"Prochaines ventes sans événement (caisse hors événement)");
+};
+
+function demarrerSynchro(){
+  // Stockage durable demandé ; IndexedDB vérifié (indisponible en navigation privée sur certains navigateurs).
+  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().then(function(ok){etatStockage.durable=!!ok;majInfoStockage();},function(){});
+  ouvrirBaseCaisse().then(function(){etatStockage.idb=true;majInfoStockage();},function(){
+    etatStockage.idb=false;majInfoStockage();
+    showToast("⚠️ Stockage indisponible (navigation privée ?) : les ventes ne seraient pas conservées");
+  });
+  // Page gardée par le navigateur : la caisse se rouvre hors ligne (Safari compris).
+  if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost"||location.hostname==="127.0.0.1")){
+    navigator.serviceWorker.register("sw.js").catch(function(){});
+  }
+  lireReglage("connexion").then(function(c){
+    syncConnexion=c||null;
+    return reconcilierFile();
+  }).then(function(){
+    majIndicateur();renderTickets();
+    if(syncConnexion){
+      synchroniser().then(chargerCatalogue);
+      if(!evenementDuJour())setTimeout(function(){showToast("🔄 Choisissez l'événement du jour (bouton SHAYA)");},2500);
+    }
+  }).catch(function(){majIndicateur();});
+  window.addEventListener("online",function(){syncProchain=0;syncDelai=0;planifierSynchro(500);setTimeout(chargerCatalogue,1500);});
+  window.addEventListener("offline",function(){majIndicateur();});
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")planifierSynchro(500);});
+  setInterval(function(){if(syncConnexion&&syncEtat.attente)planifierSynchro(0);},SYNC_INTERVALLE);
+}
+
 // ── INIT ──────────────────────────────────────────────────────
 // Vider localStorage corrompu (clés string au lieu d'int)
 try{
@@ -2006,16 +2667,23 @@ try{
         // Clés numériques en string - corriger
         var _ns={},_nsl={};
         for(var _k in _cd.stockData) _ns[parseInt(_k)]=_cd.stockData[_k];
-        if(_cd.salesData) for(var _k2 in _cd.salesData) _nsl[parseInt(_k2)]=_cd.salesData[_k2];
+        // Clés « autre_… » (autres ventes) conservées telles quelles : parseInt les réduisait toutes à « NaN » (SHAYA)
+        if(_cd.salesData) for(var _k2 in _cd.salesData) _nsl[isNaN(parseInt(_k2))?_k2:parseInt(_k2)]=_cd.salesData[_k2];
         _cd.stockData=_ns; _cd.salesData=_nsl;
         localStorage.setItem(SAVE_KEY,JSON.stringify(_cd));
       }
     }
   }
 }catch(_e){}
+appliquerCatalogue(lireCatalogueLocal());
 var restored=restaurer();
+migrerArchivesEnAttente();
+// Identifiants des ventes de l'ancienne version : enregistrés une fois pour toutes (stables ensuite).
+if(identifiantsAjoutes)sauvegarder();
+demarrerSynchro();
+if(archiveImpossible)setTimeout(function(){showToast("⚠️ Journée du "+archiveImpossible+" toujours ouverte (archivage impossible) : exportez-la en Excel puis faites « Nouveau jour »");},1500);
 if(restored){
-  document.getElementById("nbVentes").textContent=tickets.length;
+  document.getElementById("nbVentes").textContent=ticketsEncaisses().length;
   document.getElementById("caJour").textContent=fmt(totalCA);
   document.getElementById("caTotal").textContent=fmt(totalCA);
   renderTickets();renderExcelPanel();
@@ -2024,14 +2692,15 @@ if(restored){
 
 // ── SOLDE CAISSE ─────────────────────────────────────────────
 function updateSoldeCaisse(){
-  var caEsp=0;tickets.forEach(function(t){if(t.mode==="Espèces")caEsp+=t.total;});
-  var autTot=autresVentes.reduce(function(s,v){return s+v.montant;},0);
+  // Solde théorique = fond + espèces réellement encaissées − sorties (SHAYA). Les « autres ventes »
+  // réglées en espèces sont déjà dans les tickets : elles ne sont plus ajoutées une seconde fois.
+  var caEsp=0;ticketsEncaisses().forEach(function(t){if(t.mode==="Espèces")caEsp+=t.total;});
   var sorTot=sortiesCaisse.reduce(function(s,v){return s+v.montant;},0);
-  var solde=fondCaisse+caEsp+autTot-sorTot;
+  var solde=arrondi(fondCaisse+caEsp-sorTot);
   var st=document.getElementById("soldeCaisse");if(st)st.textContent=fmt(solde);
   updateObjectifBar();
   var sv=document.getElementById("cpSoldeVal");if(sv){sv.textContent=fmt(solde);sv.style.color=solde>=0?"var(--green)":"#e94560";}
-  var sd=document.getElementById("cpSoldeDetail");if(sd)sd.textContent="Fond: "+fmt(fondCaisse)+" + Esp: "+fmt(caEsp)+" + Autres: "+fmt(autTot)+" - Sorties: "+fmt(sorTot);
+  var sd=document.getElementById("cpSoldeDetail");if(sd)sd.textContent="Fond: "+fmt(fondCaisse)+" + Esp: "+fmt(caEsp)+" - Sorties: "+fmt(sorTot);
 }
 // ── PANELS TOGGLE ─────────────────────────────────────────────
 window.toggleCaisse=function(){document.getElementById("caissePanel").classList.toggle("open");renderCaisse();};
@@ -2114,7 +2783,6 @@ window.addAutreVente=function(){
   if(!label){showToast("Entrez une description");return;}if(montant<=0){showToast("Entrez un montant");return;}
   // Ajouter au panier comme article normal
   cart.push({id:"autre_"+Date.now(),name:label,cat:"Autre",price:montant,qty:1,emoji:"📦",isAutre:true});
-  autresVentes.push({label:label,montant:montant,time:new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),date:new Date().toLocaleDateString("fr-FR")});
   document.getElementById("autreLabel").value="";
   document.getElementById("autreMontant").value="";
   // Fermer panel Autres et afficher panier
@@ -2123,28 +2791,23 @@ window.addAutreVente=function(){
   showToast("📦 "+label+" ajouté au panier !");
 };
 window.deleteAutreVente=function(idx){
-  var v=autresVentes[idx];
-  totalCA-=v.montant;
-  autresVentes.splice(idx,1);
-  // Supprimer aussi le ticket correspondant
-  var tIdx=tickets.findIndex(function(t){return t.isAutre&&t.items[0]&&t.items[0].name===v.label&&t.total===v.montant;});
-  if(tIdx!==-1)tickets.splice(tIdx,1);
-  // Renuméroter les tickets
-  tickets.forEach(function(t,i){t.num=tickets.length-i;});
-  document.getElementById("nbVentes").textContent=tickets.length;
-  document.getElementById("caJour").textContent=fmt(totalCA);document.getElementById("caTotal").textContent=fmt(totalCA);
-  renderTickets();renderExcelPanel();
-  updateSoldeCaisse();renderAutres();sauvegarder();
+  // Une « autre vente » encaissée n'est plus effacée : son ticket est annulé de façon traçable (SHAYA).
+  var v=autresVentes[idx];if(!v)return;
+  if(v.annule){showToast("Vente déjà annulée");return;}
+  if(v.ticketUid){window.annulerTicket(v.ticketUid);return;}
+  // Saisie antérieure à la correction (non reliée à un ticket) : retirée de la liste uniquement.
+  if(!window.confirm("Retirer « "+v.label+" » de la liste ? (saisie antérieure, sans effet sur les tickets)"))return;
+  autresVentes.splice(idx,1);updateSoldeCaisse();renderAutres();sauvegarder();
 };
 function renderAutres(){
   var liste=document.getElementById("autresListe");var count=document.getElementById("autresCount");var totalEl=document.getElementById("autresTotalVal");
   if(!liste)return;if(count)count.textContent=autresVentes.length;
-  var tot=autresVentes.reduce(function(s,v){return s+v.montant;},0);if(totalEl)totalEl.textContent=fmt(tot);
+  var tot=autresVentes.reduce(function(s,v){return s+(v.annule?0:v.montant);},0);if(totalEl)totalEl.textContent=fmt(tot);
   if(!autresVentes.length){liste.innerHTML="<div style='text-align:center;color:var(--text3);font-size:12px;padding:10px'>Aucune vente</div>";return;}
   var h="";autresVentes.slice().reverse().forEach(function(v,i){var ri=autresVentes.length-1-i;
-    h+="<div class='cp-item'><div class='cp-item-info'><div class='cp-item-label'>"+v.label+"</div><div class='cp-item-time'>"+v.time+"</div></div>";
-    h+="<div class='cp-item-amount' style='color:var(--green)'>+"+fmt(v.montant)+"</div>";
-    h+="<button class='cp-del' onclick='deleteAutreVente("+ri+")'>✕</button></div>";
+    h+="<div class='cp-item'"+(v.annule?" style='opacity:.5'":"")+"><div class='cp-item-info'><div class='cp-item-label'>"+v.label+(v.qty>1?" ×"+v.qty:"")+"</div><div class='cp-item-time'>"+v.time+(v.mode?" · "+v.mode:"")+(v.annule?" · annulée":"")+"</div></div>";
+    h+="<div class='cp-item-amount' style='color:var(--green)"+(v.annule?";text-decoration:line-through":"")+"'>+"+fmt(v.montant)+"</div>";
+    h+=v.annule?"</div>":"<button class='cp-del' title='Annuler la vente (conservée, marquée annulée)' onclick='deleteAutreVente("+ri+")'>✕</button></div>";
   });liste.innerHTML=h;
 }
 // ── DONS & GAINS ─────────────────────────────────────────────
@@ -2192,7 +2855,7 @@ function renderDons(){
   });gl.innerHTML=h2;}}
 }
 // ── MONNAIE ───────────────────────────────────────────────────
-function getTotal(){var sub=cart.reduce(function(s,i){return s+i.price*i.qty;},0);var disc=parseFloat(document.getElementById("discountInput").value)||0;return sub-sub*disc/100;}
+function getTotal(){return calculerTotaux().total;}  // code promo compris (SHAYA)
 window.setBillet=function(montant,btn){document.getElementById("billetCustom").value=montant;document.querySelectorAll(".billet-btn").forEach(function(b){b.classList.remove("sel");});if(btn)btn.classList.add("sel");setTimeout(calcMonnaie,0);};
 function calcMonnaie(){
   var raw=(document.getElementById("billetCustom").value||"").trim().replace(",",".");var billet=parseFloat(raw);var total=getTotal();var res=document.getElementById("monnaieResult");
