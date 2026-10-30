@@ -5,7 +5,7 @@
 // interceptées : elles ne peuvent ni remplacer la copie de la caisse, ni être servies à sa place.
 "use strict";
 
-const VERSION = "caisse-2026-10-26";
+const VERSION = "caisse-2026-10-30-production";
 const BIBLIOTHEQUES = ["https://cdnjs.cloudflare.com/", "https://fonts.googleapis.com/", "https://fonts.gstatic.com/", "https://www.gstatic.com/firebasejs/"];
 // Adresses de la caisse elle-même : le dossier du service worker et son index.html.
 const DOSSIER = new URL("./", self.location.href).pathname;
@@ -22,11 +22,30 @@ self.addEventListener("install", (event) => {
   );
 });
 
+// Bibliothèques déjà gardées par une version précédente de la caisse : reprises dans la nouvelle copie
+// avant la suppression des anciennes, pour que la caisse se rouvre hors ligne dès la mise à jour (adresses
+// versionnées : même adresse, même contenu). La page n'est pas reprise : elle vient de la nouvelle version.
+async function reprendreBibliotheques(anciennes) {
+  const cache = await caches.open(VERSION);
+  for (const nom of anciennes) {
+    const ancien = await caches.open(nom);
+    for (const requete of await ancien.keys()) {
+      if (!BIBLIOTHEQUES.some((debut) => requete.url.startsWith(debut)) || (await cache.match(requete))) continue;
+      const reponse = await ancien.match(requete);
+      if (reponse) await cache.put(requete, reponse);
+    }
+  }
+}
+
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((cles) => Promise.all(cles.filter((c) => c !== VERSION).map((c) => caches.delete(c))))
+      .then(async (cles) => {
+        const anciennes = cles.filter((c) => c !== VERSION && c.startsWith("caisse-"));
+        await reprendreBibliotheques(anciennes).catch(() => undefined);
+        await Promise.all(cles.filter((c) => c !== VERSION).map((c) => caches.delete(c)));
+      })
       .then(() => self.clients.claim()),
   );
 });
