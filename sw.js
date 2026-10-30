@@ -5,7 +5,7 @@
 // interceptées : elles ne peuvent ni remplacer la copie de la caisse, ni être servies à sa place.
 "use strict";
 
-const VERSION = "caisse-2026-10-30-production";
+const VERSION = "caisse-2026-10-30-refonte-production";
 const BIBLIOTHEQUES = ["https://cdnjs.cloudflare.com/", "https://fonts.googleapis.com/", "https://fonts.gstatic.com/", "https://www.gstatic.com/firebasejs/"];
 // Adresses de la caisse elle-même : le dossier du service worker et son index.html.
 const DOSSIER = new URL("./", self.location.href).pathname;
