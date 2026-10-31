@@ -229,6 +229,25 @@ svg.roue{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-event
 .fl-temps{font:800 44px/1 var(--texte);font-variant-numeric:tabular-nums;padding:10px 22px;border-radius:16px;background:rgba(5,3,26,.5);border:1px solid rgba(246,201,107,.4);color:var(--or)}
 .fl-temps.orange{color:#ff9a3c}.fl-temps.rouge{color:#ff4d5e}
 
+/* ---------- Thème de Noël (body.theme-noel) : neige, guirlande, décor et textes dédiés ---------- */
+body:not(.theme-noel) .si-noel{display:none!important}
+body.theme-noel .si-classique{display:none!important}
+body.theme-noel .fond{background:
+  radial-gradient(38% 42% at 22% 30%,rgba(64,86,214,.34),transparent 70%),
+  radial-gradient(34% 38% at 80% 72%,rgba(112,42,254,.30),transparent 70%),
+  radial-gradient(30% 26% at 55% 6%,rgba(120,220,200,.10),transparent 70%)}
+body.theme-noel .plateau{opacity:.12}
+.guirlande{position:absolute;left:0;top:0;width:1920px;height:150px;pointer-events:none;overflow:visible}
+.guirlande .fil{fill:none;stroke:#17553a;stroke-width:4}
+.guirlande .ampoule{animation:scintille 1.8s ease-in-out infinite}
+@keyframes scintille{0%,100%{opacity:1}50%{opacity:.35}}
+.congere{position:absolute;left:0;bottom:0;width:1920px;height:130px;pointer-events:none}
+.m-noel{position:absolute;left:0;right:0;top:752px;margin:0;text-align:center;font:400 88px/1.2 "Pacifico",cursive;color:var(--or);text-shadow:0 0 40px rgba(246,201,107,.45)}
+body.theme-noel .progression{bottom:104px}
+body.theme-noel .dernier{bottom:90px}
+.c-ruban{position:absolute;top:44px;right:-86px;width:330px;height:42px;transform:rotate(45deg);pointer-events:none;background:linear-gradient(180deg,#b8852a,#f6c96b 35%,#fff0c4 50%,#f6c96b 65%,#b8852a);box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.c-noeud{position:absolute;top:2px;right:4px;width:118px;height:118px;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+
 /* ---------- Diffusion : état de la connexion, erreur éventuelle, écran de démarrage ---------- */
 .etat-fb{position:fixed;top:12px;right:16px;z-index:20;display:flex;align-items:center;gap:8px;font:700 11px/1 var(--texte);letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.3);pointer-events:none}
 .etat-fb i{width:8px;height:8px;border-radius:50%;background:#ff4d5e;box-shadow:0 0 8px #ff4d5e}
@@ -251,6 +270,8 @@ body.en-diffusion #feuille{cursor:crosshair}
         <div class="couche-pleine"><div class="fond"></div><div class="plateau"></div></div>
         <canvas class="fx" id="fxFond" width="1920" height="1080"></canvas>
         <div class="vignette"></div>
+        <svg class="congere si-noel" viewBox="0 0 1920 130" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gNeige" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2ff"/><stop offset="1" stop-color="#8e9bdc"/></linearGradient></defs><path d="M0 78C200 38 380 98 600 62S1000 26 1250 66S1650 104 1920 56V130H0Z" fill="url(#gNeige)" opacity=".85"/><path d="M0 78C200 38 380 98 600 62S1000 26 1250 66S1650 104 1920 56" fill="none" stroke="#fff" stroke-width="3" opacity=".7"/></svg>
+        <svg class="guirlande si-noel" id="guirlande" viewBox="0 0 1920 150" aria-hidden="true"><defs><filter id="lueurG" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur stdDeviation="5" result="f"/><feMerge><feMergeNode in="f"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
 
         <div class="boucle" id="boucle">
           <div class="boucle-int" id="boucleInt">
@@ -259,6 +280,7 @@ body.en-diffusion #feuille{cursor:crosshair}
               <img class="m-logo" data-logo alt="">
               <h2 class="m-titre" id="mTitre">LES PROJETS DE SHAYA</h2>
               <p class="m-sous">Impression 3D · Sublimation</p>
+              <p class="m-noel si-noel">Joyeux Noël</p>
             </section>
             <section class="beat b-achat" id="b2">
               <svg class="fantome" id="fantome" viewBox="-450 -450 900 900" aria-hidden="true"><g fill="none" stroke="#c19ef8" stroke-width="3"><circle r="420"/><circle r="398" stroke-width="1.5"/><circle r="108"/><g id="rayonsFantome"></g></g></svg>
@@ -267,7 +289,7 @@ body.en-diffusion #feuille{cursor:crosshair}
               <p class="k k3">1 TOUR DE ROUE</p>
             </section>
             <section class="beat b-gains" id="b3">
-              <div class="g-gauche"><p class="etiq">À gagner sur le stand</p><p class="g-titre">Tentez<br>votre chance</p><p class="g-note">Un tour de roue offert à chaque achat. Remises et carte cadeau à utiliser sur lesprojetsdeshaya.com.</p></div>
+              <div class="g-gauche"><p class="etiq si-classique">À gagner sur le stand</p><p class="etiq si-noel">Sous le sapin du stand</p><p class="g-titre si-classique">Tentez<br>votre chance</p><p class="g-titre si-noel">Vos cadeaux<br>de Noël</p><p class="g-note">Un tour de roue offert à chaque achat. Remises et carte cadeau à utiliser sur lesprojetsdeshaya.com.</p></div>
               <div class="g-fenetre" id="gFenetre"><div class="g-rail" id="gRail">
                 <p>-5&nbsp;<span class="sym">%</span></p><p>-10&nbsp;<span class="sym">%</span></p><p>-15&nbsp;<span class="sym">%</span></p><p class="mot2">CARTE&nbsp;15&nbsp;<span class="sym">€</span></p><p class="mot">CADEAU</p><p class="mot">BONUS</p><p class="mot">SURPRISE</p><p class="mot">DRAGON</p><p>-5&nbsp;<span class="sym">%</span></p>
               </div></div>
@@ -278,14 +300,15 @@ body.en-diffusion #feuille{cursor:crosshair}
                 <p class="etiq">Fabriqué à l'atelier</p>
                 <p class="p-titre">Couche<br>par couche</p>
                 <div class="p-ecran">
-                  <div class="pe-ligne fort"><span>Couche</span><b><span id="peCouche">0</span> / 350</b></div>
+                  <div class="pe-ligne fort"><span>Couche</span><b><span id="peCouche">0</span> / <span id="peTotal">175</span></b></div>
                   <div class="pe-ligne"><span>Hauteur imprimée</span><b id="peHaut">0,0 mm</b></div>
                   <div class="pe-ligne"><span>Buse · plateau</span><b id="peBuse">215 °C · 60 °C</b></div>
                   <div class="pe-ligne"><span>Temps restant</span><b id="peReste">3 h 20 min</b></div>
                   <div class="pe-barre"><i id="peBarre"></i></div>
                   <p class="pe-etat"><b></b><span id="peEtat">Première couche</span></p>
                 </div>
-                <p class="p-note">Œuf de dragon en filament dégradé, couches de 0,4&nbsp;mm.</p>
+                <p class="p-note si-classique">Œuf de dragon en filament dégradé, couches de 0,4&nbsp;mm.</p>
+                <p class="p-note si-noel">Sapin en filament soie, couches de 0,2&nbsp;mm.</p>
               </div>
               <canvas id="impression" width="700" height="780"></canvas>
               <p class="pe-fini" id="peFini"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12.5l5 5L20 6.5"/></svg>Impression terminée</p>
@@ -293,8 +316,10 @@ body.en-diffusion #feuille{cursor:crosshair}
             <section class="beat b-perso" id="bPerso">
               <div class="pp-texte">
                 <p class="etiq">Sur lesprojetsdeshaya.com</p>
-                <p class="pp-titre">Vos couleurs,<br>votre <em>création</em></p>
-                <p class="pp-note">Dragons articulés et fidgets se personnalisent sur le site : une couleur de filament pour chaque partie, avec l'aperçu 3D en direct.</p>
+                <p class="pp-titre si-classique">Vos couleurs,<br>votre <em>création</em></p>
+                <p class="pp-titre si-noel">Un cadeau<br>à <em>leurs</em> couleurs</p>
+                <p class="pp-note si-classique">Dragons articulés et fidgets se personnalisent sur le site : une couleur de filament pour chaque partie, avec l'aperçu 3D en direct.</p>
+                <p class="pp-note si-noel">Dragons articulés et fidgets se personnalisent sur le site : une idée cadeau unique pour Noël, avec l'aperçu 3D en direct.</p>
               </div>
               <div class="pp-panneau" id="ppPanneau">
                 <div class="pp-onglets" id="ppOnglets"><span class="actif" data-p="dragon">Dragon articulé</span><span data-p="fidget">Fidget spirale</span><span data-p="balle">Balle bicolore</span></div>
@@ -307,17 +332,20 @@ body.en-diffusion #feuille{cursor:crosshair}
               <svg class="pp-curseur" id="ppCurseur" viewBox="0 0 32 32" aria-hidden="true"><path d="M5 3l19 11-8 2 5 10-4 2-5-10-6 6z"/></svg>
             </section>
             <section class="beat b-carte" id="b5">
-              <div class="c-texte"><p class="etiq">Idée cadeau</p><p class="c-titre">Offrez une<br><em>carte cadeau</em><br>numérique</p><p class="c-note">De 10 à 50 €, valable 12 mois, reçue sur le téléphone.</p></div>
+              <div class="c-texte"><p class="etiq">Idée cadeau</p><p class="c-titre si-classique">Offrez une<br><em>carte cadeau</em><br>numérique</p><p class="c-titre si-noel">Le cadeau de<br><em>dernière</em><br><em>minute</em></p><p class="c-note">De 10 à 50 €, valable 12 mois, reçue sur le téléphone.</p></div>
               <div class="c-scene"><div class="c-carte" id="cCarte">
                 <div class="c-haut"><img data-logo alt=""><p>Carte<br>cadeau</p></div>
                 <p class="c-code">SHAYA-••••-••••</p>
                 <div class="c-bas"><p>Valable 12 mois</p><strong>25 €</strong></div>
                 <div class="c-reflet" id="cReflet"></div>
+                <div class="c-ruban si-noel"></div>
+                <svg class="c-noeud si-noel" viewBox="0 0 120 120" aria-hidden="true"><g fill="#f6c96b" stroke="#b8852a" stroke-width="3" stroke-linejoin="round"><path d="M60 60C30 20 5 40 20 62C30 78 50 70 60 60Z"/><path d="M60 60C90 20 115 40 100 62C90 78 70 70 60 60Z"/><path d="M58 64L44 106L57 99L64 112L70 64Z"/><circle cx="60" cy="60" r="11"/></g></svg>
               </div></div>
             </section>
             <section class="beat b-insta" id="b6">
               <p class="etiq">Instagram</p>
-              <p class="i-titre">Suivez l'atelier</p>
+              <p class="i-titre si-classique">Suivez l'atelier</p>
+              <p class="i-titre si-noel">Joyeuses fêtes !</p>
               <p class="i-pseudo">@lesprojetsdeshaya</p>
               <p class="i-reseaux">Facebook · Instagram · TikTok · YouTube · Discord</p>
             </section>
@@ -377,11 +405,23 @@ body.en-diffusion #feuille{cursor:crosshair}
               <circle r="102" fill="none" stroke="url(#gOr)" stroke-width="6"/>
               <circle r="90" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1.5"/>
               <image id="moyeuLogo" x="-78" y="-80" width="156" height="156"/>
+              <g class="si-noel" transform="translate(64 -66) rotate(-20)">
+                <path d="M0 0C8-14 26-16 38-6C30-4 28 4 30 12C20 8 12 10 4 16C6 8 4 4 0 0Z" fill="#2fae6b" stroke="#17553a" stroke-width="2"/>
+                <path d="M0 0C-8-14-26-16-38-6C-30-4-28 4-30 12C-20 8-12 10-4 16C-6 8-4 4 0 0Z" fill="#3ddc84" stroke="#17553a" stroke-width="2"/>
+                <circle cx="-6" cy="5" r="7" fill="#d93a5e"/><circle cx="7" cy="6" r="7" fill="#e5486f"/><circle cx="0" cy="-4" r="7" fill="#ff5f86"/>
+              </g>
             </g>
             <g transform="translate(0 -430)"><g id="buse">
-              <rect x="-11" y="-360" width="22" height="220" fill="#2a1f62"/>
+              <rect class="si-classique" x="-11" y="-360" width="22" height="220" fill="#2a1f62"/>
               <rect x="-60" y="-152" width="120" height="80" rx="14" fill="url(#gBloc)" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
-              <text x="12" y="-106" text-anchor="middle" class="buse-texte">SHAYA</text>
+              <!-- bonnet posé sur le bloc (le haut de l'écran est juste au-dessus) : la pointe retombe sur le côté -->
+              <g class="si-noel">
+                <path d="M-60-128Q-54-164 14-162Q80-160 102-118L82-120Q68-142 44-144L56-128Z" fill="#d93a5e"/>
+                <path d="M-40-142Q-20-156 20-154" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="4" stroke-linecap="round"/>
+                <rect x="-66" y="-138" width="132" height="24" rx="12" fill="#f4f7ff"/>
+                <circle cx="100" cy="-112" r="14" fill="#f4f7ff"/>
+              </g>
+              <text x="12" y="-106" text-anchor="middle" class="buse-texte si-classique">SHAYA</text>
               <circle cx="-40" cy="-112" r="6" fill="#f6c96b" filter="url(#lueur)"/>
               <path d="M-34 -72H34L27 -52H-27Z" fill="url(#gOr)"/>
               <path d="M-21 -52H21L6 -8H-6Z" fill="url(#gOr)"/>
@@ -486,7 +526,19 @@ const LOSE_MESSAGES = [
 const CARTE = 'CARTE 15 €';
 const N = PRIZES.length, ARC = 360 / N;
 const CX = 960, CY = 590, R_IN = 104, R_OUT = 400, R_JANTE = 414, DEPART_D = 1150; // DEPART_D : juste hors de l'écran, pour que les parts restent longtemps visibles en vol
-const S = { mode:'wheel', panier:false, enJeu:false, son:false, modeJeu:'wheel', attente:false, dernier:null, roueVisible:false, tourne:false, vitesse:0, vol:false, carteVol:false, flash:null, perso:false, tension:false };
+/* Thème : « noel » ou « classique », demandé dans l'adresse (#noel, ?theme=noel), sinon THEME_DEFAUT. */
+function themeDuJour(d){ const m = d.getMonth(), j = d.getDate(); return (m === 10 && j >= 27) || m === 11 ? 'noel' : 'classique'; }
+const THEME_DEFAUT = themeDuJour(new Date());
+function themeDepart(){ const m = (location.search + location.hash).match(/noel|classique/); return m ? m[0] : THEME_DEFAUT; }
+/* Messages affichés quand c'est perdu pendant la période de Noël (la caisse reçoit toujours le libellé du lot). */
+const PERTE_NOEL = [
+  { title:"PRESQUE !", sub:"Le Père Noël repasse au prochain achat !" },
+  { title:"OH NON !", sub:"Les lutins préparent ta prochaine chance !" },
+  { title:"DOMMAGE !", sub:"La roue garde ses cadeaux pour ton prochain achat !" },
+  { title:"RATÉ !", sub:"Un autre achat, et la magie de Noël opère !" },
+  { title:"PAS CETTE FOIS !", sub:"Le traîneau revient au prochain achat !" },
+];
+const S = { theme:themeDepart(), mode:'wheel',panier:false, enJeu:false, son:false, modeJeu:'wheel', attente:false, dernier:null, roueVisible:false, tourne:false, vitesse:0, vol:false, carteVol:false, flash:null, perso:false, tension:false };
 let R = 0;
 
 $$('img[data-logo]').forEach(i => { i.src = LOGO; });
@@ -587,8 +639,9 @@ function majFantomes(v){
   fantomes.forEach((u, k) => { u.setAttribute('transform', `rotate(${f2(-retard * (k + 1))})`); u.setAttribute('opacity', (force * [.22, .12, .06][k]).toFixed(3)); });
 }
 function indexSousBuse(r){ return ((Math.round(-r / ARC) % N) + N) % N; }
-gsap.set('#buse', { svgOrigin:'960 8' });
-gsap.set('#moyeu', { svgOrigin:'960 590' });
+// pivots dans le repère propre de chaque groupe : haut du bloc de chauffe pour la buse, centre de la roue pour le moyeu
+gsap.set('#buse', { svgOrigin:'0 -152' });
+gsap.set('#moyeu', { svgOrigin:'0 0' });
 function preparerRoue(){
   gsap.set('#roue', { scale:1, filter:'blur(0px)', opacity:1 });
   roueRot.setAttribute('transform', `rotate(${f2(R)})`);
@@ -607,6 +660,8 @@ function cacherRoue(){ parts.forEach(sp => { sp.d = DEPART_D; majPart(sp); }); m
 const cFond = $('#fxFond').getContext('2d'), cHaut = $('#fxHaut').getContext('2d'), cRoue = $('#fxRoue').getContext('2d'), cTension = $('#fxTension').getContext('2d');
 const P = [], PH = [], PT = []; let hautSale = false, roueSale = false;
 const POUSS = Array.from({ length: Math.round(70 * Q) }, () => ({ x:hasard() * 1920, y:hasard() * 1080, v:8 + hasard() * 22, s:.8 + hasard() * 2.2, a:.15 + hasard() * .35, ph:hasard() * 6.28 }));
+// neige de Noël : flocons fins qui tombent en se balançant, et quelques gros flocons flous au premier plan
+const NEIGE = Array.from({ length: Math.round(170 * Q) }, (_, i) => { const gros = i % 17 === 0; return { x:hasard() * 1920, y:hasard() * 1080, v:gros ? 24 + hasard() * 20 : 40 + hasard() * 70, s:gros ? 7 + hasard() * 5 : 1.2 + hasard() * 2.8, a:gros ? .12 : .35 + hasard() * .5, b:16 + hasard() * 30, o:.4 + hasard() * .8, ph:hasard() * 6.28 }; });
 const traineeCarte = [[], [], []];
 function majParticules(c, L, dt){
   for (let i = L.length - 1; i >= 0; i--){
@@ -623,7 +678,8 @@ function majParticules(c, L, dt){
     if (p.type === 'confetti'){
       p.rot += p.vr * dt;
       c.save(); c.translate(p.x, p.y); c.rotate(p.rot); c.globalAlpha = Math.min(1, k * 3);
-      if (p.fil){ c.strokeStyle = p.col; c.lineWidth = 4; c.lineCap = 'round'; c.beginPath(); c.moveTo(-14, 0); c.quadraticCurveTo(-7, -9, 0, 0); c.quadraticCurveTo(7, 9, 14, 0); c.stroke(); }
+      if (p.flocon){ c.strokeStyle = '#f4f7ff'; c.lineWidth = 2.6; c.lineCap = 'round'; c.beginPath(); for (let b = 0; b < 3; b++){ c.rotate(Math.PI / 3); c.moveTo(-12, 0); c.lineTo(12, 0); } c.stroke(); }
+      else if (p.fil){ c.strokeStyle = p.col; c.lineWidth = 4; c.lineCap = 'round'; c.beginPath(); c.moveTo(-14, 0); c.quadraticCurveTo(-7, -9, 0, 0); c.quadraticCurveTo(7, 9, 14, 0); c.stroke(); }
       else { c.fillStyle = p.col; c.scale(1, Math.cos(p.rot * 2.3)); c.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); }
       c.restore(); c.globalAlpha = 1; continue;
     }
@@ -649,7 +705,13 @@ function ruban(c, pts, col, larg){
 function dessinerFx(dt, time){
   cFond.clearRect(0, 0, 1920, 1080);
   cFond.globalCompositeOperation = 'lighter';
-  for (const d of POUSS){
+  if (S.theme === 'noel') for (const f of NEIGE){
+    f.y += f.v * dt; f.x += Math.sin(time * f.o + f.ph) * f.b * dt;
+    if (f.y > 1090){ f.y = -12; f.x = hasard() * 1920; }
+    cFond.globalAlpha = f.a; cFond.fillStyle = '#f4f7ff';
+    cFond.beginPath(); cFond.arc(f.x, f.y, f.s, 0, 6.2832); cFond.fill();
+  }
+  else for (const d of POUSS){
     d.y -= d.v * dt; d.x += Math.sin(time * .5 + d.ph) * 6 * dt;
     if (d.y < -10){ d.y = 1090; d.x = hasard() * 1920; }
     cFond.globalAlpha = d.a * (.55 + .45 * Math.sin(time * 2 + d.ph)); cFond.fillStyle = '#c19ef8';
@@ -683,10 +745,11 @@ function eclat(x, y, col, n = 40, v = 900){
 }
 function onde(x, y, r0, r1, col, ep = 10, vie = .8, L = P){ L.push({ type:'anneau', x, y, r0, r1, col, ep, vie, max:vie }); }
 function confettis(x, y, n, dore){
-  const cols = dore ? ['#f6c96b','#fff0c4','#f6c96b','#c19ef8','#ffffff','#702afe'] : ['#702afe','#8a4ef9','#c19ef8','#ffffff','#f6c96b'];
+  const noel = S.theme === 'noel';
+  const cols = noel ? ['#f6c96b','#ffffff','#ff5f86','#3ddc84','#f6c96b','#c19ef8'] : dore ? ['#f6c96b','#fff0c4','#f6c96b','#c19ef8','#ffffff','#702afe'] : ['#702afe','#8a4ef9','#c19ef8','#ffffff','#f6c96b'];
   for (let i = 0; i < n * Q; i++){
     const a = -Math.PI / 2 + (hasard() - .5) * Math.PI * 1.7, s = 700 + hasard() * 1100, vie = 2.4 + hasard() * 1.6;
-    PH.push({ type:'confetti', x:x + (hasard() - .5) * 160, y:y + (hasard() - .5) * 60, vx:Math.cos(a) * s, vy:Math.sin(a) * s, g:1500, fr:1.7, rot:hasard() * 6.28, vr:(hasard() - .5) * 16, w:12 + hasard() * 10, h:7 + hasard() * 6, col:cols[i % cols.length], fil:hasard() < .2, vie, max:vie });
+    PH.push({ type:'confetti', x:x + (hasard() - .5) * 160, y:y + (hasard() - .5) * 60, vx:Math.cos(a) * s, vy:Math.sin(a) * s, g:1500, fr:1.7, rot:hasard() * 6.28, vr:(hasard() - .5) * 16, w:12 + hasard() * 10, h:7 + hasard() * 6, col:cols[i % cols.length], fil:hasard() < .2, flocon:noel && hasard() < .3, vie, max:vie });
   }
 }
 function poussiereGratte(x, y){
@@ -721,46 +784,92 @@ const son = (() => {
     s.buffer = bruit; f.type = 'bandpass'; f.Q.value = 1.2; f.frequency.setValueAtTime(fa, t); f.frequency.exponentialRampToValueAtTime(fb, t + dur);
     env(g, t, dur * .6, pic, dur); s.connect(f); f.connect(g); g.connect(maitre); s.start(t); s.stop(t + dur + .05);
   }
+  // grelots de traîneau : petites rafales de bruit très aigu qui s'éteignent
+  function grelots(d){
+    const c = pret(); if (!c) return;
+    for (let t = 0; t < d; t += .085){
+      const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), t0 = c.currentTime + t;
+      s.buffer = bruit; f.type = 'highpass'; f.frequency.value = 6500;
+      env(g, t0, .005, .05 * (1 - t / d) + .01, .07); s.connect(f); f.connect(g); g.connect(maitre); s.start(t0, Math.random()); s.stop(t0 + .09);
+    }
+  }
+  // refrain de « Jingle Bells » (J. L. Pierpont, 1857, domaine public) pour un gain à Noël
+  function jingle(){
+    const E = 659.25, G = 783.99, C = 523.25, D = 587.33; let t = 0;
+    [[E,.16],[E,.16],[E,.32],[E,.16],[E,.16],[E,.32],[E,.16],[G,.16],[C,.24],[D,.08],[E,.55]].forEach(([f, d]) => { ton(f, t, d * .95, 'triangle', .17); ton(f * 2, t, d * .5, 'sine', .04); t += d; });
+    grelots(2.2);
+  }
   return {
     pret,
     whoosh:(d = 1) => souffle(d, 300, 2600, .35),
     thump:(k = 1) => { ton(110, 0, .45, 'sine', .6 * k, 38); souffle(.25, 900, 200, .18 * k); },
-    coeur:() => { ton(70, 0, .22, 'sine', .32, 48); ton(66, .2, .25, 'sine', .24, 44); },
+    coeur:() => { ton(70, 0, .22, 'sine', .32, 48); ton(66, .2, .25, 'sine', .24, 44); if (S.theme === 'noel') grelots(.35); },
     clac:() => { ton(1400, 0, .05, 'square', .06); ton(700, 0, .08, 'triangle', .08); },
     tic:(f = 1600) => { const c = pret(); if (!c || c.currentTime - dernierTic < .035) return; dernierTic = c.currentTime; ton(f, 0, .035, 'square', .045); },
-    gain:() => { [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => ton(f, i * .09, .5, 'triangle', .16)); souffle(1.2, 2000, 8000, .06); },
+    gain:() => { if (S.theme === 'noel'){ jingle(); return; } [523.25, 659.25, 783.99, 1046.5, 1318.5].forEach((f, i) => ton(f, i * .09, .5, 'triangle', .16)); souffle(1.2, 2000, 8000, .06); },
     perte:() => { ton(392, 0, .35, 'sine', .14, 370); ton(311.13, .2, .6, 'sine', .12, 262); },
     gratte:() => { const c = pret(); if (!c || c.currentTime - dernierGratte < .07) return; dernierGratte = c.currentTime; souffle(.09, 1800, 3400, .05); }
   };
 })();
 
-/* ---------- Temps 4 : l'œuf de dragon imprimé couche par couche ---------- */
+/* ---------- Temps 4 : une pièce imprimée couche par couche (œuf de dragon, sapin pour Noël) ---------- */
 const lettresTitre = eclater($('#mTitre'), 'LES PROJETS DE SHAYA');
 const cImp = $('#impression').getContext('2d');
 const IMP = { base:690, haut:520, n:140, cx:350, larg:196 };
-function demi(t){ const u = 2 * t - 1; return IMP.larg * Math.sqrt(Math.max(0, 1 - u * u)) * (1 - .17 * u); }
 function tC(i){ return .06 + .94 * (i + .5) / IMP.n; }
-/* Filament dégradé (soie) : violet en bas, magenta au milieu, pêche dorée au sommet. */
-const DEG = [[86,34,210],[198,62,206],[246,178,107]];
-function teinteH(m){ const a = m < .55 ? DEG[0] : DEG[1], b = m < .55 ? DEG[1] : DEG[2], k = m < .55 ? m / .55 : (m - .55) / .45; return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k]; }
-/* L'œuf complet est rendu une seule fois (ombrage arrondi, écailles, lignes de couche) puis révélé couche après couche. */
-const oeuf = document.createElement('canvas'); oeuf.width = 700; oeuf.height = 780;
-(function rendreOeuf(){
-  const c = oeuf.getContext('2d'), hc = IMP.haut / IMP.n;
+function melange(etapes, m){
+  for (let i = 1; i < etapes.length; i++){
+    const [ma, a] = etapes[i - 1], [mb, b] = etapes[i];
+    if (m <= mb || i === etapes.length - 1){ const k = Math.max(0, Math.min(1, (m - ma) / (mb - ma))); return [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k]; }
+  }
+}
+/* Œuf de dragon en filament dégradé (soie) : violet en bas, magenta au milieu, pêche dorée au sommet ; écailles en rangées décalées. */
+const OEUF = {
+  couches:175, // 70 mm en couches de 0,4 mm
+
+  demi:t => { const u = 2 * t - 1; return IMP.larg * Math.sqrt(Math.max(0, 1 - u * u)) * (1 - .17 * u); },
+  teinte:m => melange([[0, [86,34,210]], [.55, [198,62,206]], [1, [246,178,107]]], m),
+  motif:(i, u, vy, q) => { let s = (Math.asin(u) / Math.PI * 10 + (q % 2) * .5) % 1; if (s < 0) s += 1; const dx = s - .5; return { k:.84 + .16 * Math.cos(dx * 2 * Math.PI) * (1 - vy * .9) - (Math.abs(vy - (.08 + 2.4 * dx * dx)) < .1 ? .13 : 0) }; }
+};
+/* Sapin : tronc puis trois étages de branches, guirlande dorée en spirale ; les boules sont posées sur l'image finie. */
+const SAPIN = {
+  couches:350, // 70 mm en couches de 0,2 mm
+
+  demi:t => { if (t < .1) return 34; let w = 0; [[.1, .47, 196], [.4, .74, 152], [.67, .99, 108]].forEach(([a, b, m]) => { if (t >= a && t <= b) w = Math.max(w, m * (1 - (t - a) / (b - a)) + 6); }); return w; },
+  teinte:m => m < .1 ? [112,70,40] : melange([[.1, [22,112,64]], [1, [64,196,116]]], m),
+  motif:(i, u, vy, q, t) => { let s = (Math.asin(u) / Math.PI + t * 4.2) % 1; if (s < 0) s += 1; return t >= .1 && s < .07 ? { col:[246,201,107], k:1.05 } : { k:.86 + .14 * Math.sin(i * 7.3 + u * 40) }; }
+};
+/* Chaque pièce est rendue une seule fois (ombrage arrondi, motif, lignes de couche) puis révélée couche après couche. */
+function rendreObjet(O){
+  const img = document.createElement('canvas'); img.width = 700; img.height = 780;
+  const c = img.getContext('2d'), hc = IMP.haut / IMP.n;
   for (let i = 0; i < IMP.n; i++){
-    const y = IMP.base - (i + 1) * hc, w = demi(tC(i)), col = teinteH(i / IMP.n), q = Math.floor(i / 7), vy = (i % 7) / 7;
+    const t = tC(i), y = IMP.base - (i + 1) * hc, w = O.demi(t), col = O.teinte(i / IMP.n), q = Math.floor(i / 7), vy = (i % 7) / 7;
     for (let x = IMP.cx - w; x < IMP.cx + w; x += 3){
       const u = Math.max(-1, Math.min(1, (x + 1.5 - IMP.cx) / w)), z = Math.sqrt(1 - u * u);
       const diffus = Math.max(0, -.45 * u + .85 * z), spec = Math.exp(-Math.pow((u + .36) / .11, 2)) * .5;
-      let s = (Math.asin(u) / Math.PI * 10 + (q % 2) * .5) % 1; if (s < 0) s += 1; const dx = s - .5;
-      const ecaille = .84 + .16 * Math.cos(dx * 2 * Math.PI) * (1 - vy * .9) - (Math.abs(vy - (.08 + 2.4 * dx * dx)) < .1 ? .13 : 0);
-      const k = (.22 + .78 * diffus) * ecaille;
-      c.fillStyle = `rgb(${Math.min(255, col[0] * k + 255 * spec) | 0},${Math.min(255, col[1] * k + 255 * spec) | 0},${Math.min(255, col[2] * k + 255 * spec) | 0})`;
+      const m = O.motif(i, u, vy, q, t), cc = m.col || col, k = (.22 + .78 * diffus) * m.k;
+      c.fillStyle = `rgb(${Math.min(255, cc[0] * k + 255 * spec) | 0},${Math.min(255, cc[1] * k + 255 * spec) | 0},${Math.min(255, cc[2] * k + 255 * spec) | 0})`;
       c.fillRect(x, y, 3.4, hc);
     }
     c.fillStyle = 'rgba(0,0,0,.18)'; c.fillRect(IMP.cx - w, y + hc - .7, 2 * w, .7);
   }
-})();
+  if (O === SAPIN){
+    const cols = ['#ff5f86', '#f6c96b', '#f4f7ff', '#c19ef8'];
+    for (let n = 0; n < 26; n++){
+      // suites à pas irrationnels différents : boules réparties sans motif visible, mais toujours aux mêmes places
+      const alea = k => { const s = Math.sin(n * 12.9898 + k * 78.233) * 43758.5453; return s - Math.floor(s); };
+      const t = .16 + .78 * alea(1), u = (alea(2) * 2 - 1) * .78, w = O.demi(t);
+      if (w < 30) continue;
+      const x = IMP.cx + u * w, y = IMP.base - t * IMP.haut, g = c.createRadialGradient(x - 3, y - 3, 1, x, y, 9);
+      g.addColorStop(0, '#ffffff'); g.addColorStop(.35, cols[n % 4]); g.addColorStop(1, 'rgba(0,0,0,.35)');
+      c.fillStyle = g; c.beginPath(); c.arc(x, y, 8.5, 0, 6.2832); c.fill();
+    }
+  }
+  return img;
+}
+OEUF.img = rendreObjet(OEUF); SAPIN.img = rendreObjet(SAPIN);
+function O(){ return S.theme === 'noel' ? SAPIN : OEUF; }
 const plateauImp = document.createElement('canvas'); plateauImp.width = 700; plateauImp.height = 80;
 (function rendrePlateau(){
   const c = plateauImp.getContext('2d'), g = c.createLinearGradient(0, 0, 0, 44);
@@ -772,7 +881,7 @@ const plateauImp = document.createElement('canvas'); plateauImp.width = 700; pla
 })();
 function lisse(t){ return t * t * (3 - 2 * t); }
 function surfaceCouche(c, y, w, k){
-  const ry = w * .16, col = teinteH(k / IMP.n), sens = k % 2 ? 1 : -1;
+  const ry = w * .16, col = O().teinte(k / IMP.n), sens = k % 2 ? 1 : -1;
   c.save(); c.beginPath(); c.ellipse(IMP.cx, y, w, ry, 0, 0, 6.2832);
   c.fillStyle = `rgba(${col[0] * .42 | 0},${col[1] * .42 | 0},${col[2] * .42 | 0},.96)`; c.fill(); c.clip();
   // remplissage rectiligne à 45°, sens alterné d'une couche à l'autre, comme le trancheur
@@ -790,7 +899,7 @@ function teteImp(c, x, y, chauffe, p){
   c.fillStyle = gm; c.fillRect(26, gy, 648, 18);
   c.fillStyle = '#3a2f7a'; c.fillRect(18, gy - 8, 30, 34); c.fillRect(652, gy - 8, 30, 34);
   // gaine du filament jusqu'à la bobine
-  const col = teinteH(Math.min(1, p));
+  const col = O().teinte(Math.min(1, p));
   c.strokeStyle = 'rgba(255,255,255,.22)'; c.lineWidth = 8; c.lineCap = 'round';
   c.beginPath(); c.moveTo(x + 26, y - 160); c.quadraticCurveTo(x + 130, y - 330, 600, 112); c.stroke();
   c.strokeStyle = `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`; c.lineWidth = 2.4;
@@ -815,7 +924,7 @@ function machine(c, p){
   // colonnes, bobine et plateau
   const gm = c.createLinearGradient(0, 0, 18, 0); gm.addColorStop(0, '#2a2160'); gm.addColorStop(.5, '#7b6cc8'); gm.addColorStop(1, '#2a2160');
   c.fillStyle = gm; c.fillRect(24, 20, 12, IMP.base + 30); c.fillRect(664, 20, 12, IMP.base + 30);
-  const col = teinteH(Math.min(1, p));
+  const col = O().teinte(Math.min(1, p));
   c.save(); c.translate(600, 70);
   c.fillStyle = '#16113a'; c.beginPath(); c.arc(0, 0, 58, 0, 6.2832); c.fill();
   const gf = c.createRadialGradient(0, 0, 18, 0, 0, 50); gf.addColorStop(0, `rgb(${col[0] * .6 | 0},${col[1] * .6 | 0},${col[2] * .6 | 0})`); gf.addColorStop(1, `rgb(${col[0] | 0},${col[1] | 0},${col[2] | 0})`);
@@ -829,28 +938,37 @@ function machine(c, p){
 function dessinImpression(p, fin){
   const c = cImp, hc = IMP.haut / IMP.n; c.clearRect(0, 0, 700, 780);
   machine(c, p);
-  const faites = p * IMP.n, k = Math.min(IMP.n, Math.floor(faites)), frac = faites - k;
-  if (k > 0){ const yTop = IMP.base - k * hc; c.drawImage(oeuf, 0, yTop, 700, IMP.base - yTop, 0, yTop, 700, IMP.base - yTop); }
+  const piece = O(), faites = p * IMP.n, k = Math.min(IMP.n, Math.floor(faites)), frac = faites - k;
+  if (k > 0){ const yTop = IMP.base - k * hc; c.drawImage(piece.img, 0, yTop, 700, IMP.base - yTop, 0, yTop, 700, IMP.base - yTop); }
   let bx = IMP.cx, by = IMP.base - IMP.haut - 6;
   if (k < IMP.n){
-    const w = demi(tC(k)), yC = IMP.base - (k + 1) * hc, th = frac * 2 * Math.PI;
+    const w = piece.demi(tC(k)), yC = IMP.base - (k + 1) * hc, th = frac * 2 * Math.PI;
     bx = IMP.cx + w * Math.cos(th); by = yC + w * .16 * Math.sin(th);
     const prog = Math.min(1, th / Math.PI), xl = IMP.cx + w - 2 * w * prog;
-    if (prog > 0) c.drawImage(oeuf, xl, yC, IMP.cx + w - xl, hc, xl, yC, IMP.cx + w - xl, hc);
+    if (prog > 0) c.drawImage(piece.img, xl, yC, IMP.cx + w - xl, hc, xl, yC, IMP.cx + w - xl, hc);
     surfaceCouche(c, yC, w, k);
     // matière encore chaude sur les dernières couches
     const g = c.createLinearGradient(0, yC, 0, yC + 26); g.addColorStop(0, 'rgba(255,170,90,.42)'); g.addColorStop(1, 'rgba(255,170,90,0)');
     c.fillStyle = g; c.fillRect(IMP.cx - w, yC, 2 * w, 26);
   }
   if (fin > 0){
-    // reflet qui balaie l'œuf terminé, puis étincelles
+    // reflet qui balaie la pièce terminée, puis étincelles (et l'étoile au sommet du sapin)
     c.save(); c.beginPath();
-    for (let i = 0; i <= IMP.n; i++){ const t = .06 + .94 * i / IMP.n, y = IMP.base - i * hc, x = IMP.cx - demi(t); if (i) c.lineTo(x, y); else c.moveTo(x, y); }
-    for (let i = IMP.n; i >= 0; i--){ const t = .06 + .94 * i / IMP.n; c.lineTo(IMP.cx + demi(t), IMP.base - i * hc); }
+    for (let i = 0; i <= IMP.n; i++){ const t = .06 + .94 * i / IMP.n, y = IMP.base - i * hc, x = IMP.cx - piece.demi(t); if (i) c.lineTo(x, y); else c.moveTo(x, y); }
+    for (let i = IMP.n; i >= 0; i--){ const t = .06 + .94 * i / IMP.n; c.lineTo(IMP.cx + piece.demi(t), IMP.base - i * hc); }
     c.closePath(); c.clip();
     const sx = -300 + 1300 * lisse(Math.min(1, fin * 1.4)), gs = c.createLinearGradient(sx - 120, 0, sx + 120, 0);
     gs.addColorStop(0, 'rgba(255,255,255,0)'); gs.addColorStop(.5, 'rgba(255,255,255,.55)'); gs.addColorStop(1, 'rgba(255,255,255,0)');
     c.fillStyle = gs; c.fillRect(0, 0, 700, 780); c.restore();
+    if (piece === SAPIN){
+      const e = Math.min(1, fin * 2.4), s = e < 1 ? 1 + 2.7 * Math.pow(e - 1, 3) + 1.7 * Math.pow(e - 1, 2) : 1;
+      c.save(); c.translate(IMP.cx, IMP.base - IMP.haut - 18); c.scale(s, s); c.rotate((1 - e) * -1.2);
+      const halo = c.createRadialGradient(0, 0, 4, 0, 0, 70); halo.addColorStop(0, 'rgba(246,201,107,.7)'); halo.addColorStop(1, 'rgba(246,201,107,0)');
+      c.fillStyle = halo; c.beginPath(); c.arc(0, 0, 70, 0, 6.2832); c.fill();
+      c.fillStyle = '#f6c96b'; c.strokeStyle = '#fff6dc'; c.lineWidth = 3; c.beginPath();
+      for (let b = 0; b < 10; b++){ const r = b % 2 ? 15 : 36, a = -Math.PI / 2 + b * Math.PI / 5; c[b ? 'lineTo' : 'moveTo'](Math.cos(a) * r, Math.sin(a) * r); }
+      c.closePath(); c.fill(); c.stroke(); c.restore();
+    }
     for (let s = 0; s < 7; s++){
       const a = s * .9 + fin * 3, rx = 250 + 30 * Math.sin(s * 2.1), sxp = IMP.cx + Math.cos(a) * rx, syp = 430 + Math.sin(a) * 280, al = Math.max(0, Math.sin(fin * Math.PI * 2 + s)) * Math.min(1, fin * 4);
       c.save(); c.translate(sxp, syp); c.globalAlpha = al; c.fillStyle = s % 2 ? '#f6c96b' : '#ffffff';
@@ -860,7 +978,7 @@ function dessinImpression(p, fin){
   // la tête se range en fin d'impression
   const e = lisse(Math.min(1, fin * 1.6)), tx = bx + (120 - bx) * e, ty = by - 10 * e;
   teteImp(c, tx, ty, k < IMP.n, p);
-  $('#peCouche').textContent = Math.round(p * 350);
+  $('#peCouche').textContent = Math.round(p * piece.couches); $('#peTotal').textContent = piece.couches;
   $('#peHaut').textContent = (p * 70).toFixed(1).replace('.', ',') + ' mm';
   $('#peBuse').textContent = (fin > 0 ? 180 - Math.round(fin * 60) : 215 + Math.round(Math.sin(performance.now() / 260))) + ' °C · 60 °C';
   const reste = Math.round((1 - p) * 200); $('#peReste').textContent = reste ? `${Math.floor(reste / 60)} h ${String(reste % 60).padStart(2, '0')} min` : 'terminé';
@@ -1187,6 +1305,7 @@ function entreeMarque(){
     .fromTo(logo, { scale:0, rotation:-24, autoAlpha:0 }, { scale:1, rotation:0, autoAlpha:1, duration:.95, ease:'back.out(1.7)' }, .1)
     .fromTo(lettresTitre, { yPercent:120, rotationX:-80, autoAlpha:0 }, { yPercent:0, rotationX:0, autoAlpha:1, duration:.75, stagger:.028, ease:'back.out(1.7)' }, .5)
     .fromTo(b.querySelector('.m-sous'), { letterSpacing:'.9em', autoAlpha:0 }, { letterSpacing:'.42em', autoAlpha:1, duration:1.3, ease:'expo.out' }, 1)
+    .fromTo(b.querySelector('.m-noel'), { scale:.5, rotation:-8, autoAlpha:0 }, { scale:1, rotation:0, autoAlpha:1, duration:.9, ease:'back.out(2.2)' }, 1.5)
     .fromTo(logo, { y:0 }, { y:-16, duration:1.8, ease:'sine.inOut', yoyo:true, repeat:1, immediateRender:false }, 1.2);
 }
 function entreeAchat(){
@@ -1246,7 +1365,7 @@ function entreeCarte(){
 function entreeInsta(){
   const b = $('#b6');
   return gsap.timeline()
-    .fromTo([b.querySelector('.etiq'), b.querySelector('.i-titre')], { y:40, autoAlpha:0 }, { y:0, autoAlpha:1, duration:.8, stagger:.12, ease:'expo.out' }, .1)
+    .fromTo([b.querySelector('.etiq'), ...b.querySelectorAll('.i-titre')], { y:40, autoAlpha:0 }, { y:0, autoAlpha:1, duration:.8, stagger:.12, ease:'expo.out' }, .1)
     .fromTo(b.querySelector('.i-pseudo'), { autoAlpha:0, scale:.9, backgroundPosition:'100% 0' }, { autoAlpha:1, scale:1, backgroundPosition:'0% 0', duration:2.6, ease:'power2.out' }, .35)
     .fromTo(b.querySelector('.i-reseaux'), { autoAlpha:0, letterSpacing:'.5em' }, { autoAlpha:1, letterSpacing:'.2em', duration:1.2, ease:'expo.out' }, .9);
 }
@@ -1295,7 +1414,7 @@ function demarrerTension(){
   const carte = S.mode !== 'wheel';
   $('#tTexte').textContent = 'Une vente se prépare';
   $('#tLabel').textContent = 'Préchauffage';
-  $('#tTitre').textContent = carte ? 'La carte se prépare' : 'La roue chauffe';
+  $('#tTitre').textContent = carte ? 'La carte se prépare' : S.theme === 'noel' ? 'Les lutins préparent la roue' : 'La roue chauffe';
   gsap.to('#tension', { autoAlpha:1, duration:.5, overwrite:true });
   gsap.to(TEN, { intro:1, duration:1.4, ease:'power2.out', overwrite:true });
   gsap.fromTo('#tJauge', { scale:.4, autoAlpha:0, rotation:-40 }, { scale:1, autoAlpha:1, rotation:0, duration:.9, ease:'back.out(1.6)' });
@@ -1339,7 +1458,12 @@ function dessinerTension(dt, time){
     const x = 960 + Math.cos(a) * r, y = 460 + Math.sin(a) * r;
     c.save(); c.translate(x, y); c.rotate(a + Math.PI / 2); c.globalAlpha = e * (.75 + .25 * Math.sin(time * 4 + k));
     c.shadowColor = TCOL[k]; c.shadowBlur = 22 + chaleur * 18; c.fillStyle = TCOL[k];
-    c.beginPath(); c.moveTo(-26, -20); c.lineTo(26, -20); c.lineTo(16, 22); c.lineTo(-16, 22); c.closePath(); c.fill();
+    if (S.theme === 'noel'){
+      // à Noël, les éclats deviennent de petits paquets cadeaux
+      c.fillRect(-21, -18, 42, 38); c.shadowBlur = 0; c.fillStyle = 'rgba(255,255,255,.88)';
+      c.fillRect(-4, -18, 8, 38); c.fillRect(-21, -3, 42, 8);
+      c.beginPath(); c.ellipse(-8, -23, 8, 5, -.5, 0, 6.2832); c.ellipse(8, -23, 8, 5, .5, 0, 6.2832); c.fill();
+    } else { c.beginPath(); c.moveTo(-26, -20); c.lineTo(26, -20); c.lineTo(16, 22); c.lineTo(-16, 22); c.closePath(); c.fill(); }
     c.restore();
   }
   c.globalAlpha = 1; c.shadowBlur = 0; c.globalCompositeOperation = 'source-over';
@@ -1491,10 +1615,10 @@ function fermerRoue(sp){
 
 /* ---------- Résultat commun (roue et carte) ---------- */
 function montrerResultat(p, ox, oy){
-  const gagne = p.type !== 'lose', carte = p.label === CARTE, msg = LOSE_MESSAGES[Math.floor(Math.random() * LOSE_MESSAGES.length)];
+  const gagne = p.type !== 'lose', carte = p.label === CARTE, noel = S.theme === 'noel', pertes = noel ? PERTE_NOEL : LOSE_MESSAGES, msg = pertes[Math.floor(Math.random() * pertes.length)];
   const titre = gagne ? aff(p) : msg.title;
   $('#resultat').className = 'resultat ' + p.type;
-  $('#rSur').textContent = !gagne ? 'Dommage' : carte ? 'Vous gagnez une carte cadeau' : p.type === 'gift' ? 'Vous gagnez' : 'Félicitations';
+  $('#rSur').textContent = !gagne ? 'Dommage' : carte ? (noel ? 'Le Père Noël vous offre une carte cadeau' : 'Vous gagnez une carte cadeau') : p.type === 'gift' ? (noel ? 'Le Père Noël vous offre' : 'Vous gagnez') : (noel ? 'Joyeux Noël !' : 'Félicitations');
   $('#rIcone').innerHTML = p.type === 'gift' && !carte ? `<svg viewBox="0 0 48 48" aria-hidden="true">${ICONES[p.label]}</svg>` : '';
   const lot = $('#rLot'); lot.style.fontSize = Math.min(240, Math.floor(1560 / ([...titre].length * .92))) + 'px';
   const lettres = eclater(lot, titre);
@@ -1534,14 +1658,15 @@ const grat = { actif:false, manuel:false, fini:false, prev:null, n:0, auto:null,
 function dessinerFeuille(){
   cF.globalCompositeOperation = 'source-over';
   const g = cF.createLinearGradient(0, 0, 960, 600);
-  [['0','#cbbdf2'],['.25','#8e74d9'],['.5','#e3d9fb'],['.75','#7c60cc'],['1','#c4b2ef']].forEach(([o, c]) => g.addColorStop(+o, c));
+  const noel = S.theme === 'noel';
+  (noel ? [['0','#f7dc9a'],['.25','#d9a441'],['.5','#fff0c4'],['.75','#c98f2c'],['1','#f3d389']] : [['0','#cbbdf2'],['.25','#8e74d9'],['.5','#e3d9fb'],['.75','#7c60cc'],['1','#c4b2ef']]).forEach(([o, c]) => g.addColorStop(+o, c));
   cF.fillStyle = g; cF.fillRect(0, 0, 960, 600);
   for (let i = 0; i < 2600; i++){ cF.fillStyle = i % 2 ? `rgba(255,255,255,${(Math.random() * .25).toFixed(2)})` : `rgba(40,20,90,${(Math.random() * .2).toFixed(2)})`; cF.fillRect(Math.random() * 960, Math.random() * 600, 1.6, 1.6); }
   cF.save(); cF.translate(480, 300); cF.rotate(-.35); cF.font = '400 22px Michroma, "Arial Black", sans-serif'; cF.fillStyle = 'rgba(255,255,255,.17)'; cF.textAlign = 'center';
-  for (let row = -10; row <= 10; row++) for (let col = -6; col <= 6; col++) cF.fillText('SHAYA', col * 190 + (row % 2) * 95, row * 52);
+  for (let row = -10; row <= 10; row++) for (let col = -6; col <= 6; col++) cF.fillText(noel ? 'NOËL' : 'SHAYA', col * 190 + (row % 2) * 95, row * 52);
   cF.restore();
-  cF.textAlign = 'center'; cF.fillStyle = 'rgba(30,12,80,.78)'; cF.font = '400 56px Michroma, "Arial Black", sans-serif'; cF.fillText('GRATTEZ ICI', 480, 318);
-  cF.fillStyle = 'rgba(30,12,80,.6)'; cF.font = '800 22px Manrope, sans-serif'; cF.fillText('UN LOT VOUS ATTEND', 480, 372);
+  cF.textAlign = 'center'; cF.fillStyle = noel ? 'rgba(74,42,6,.8)' : 'rgba(30,12,80,.78)'; cF.font = '400 56px Michroma, "Arial Black", sans-serif'; cF.fillText('GRATTEZ ICI', 480, 318);
+  cF.fillStyle = noel ? 'rgba(74,42,6,.62)' : 'rgba(30,12,80,.6)'; cF.font = '800 22px Manrope, sans-serif'; cF.fillText(noel ? 'UN CADEAU VOUS ATTEND' : 'UN LOT VOUS ATTEND', 480, 372);
   gsap.set(feuille, { autoAlpha:1 });
 }
 function gratterSegment(a, b){
@@ -1700,10 +1825,32 @@ gsap.ticker.add((time, dms) => {
   }
 });
 
+/* ---------- Thème : classique ou Noël (décor, textes, sons et pièce imprimée suivent S.theme) ---------- */
+const GUIRLANDE = ['#f6c96b', '#ff5f86', '#3ddc84', '#f4f7ff'];
+function appliquerTheme(nom){
+  S.theme = nom;
+  document.body.classList.toggle('theme-noel', nom === 'noel');
+  ampoules.forEach((a, k) => a.setAttribute('fill', nom === 'noel' ? GUIRLANDE[k % 4] : '#fff'));
+  dessinImpression(0, 0);
+}
+/* Guirlande : deux festons en haut de l'écran (le centre reste libre pour la buse), ampoules qui scintillent en décalé. */
+(function guirlande(){
+  const g = $('#guirlande');
+  [[0, 8, 350, 128, 700, 10], [1220, 10, 1570, 128, 1920, 8]].forEach(([x0, y0, cx, cy, x1, y1], f) => {
+    el('path', { d:`M${x0} ${y0}Q${cx} ${cy} ${x1} ${y1}`, class:'fil' }, g);
+    for (let k = 1; k < 12; k++){
+      const t = k / 12, x = (1 - t) ** 2 * x0 + 2 * (1 - t) * t * cx + t * t * x1, y = (1 - t) ** 2 * y0 + 2 * (1 - t) * t * cy + t * t * y1;
+      const b = el('g', { class:'ampoule', style:`animation-delay:${(((k * 7 + f * 3) % 10) * .18).toFixed(2)}s` }, g);
+      el('rect', { x:f2(x - 5), y:f2(y - 2), width:10, height:9, rx:2, fill:'#3a3f4a' }, b);
+      el('ellipse', { cx:f2(x), cy:f2(y + 16), rx:8, ry:11, fill:GUIRLANDE[(k + f) % 4], filter:'url(#lueurG)' }, b);
+    }
+  });
+})();
+
 /* ---------- Mode de jeu choisi dans la caisse (stand/mode), appliqué à la prochaine partie ---------- */
 function choisirMode(m){
   S.mode = m;
-  if (S.tension) $('#tTitre').textContent = m === 'wheel' ? (TEN.prete ? 'Prête à tourner' : 'La roue chauffe') : (TEN.prete ? 'Prête à gratter' : 'La carte se prépare');
+  if (S.tension) $('#tTitre').textContent = m === 'wheel' ? (TEN.prete ? 'Prête à tourner' : S.theme === 'noel' ? 'Les lutins préparent la roue' : 'La roue chauffe') : (TEN.prete ? 'Prête à gratter' : 'La carte se prépare');
 }
 
 /* ---------- Firebase : même projet et mêmes chemins que l'écran précédent ---------- */
@@ -1758,6 +1905,8 @@ window.addEventListener('error', e => signalerErreur('Erreur : ' + e.message));
 
 /* ---------- Démarrage ---------- */
 new ResizeObserver(ajuster).observe(cadre); ajuster();
+appliquerTheme(S.theme);
+if (!/noel|classique/.test(location.search + location.hash)) setInterval(() => { const t = themeDuJour(new Date()); if (t !== S.theme && !S.enJeu) appliquerTheme(t); }, 3600000);
 cacherRoue();
 resetPerso();
 initTrois();
